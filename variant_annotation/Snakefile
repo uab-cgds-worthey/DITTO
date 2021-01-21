@@ -1,0 +1,124 @@
+"""
+Sets up VEP cache and plugins, and then uses them to annotate VCF
+"""
+
+from pathlib import Path
+
+
+# VCF_BASENAME = "cross_sample_cftr_and_vars_of_interest"
+VCF_BASENAME = "cross_sample_vars"
+INPUT_VCF = f"/data/project/worthey_lab/projects/CF_TLOAF_PFarrell/analysis/select_vars/{VCF_BASENAME}.vcf.gz"
+ANNOTATED_VCF = f"data/processed/vep/{VCF_BASENAME}_annotated.vcf"
+
+# VEP parameters
+VEP_CACHE = 'homo_sapiens_refseq'
+SPECIES = 'homo_sapiens'
+REF_BUILD = "GRCh38"
+ENSEMBL_DATASET_VERSION="101"
+
+# datasets for annotation
+CADD_SNV="/data/project/worthey_lab/temp_datasets_central/mana/cadd/raw/hg38/v1.6/whole_genome_SNVs.tsv.gz",
+CADD_INDEL="/data/project/worthey_lab/temp_datasets_central/mana/cadd/raw/hg38/v1.6/gnomad.genomes.r3.0.indel.tsv.gz",
+GERP="/data/project/worthey_lab/temp_datasets_central/mana/gerp/processed/hg38/v1.6/gerp_score_hg38.bg.gz",
+# GNOMAD_EXOMES="/data/project/worthey_lab/temp_datasets_central/mana/gnomad/v2.1.1/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz",
+GNOMAD_GENOMES="/data/project/worthey_lab/temp_datasets_central/mana/gnomad/v3.0/data/gnomad.genomes.r3.0.sites.vcf.bgz",
+CLINVAR="/data/project/worthey_lab/temp_datasets_central/mana/clinvar/clinvar_20200830.vcf.gz"
+
+
+# rule all:
+#     input:
+#         ANNOTATED_VCF,
+
+
+rule annotate_variants:
+    input:
+        calls=INPUT_VCF,
+        cache=f"data/external/resources/vep/{VEP_CACHE}/cache",
+        plugins="data/external/resources/vep/plugins",
+        cadd_snv=CADD_SNV,
+        cadd_indel=CADD_INDEL,
+        gerp=GERP,
+        # gnomad_exomes=GNOMAD_EXOMES,
+        gnomad_genomes=GNOMAD_GENOMES,
+        clinvar=CLINVAR,
+    output:
+        calls=ANNOTATED_VCF,
+        stats="data/processed/vep/stats.html"
+    message:
+        "Annotated vcf using VEP with CADD, gnomad-exomes, gnomad-genomes and GERP. "
+        f"VEP cache used: {VEP_CACHE}, ref build: {REF_BUILD}, Ensemble version: {ENSEMBL_DATASET_VERSION}"
+    params:
+        release=ENSEMBL_DATASET_VERSION,
+        species=SPECIES,
+        build=REF_BUILD,
+        refseq_flag = "--refseq" if 'refseq' in VEP_CACHE else "",
+    log:
+        "logs/vep/annotate.log"
+    threads: 4
+    # wrapper:
+    #     "0.64.0/bio/vep/annotate"
+    conda:
+        "config/env/vep_bcftools.yaml"
+    shell:
+        r"""
+        (bcftools view {input.calls} | \
+            vep --fork {threads} \
+                --format vcf \
+                --vcf \
+                --cache \
+                --cache_version {params.release} \
+                --species {params.species} \
+                {params.refseq_flag} \
+                --assembly {params.build} \
+                --hgvs \
+                --dir_cache {input.cache} \
+                --dir_plugins {input.plugins} \
+                --plugin CADD,{input.cadd_snv},{input.cadd_indel}\
+                --custom {input.gerp},GERP,bed \
+                --custom {input.gnomad_genomes},gnomADv3,vcf,exact,0,AC,AN,AF \
+                --custom {input.clinvar},clinvar,vcf,exact,0,ALLELEID,CLNSIG,CLNSIGCONF,GENEINFO \
+                --output_file STDOUT \
+                --stats_file {output.stats} | \
+            bcftools view -Ov > {output.calls}) \
+            &> {log}
+        """
+
+
+rule get_vep_cache:
+    output:
+        cache = directory(f"data/external/resources/vep/{VEP_CACHE}/cache"),
+    params:
+        species=VEP_CACHE,
+        build=REF_BUILD,
+        release=ENSEMBL_DATASET_VERSION,
+        plugins="CADD"
+    message:
+        "Retrieves VEP cache data"
+    log:
+        "logs/vep/cache.log"
+    # wrapper:
+    #     "0.59.2/bio/vep/cache"
+    conda:
+        "config/env/vep_bcftools.yaml"
+    shell:
+        r"""
+        vep_install --AUTO cfp \
+            --SPECIES {params.species} \
+            --ASSEMBLY {params.build} \
+            --PLUGINS {params.plugins} \
+            --CACHE_VERSION {params.release} \
+            --CACHEDIR {output.cache} \
+            --CONVERT \
+            --NO_UPDATE > {log}
+        """
+
+
+rule get_vep_plugins:
+    output:
+        directory("data/external/resources/vep/plugins")
+    message:
+        "Downloads VEP plugins"
+    params:
+        release=ENSEMBL_DATASET_VERSION
+    wrapper:
+        "0.59.2/bio/vep/plugins"
