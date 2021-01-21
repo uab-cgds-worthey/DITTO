@@ -1,0 +1,357 @@
+Getting started
+===============
+
+############# 6/5/20 ###################################
+srun --ntasks=1 --cpus-per-task=1 --mem-per-cpu=200G --time=01:59:00 --partition=pascalnodes --job-name=classify --pty /bin/bash
+Using conda envi to install and work on tools
+    module load Anaconda3/2020.02
+    source activate testing         #for GPU Neural Networks
+    conda create --name envi  #first time use only
+    source activate envi
+
+ClinVar data (GRCh37) is downloaded to /data/external/ directory using the following command on 6/4/20.
+    wget https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/clinvar.vcf.gz
+
+To unzip it, use the below command
+    gunzip clinvar.vcf.gz
+
+Output CSV file is saved as clinvar.csv under "data/processed"
+
+############# 6/6/20 #########################################
+Using Annovar to annotate clinvar variants
+
+Download Annovar - wget http://www.openbioinformatics.org/annovar/download/0wgxR2rIVP/annovar.latest.tar.gz
+Unzip Annovar - tar xvfz annovar.latest.tar.gz
+
+Download all annotation databases using the following commands
+    perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGene humandb/
+    perl annotate_variation.pl -buildver hg19 -downdb cytoBand humandb/
+    perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 humandb/ 
+    perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 humandb/ 
+    perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a humandb/
+
+SLURM interactive session before annotating variants
+    alias SRUN_EXPRESS="srun --ntasks=1 --cpus-per-task=4 --mem-per-cpu=4096 --partition=express --pty /bin/bash"
+    SRUN_EXPRESS
+
+Annotate variants-
+    Tab delimited input -
+        perl table_annovar.pl ../../processed/clinvar.avinput humandb/ -buildver hg19 -out ../myanno -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -csvout -polish -xref example/gene_xref.txt
+    VCF file input - 
+        perl table_annovar.pl ../../external/clinvar.vcf humandb/ -buildver hg19 -out ../myanno -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -vcfinput -polish -xref example/gene_xref.txt
+
+
+Install scikit-allel to extract info from vcf as csv. 
+    conda install -c conda-forge scikit-allel
+Run "parse_clinvar.py" code to convert vcf annotations to txt format.
+
+
+################## 6/8/20 ###########################################
+
+Ran Brandon's script for annotation
+    -Script is located in this path
+    /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation
+    -Commands to Run
+        module load Python/3.6.6-foss-2018b
+        python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation/Annotate.py --req_AD --clean_homo_ref --clean_no_call /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/external/clinvar_20200602.vcf /data/scratch/tmamidi/ /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/interim/annov/ /data/project/worthey_lab/tools/annovar/annovar_hg19_db
+
+
+################## 6/24/20 ##########################################
+
+Again, Downloaded the "updated" clinvar vcf file and ran Brandon's script for annotation.
+
+-Commands to Run
+        module load Python/3.6.6-foss-2018b
+        python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation/Annotate_Sample_Annovar.py  /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/external/clinvar.vcf /data/scratch/tmamidi/ /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/interim/ /data/project/worthey_lab/tools/annovar/annovar_hg19_db
+
+-Ran "parse_clinvar.py" code to convert vcf annotations to txt format.
+-Working on "Filter_variants.py" to filter all the variants and their annotations for ML models
+
+################### 7/8/20 ############################################
+
+data/processed/class-count.csv has the summary statistics of all variants categorized according to ACMG guidelines.
+Filtering out only the necessary columns - 
+    Polyphen-2 HDIV vs HVAR - While PolyPhen-2 HDIV uses alleles encoding human proteins and their closely related mammalian homologs as TN observations, PolyPhen-2 HVAR applies common human nsSNVs as TN observations.
+    LRTori is a two-sided P-value of the likelihood ratio test of codon constraint. Each LRTori is associated with an estimated nonsynonymous-to-synonymous-rate ratio (ω) and an amino acid alignment of 31 species at the test codon. The score ranges from 0 to 1 and a larger score signifies that the codon is more constrained or a NS is more likely to be deleterious.
+    Eigen-PC-raw: Eigen PC score for genome-wide SNVs. A functional prediction score based on conservation, allele frequencies, deleteriousness prediction (for missense SNVs) and epigenomic signals (for synonymous and non-coding SNVs) using an unsupervised learning method (doi: 10.1038/ng.3477).
+    GenoCanyon_score: a functional prediction score based on conservation and biochemical annotations using unsupervised statistical learning. (doi:10.1038/srep10576)
+	GenoCanyon_rankscore: rank of the GenoCanyon_score among all GenoCanyon_scores in genome
+
+For details on annotations, please refer to this pdf document - https://softgenetics.com/PDF/GeneticistAssistant-Variant-Reference-Fields.pdf
+It covers most of the annotations but not all.
+
+
+### Variants per each ACMG category #########
+>>> df[['InterVar_automated','ID']].groupby('InterVar_automated').count()
+                            ID
+InterVar_automated        Count    
+Benign                   20859
+Likely_benign           187722
+Likely_pathogenic        23539
+Pathogenic               18587
+Uncertain_significance  244031
+Total                   494738
+
+>>> df[['CLNSIG','ID']].groupby('CLNSIG').count()
+
+CLNSIG                                              
+Affects                                          112
+Benign                                         29704
+Benign/Likely_benign                           13909
+Conflicting_interpretations_of_pathogenicity   20654
+Likely_benign                                  80901
+Likely_pathogenic                              25774
+Pathogenic                                     59416
+Pathogenic/Likely_pathogenic                    4072
+Uncertain_significance                        193444
+association                                      186
+drug_response                                    305
+not_provided                                    9409
+other                                           1720
+protective                                        36
+risk_factor                                      411
+Total	                                        440053
+
+################# 7/16/20 #####################################################################################
+
+There are features annotated multiple times by different databases (using Annovar). Scikit-allel cannot account for multiple features and just omits all other instances except the last one.
+To overcome this problem, I'm writing a parsing code for extracting info from vcf - "parse_vcf.py"
+Looks like that's not the way to go. It didn't work.
+
+So, the three databases (gnomad211_exome,clinvar_20190305,mitimpact24) while running Annovar are creating duplicate annotations. So, I removed them and ran "Annovar.py" again and it worked.
+-Commands to Run
+        module load Python/3.6.6-foss-2018b
+        python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation/Annovar.py  /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/external/clinvar.vcf /data/scratch/tmamidi/ /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/interim/ /data/project/worthey_lab/tools/annovar/annovar_hg19_db
+
+Then run "parse_clinvar.py" to convert annotated vcf to tab-delimited format.
+Finally, got "raw-features.csv" to further transform to categorical and use ML.
+
+CLNSIG	                                        ID
+Affects	                                        132
+Benign	                                        92165
+Benign/Likely_benign	                        19060
+Conflicting_interpretations_of_pathogenicity	41019
+Likely_benign	                                152762
+Likely_pathogenic	                            34029
+Pathogenic	                                    74857
+Pathogenic/Likely_pathogenic	                6724
+Uncertain_significance	                        294609
+association	                                    216
+association_not_found	                        2
+drug_response	                                1979
+not_provided	                                11110
+other	                                        1660
+protective	                                    39
+risk_factor	                                    441
+
+################# 7/21/20 ######################################################################
+
+Extract rows with only 5 ACMG classified annotations.
+    - (648422, 141)
+     
+Impute values to NAs
+
+################# 7/29/20 #######################################################################
+Ran the code multiclass.py with SVM classifier for first 10000 rows. Complete dataset takes way too long to output result.
+
+Confusion matrix: Benign. Likely_benign, VUS, Likely_pathogenic, Pathogenic
+array([[ 874,  324,    0,    0,   88],
+       [  76, 1570,    1,    3,  248],
+       [   0,    7,   91,   96,   83],
+       [   2,    9,   98,  317,   85],
+       [  28,  449,   41,   65, 2945]])
+
+################## 8/1/20 & 8/2/20 ###############################################################
+Wrote code for keras using tensorflow (keras-seq) and 5 models from sklearn (models.py).
+Using model.job for submitting slurm job.
+
+Keras results - keras.csv, losskeras.jpg and accuracy-keras.jpg - stored in data/processed directory
+    5 layers with 141,70,45,23,11,5 neurons and batch size = 100, epoch=10
+    looks like the highest is 80% accuracy with almost 60% loss.
+
+sklearn 5 models results - model-scores-<num>.csv
+    - for first 1000 lines - repeats=3; split=15
+        SVM 0.704 (0.049)
+        KNN 0.749 (0.045)
+        BAG 0.869 (0.040)
+        RF 0.874 (0.042)
+        ET 0.869 (0.044)
+    -for first 10000 lines - repeats=3; split=50
+        SVM 0.748 (0.014)
+        KNN 0.709 (0.015)
+        BAG 0.806 (0.010)
+        RF 0.807 (0.013)
+        ET 0.807 (0.012)
+
+################### 8/21/20 #####################################################################
+Cleaned the src directory and made subfolders accordingly.
+Under classification, developing sklearn pipeline - refer to models.py
+
+################### 8/27/20 ######################################################################
+Started working on JSON parsing - output from CodiCem and input for this tool.
+Trying out multiprocessing for our models. Ref - https://www.youtube.com/watch?v=fKl2JW_qrso
+Parameter tuning - 
+    https://towardsdatascience.com/credit-risk-management-classification-models-hyperparameter-tuning-d3785edd8371
+
+################### 8/31 & 9/1 ###################################################################
+Using Ray, ran multiple classifiers for 5 ACMG classes. results are stored in "sklearn results.xlsx" in prossessed directory.
+    code used for this is models.py.
+    On a separate context, trying to run commands separately and debug syntax errors in multiclass.py script.
+
+################### 9/2/20 ######################################################################
+Start trying out hyperparameter tuning.
+    - Trying out Random forest and Decision tree.
+
+################### 9/9/20 ######################################################################
+Trying out ELI5 - https://eli5.readthedocs.io/en/latest/overview.html#installation
+    - package to calc weights
+Better to use feature_importances_ function from classifiers
+    - https://machinelearningmastery.com/calculate-feature-importance-with-python/
+
+################### 9/10/20 ######################################################################
+Looking more towards Neural Networks which can be easily customizable.
+Hyperparameter tuning for NN
+    - https://www.youtube.com/watch?v=OSJOBH2-a9Y
+    - Also look in to Brandon's code
+
+################### 9/11/20 ######################################################################
+Plan for today -   
+    - Work on creating neural Network
+    - use standard scalar for NN (mandatory).
+    - Parameter tuning as mentioned by youtube video above and parameters from Brandon's code
+    - backpropagation is being taken care by keras. So, no need to implement that separately.
+    - select different drop-outs with parameter tuning
+    - Use ELI5 package to calculate weights of features once the NN model is trained
+    - Use average_precision_score function from sklearn to calculate precision scores.
+Also, refer to this for all types of parameters - https://github.com/keras-team/keras/issues/13586
+Something to look at for parameter setup - https://towardsdatascience.com/hyperparameter-optimization-with-keras-b82e6364ca53
+Breaking down parameters for neural network - https://machinelearningmastery.com/grid-search-hyperparameters-deep-learning-models-python-keras/
+Building layers and neurons - https://github.com/jeffheaton/t81_558_deep_learning/blob/master/t81_558_class_08_4_bayesian_hyperparameter_opt.ipynb
+
+################### 9/14/20 ######################################################################
+Converting keras script from CPU to GPU usage on cheaha. This needs Tensorflow-gpu and CUDA to be installed to work.
+    - Using the environment 'testing' where I installed tensorflow-gpu.
+    - use the below modules on cheaha - also add them to the .job file.
+        - module load CUDA/10.1.243
+        - module load cuDNN/7.6.2.24-CUDA-10.1.243
+Next step is to modify the NN builder definition to create layers and neurons on its own. Use this tutorial for this - https://github.com/jeffheaton/t81_558_deep_learning/blob/master/t81_558_class_08_4_bayesian_hyperparameter_opt.ipynb
+Note- I saw a worker stopping and errors out the script. This is cause of njobs=-1 (according to web), where parallel fits take up all the memory and this might exit out? A proposed solution is to update matplotlib (pip install -U matplotlib). 
+I know it's strange, but whatever works and doesn't throw an error, lol. I have to look up how Cheaha's GPU split jobs among them and how ntasks work.
+
+Cool plots for parameter tuning using hiplot - https://medium.com/roonyx/neural-network-hyper-parameter-tuning-with-keras-tuner-and-hiplot-7637677821fa
+Try this for tomorrow. looks promising.
+    - https://medium.com/python-data/hyperparameter-tuning-tensorflow-2-models-with-keras-tuner-81f36f801040
+    
+
+################### 9/15/20 ######################################################################
+Looks like hyperopt is the way to go. Use this video to build your model - https://www.youtube.com/watch?v=RublDm4J1vY
+Probably this helps to copy+paste - https://www.kaggle.com/inspector/keras-hyperopt-example-sketch
+
+################### 9/16/20 ######################################################################
+**Ignore everything above about tuning parameters**
+BayesSearchCV works using this tutorial - https://github.com/M-e-r-c-u-r-y/Machine-Learning/blob/master/Kaggle/Titanic/Neural%20Network%20Classifier%20using%20Bayesian%20Search.ipynb
+    - make sure you have the latest skopt installed.
+
+Now that everything is working, let's move to faster tuning algorithms like Ray.tune - https://docs.ray.io/en/master/tune/examples/index.html
+Here is an example of how it's done - https://docs.ray.io/en/master/tune/examples/tune_mnist_keras.html
+Didn't understand this, but might be useful, lol - https://medium.com/rapids-ai/30x-faster-hyperparameter-search-with-raytune-and-rapids-403013fbefc5
+
+################### 9/18/20 ######################################################################
+Example given by Ray folk - https://colab.research.google.com/github/ray-project/tutorial/blob/master/tune_exercises/exercise_1_basics.ipynb#scrollTo=m1YHm_CyFWS9
+Video presentation of the same thing - https://www.youtube.com/watch?v=VX7HvEoMrsA
+probably use this - https://medium.com/@himanshurawlani/hyperparameter-tuning-with-keras-and-ray-tune-1353e6586fda
+
+################### 9/19/20 ######################################################################
+Build layers and neurons chosing randomly for parameter tuning - https://www.curiousily.com/posts/hackers-guide-to-hyperparameter-tuning/
+and this - https://keras-team.github.io/keras-tuner/
+but these are available in keras-tuner. Ray doesn't support keras tuner yet.
+TuneReporter function definition - https://medium.com/@himanshurawlani/hyperparameter-tuning-with-keras-and-ray-tune-1353e6586fda
+Ray tune and this might be a good combination - https://www.justintodata.com/hyperparameter-tuning-with-python-keras-guide/
+
+################### 9/28/20 ######################################################################
+As per internet, the way to go is to build the keras model as we already did but use early stopping and population based method to tune parameters (cause it works well with large data and large range of parameters.)
+Use this link for Ray tune FAQs - https://github.com/krfricke/ray/blob/3636f77e15f15732ef576d4782705dd1d47b4d6a/doc/source/tune/_tutorials/_faq.rst#id32
+
+################### 9/30/20 ######################################################################
+Working with OPTUNA. This allows us to use define-by-run search space. Created a sub-folder under src for optuna runs.
+
+################### 10/1/20 ######################################################################
+Optuna is running on cluster. Study name is Ditto_v0
+Have to try Axclient - https://www.justintodata.com/hyperparameter-tuning-with-python-keras-guide/
+Have to try Ray-tune Dragonfly and Axclient and compare the results. Also use Novorad? amd wandb.
+
+################### 10/2/20 ######################################################################
+export CUDA_VISIBLE_DEVICES=4
+running the above line gave me a ray hostname to look up for how much I'm using.
+Made wrike tasks to use keras-tuner, Ray tune algorithms like hyper-opt and dragonfly along with schedulers.
+Also have to tune ML models on the side.
+
+################### 12/16/20 ######################################################################
+Making a pipeline of the whole process. Here's the plan - 
+    -   We need to have a vcf file to start with. I'm taking this one from UDN solves.
+        -------------
+        52	Proband	UDN308376	C1019-HJ-0012	SL156674	GABRG2	GABRG2-related encephalopathy		GABRG2(NM_00081.3,c.316G>A,p.Ala106Thr,Pathogenic)	
+        -------------
+    -   We have an annotated vcf file for this in our lab workspace on cheaha. 
+        `python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation/Annovar.py  /data/project/worthey_lab/projects/PyxisMap/analysis/UDN/SL156674.vcf.gz /data/scratch/tmamidi/ /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/interim/ /data/project/worthey_lab/tools/annovar/annovar_hg19_db`
+    -   Once we have the annotated vcf file, I'm going to run the following python scripts for annotation and feature extraction. Basically, prepping the data for prediction.
+        -   vcf to csv conversion - parse_clinvar.py
+        -   csv to test file - filter.py
+    -   Now, we'll have the test csv for prediction. We'll be using predict.py for predictions.
+
+For training the classifier/model, I'll be using `parse_clinvar.py` and `filter.py` for prepping the clinvar dataset. Then I'll be running Optuna for hyper-parameter tuning `optuna-tpe.ipy`. 
+Copy the best parameters and run the final code for model performance stats.  
+
+Below are the other cases to work on.
+-----------
+63	Proband	UDN587784	C1006-HJ-0022	SL201103	ENG	TELANGIECTASIA, HEREDITARY HEMORRHAGIC, TYPE 1; HHT1; SYSTEMIC LUPUS ERYTHEMATOSIS (NO MOLEC DIAGNOSIS)		ENG(NM_000118.3,c.816+6T>C,N/A,Research)	
+68	Proband	UDN021466	C1012-HJ-0066	SL202061	KMT2B	KMT2B-related dystonia		KMT2B(NM_014727.2,c.7613delC,p.Thr2539Profs*75,Research)		SHANK2(NM_133266.4,c.902dupC,p.Pro302Serfs*32,Pathogenic)
+-----------
+
+################### 12/21/20 ######################################################################
+*Testing a sample and ranking the variants*
+module load Anaconda3/2020.02
+source activate envi
+cp /data/project/worthey_lab/projects/PyxisMap/analysis/UDN/SL156674.vcf.gz /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/interim/
+gunzip /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/interim/SL156674.vcf.gz
+
+We will need to filter the vcf before annotating and filtering as the files are really huge to work with. Using vcflib package to filter.
+`conda install -c conda-forge -c bioconda -c defaults vcflib`
+https://github.com/vcflib/vcflib - `vcffilter -f "DP > 10 & MQ > 30 & QD > 20" SL156674.vcf > filtered_SL156674.vcf`
+
+python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation/Annovar_Tarun.py  /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/interim/filtered_SL156674.vcf /data/scratch/tmamidi/ /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/interim/ /data/project/worthey_lab/tools/annovar/annovar_hg19_db
+KeyError: "['CLNSIG', 'MC', 'CLNVC', 'AF_ESP', 'AF_TGP', 'CLNHGVS', 'CLNREVSTAT', 'AF_EXAC'] not in index"
+
+################### 1/9/21 ######################################################################
+Use Annovar.py for Clinvar and Annovar_Tarun.py for samples cause clinvar is not updted and downloaded clinvar has info.
+python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation/Annovar.py  /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/external/clinvar.vcf /data/scratch/tmamidi/ /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/interim/ /data/project/worthey_lab/tools/annovar/annovar_hg19_db
+
+Imputation notes
+Using this for now - logistic regression for transform
+    https://medium.com/nerd-for-tech/how-to-implement-mice-algorithm-using-iterative-imputer-to-handle-missing-values-3d6792d4ba7f
+Alternate resources - 
+    https://towardsdatascience.com/6-different-ways-to-compensate-for-missing-values-data-imputation-with-examples-6022d9ca0779
+    https://www.analyticsvidhya.com/blog/2020/07/knnimputer-a-robust-way-to-impute-missing-values-using-scikit-learn/
+    
+Something to read on Overfitting - https://elitedatascience.com/overfitting-in-machine-learning
+
+################### 1/12/21 ######################################################################
+Installed Hazel on to my laptop.
+Hazel is a gene prioritizing tool given phenotype as input.
+
+################### 1/13/21 ######################################################################
+Testing Ditto - 
+Sample - SL212589	IQCB1	Senior-Loken syndrome5		IQCB1(NM_001023570.3,c.1518_1519delCA,p.His506GlnfsTer13,Pathogenic)	IQCB1(NM_001023570.3,c.1465C>T,p.Arg489Ter,Pathogenic)
+HPO - HP:0000510, HP:0003774, HP:0000090
+Command for Hazel - 
+curl -d '{"terms": ["HP:0000479", "HP:0001129", "HP:0003774", "HP:0007481"]}' -H "Content-Type: application/json" \
+-X GET http://localhost:5000/v1/cosine > SL212589_genes.yaml
+
+################### 1/18/21 ######################################################################
+For faster queries, tabix the file - https://pypi.org/project/pytabix/
+
+################### 1/19/21 ######################################################################
+ping Hazel in cheaha - curl -d '{"terms": ["HP:0001337", "HP:0010242"]}' -H "Content-Type: application/json" -X GET http://10.111.161.203:5000/v1/cosine
+Looking in to other annotation tools - Trying out Exomiser
+Download Exomiser zip from the release page mentioned here and follow the readme in that folder - https://github.com/exomiser/Exomiser
+prioritizing variants - http://exomiser.github.io/Exomiser/manual/7/analysis_file_config/

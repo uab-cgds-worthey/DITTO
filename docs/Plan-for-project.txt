@@ -1,0 +1,85 @@
+Plan for Variant prioritization tool
+
+Objective:
+Application of classification algorithms that ingest variant annotations along with phenotype information for predicting whether a variant will ultimately be clinically reported and returned to a patient. It should also predict and classify the variants based on ACMG guidelines.
+Background: In the field of genomic medicine, the primary goal of diagnosing rare disease patient is to identify one or more genomic variants that may be responsible for a particular phenotype. This process is typically through annotation, filtering and ranking/prioritizing variants for manual curation. These curated variants are then clinically reported back to the patient.
+Problem: Manual curation of thousands of variants even after filtering is time consuming process. Average time of curation is 100 variants per man-hour. Thus, methods/tools that can identify variants to be clinically reported, even in presence of high degree of variability in phenotype presentation, are of critical importance.
+Solution: Develop a tool for accurate prioritization of variants, reduces time to review and diagnose rare disease patients.
+Dataset: 
+Genotypes – 
+•	SNVs – 
+o	allele frequency, 
+o	sequence based, structure-based predictions (ClinVarRVRD), 
+o	sequence conservation, splice factor motifs, splice donor/acceptor sites, RNA folding energy, codon usage, CpG content (SilVa tool)
+o	splice donors and acceptors in pre-mRNA transcripts (SpliceAI)
+•	oligogenic or multilocus genetic pattern (VarCoPP)
+•	CNVs (CNVdigest)
+•	Gene expression pathway level training (MuliPLIER) – database (recount2)
+•	Protein-chaperon interaction (DeepNEU)
+•	eQTL as feature?
+•	Can we use polygenic risk scores? probably to identify modifier variants?
+Note – population based = improved prediction? MAF filter?
+
+Genotype-Phenotype – 
+•	Variant pathogenicity prediction and annotation (eDiVA) for WES datasets
+•	Genotypic and phenotypic features (Xrare and DeepPVP – deep phenomeNET variant predictor)
+Note - HPO terms for human and orthologous genes from model organisms (mouse, zebrafish etc.,) and phenotypes from protein-protein interactions. OMIM orphaned, IMPC, string DB. Monarch
+Phenotype – 
+•	Phenotypes (HPO, upheno), diseases (Mondo), genes and pathways (HANRD - heterogeneous association network for rare diseases, Orphamizer)
+•	EHR data (Ada XD, Dr. Warehouse) – this is not HPO
+•	Image based (Face2Gene, DeepGestalt)
+•	IR fingerprint (artificial neural networks)
+Variants – ClinVar, HGMD, dbSNP, Varibench, HumVar, ExoVar, predictSNP, and SwissVar
+Features – allele frequency, specific populations, evolutionary conservation, functional impact (SIFT), segmental duplication, simple sequence repeats, ClinVar and OMIM; local context: GC content within 10 flanking bases on the reference genome; amino acid constraint, including blosum62 and pam250; Protein structure, interaction, and modifications, including predicted secondary structures, number of protein interactions from the BioPlex 2.0 Network, whether the protein is involved in complexes formation from CORUM database, number of high-confidence interacting proteins by PrePPI , probability of a residue being located the interaction interface by PrePPI (based on PPISP, PINUP, PredU), predicted accessible surface areas were obtained from dbPTM, SUMO scores in 7-amino acids neighborhood by GPS-SUMO, phosphorylation sites predictions within 7 amino acids neighborhood by GPS3.0, and ubiquitination scores within 14- amino acids neighborhood by UbiProber ; Gene mutation intolerance, including ExAC metrics – loss of function (check mvp paper)
+Algorithms –
+•	Machine learning – sklearn, imblearn
+•	Deep learning/neural networks
+•	Convolutional Neural networks
+•	AI ??
+Training and Testing
+•	Probably use 80:20 from all clinvar variants
+Tuning parameters
+•	Use population based tuning for large parameter space and large train data - https://deepmind.com/blog/article/population-based-training-neural-networks
+•	Use Optuna for define-by-run search space and parallelize it.
+•	ELI5 or SHAP for feature importance
+Simulation data- 
+•	Use 1000genome project VCF and add variants with HPO terms and create multiple vcf files. Use this as test.
+•	Use SNV vcfs and compare to SNV prioritization tools. Same with other type of variants and tools. Finally, combine all types of variants and test the model.
+•	Also simulate using inheritance patterns – a bit complicated – refer to eDiVA paper
+Real data – 
+•	Use UDN phase-1 data as a test set.
+Results – 
+Variant ranking – 
+•	Top 1 variant predicted by tool
+•	In top 10 list predicted by tool
+•	In top 20-30% list predicted by tool
+•	Not predicted/ unpredictable
+Things to keep in mind – 
+•	When seeing new values in some categorical columns, look for additive smoothing, also called Laplace smoothing
+•	Nuclear variants vs mitochondrial variants
+•	Hyperparameter tuning of features and check for F1 score
+•	Sequencing errors
+•	Default features and in combination with other predictors?
+•	Similar phenotype – similar mutation in the same gene?
+•	Inheritance patterns? a) dominant de novo, (b) autosomal dominant inherited, (c) autosomal recessive homozygous, (d) autosomal recessive compound heterozygous, or (e) X‐linked.
+•	Xu et al. developed Dic-Att-BiLSTM-CRF (DABLC), a deep attention NN method. By incorporating dictionary-based (using disease ontology) and document-based attention mechanisms, this new method outperformed existing ones at identifying rare and complex disease names
+
+
+Tools to look/read:
+1. rvtests - https://github.com/zhanxw/rvtests
+2. favor - http://favor.genohub.org/
+3. LINSIGHT - https://www.nature.com/articles/ng.3810
+4. STAAR - https://github.com/xihaoli/STAAR ; https://www.nature.com/articles/s41588-020-0676-4
+5. Methylome mappability - https://bismap.hoffmanlab.org/
+6. Linkage disequilibrium - https://www.nature.com/articles/ng.3954
+7. Assay info - Encode (https://www.encodeproject.org/report/?type=Experiment)
+8. Phen2Gene - https://academic.oup.com/nargab/article/2/2/lqaa032/5843800
+9. Hyperas - Hyperparameter tuning using the treestructured Parzen estimator (TPE) algorithm (DeepPVP).
+10. Miscastv1.0 - Protein surface prediction
+    - dbs to consider - PhyreRisk, VarMap 
+11. AMELIE - page-13 in https://stm.sciencemag.org/content/scitransmed/suppl/2020/05/18/12.544.eaau9113.DC1/aau9113_SM.pdf
+12. Cool plots for parameter tuning using hiplot - https://medium.com/roonyx/neural-network-hyper-parameter-tuning-with-keras-tuner-and-hiplot-7637677821fa
+
+Bluesky/User requirements/ideas:
+1. Can we give 2 scores per variant: One as driver (monogenic), one as modifier (complex diseases).
+2. Can it also predict if a variant is protective?
