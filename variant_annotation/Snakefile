@@ -5,7 +5,7 @@ Sets up VEP cache and plugins, and then uses them to annotate VCF
 from pathlib import Path
 
 # datasets to use for annotations
-configfile: "variant_annotation/configs/datasets.yaml"
+configfile: "configs/datasets.yaml"
 
 EXTERNAL_DIR = Path("data/external")
 # RAW_DIR = Path("data/raw")
@@ -13,7 +13,8 @@ EXTERNAL_DIR = Path("data/external")
 PROCESSED_DIR = Path("data/processed")
 
 
-INPUT_VCF = f"/data/project/worthey_lab/projects/CF_TLOAF_PFarrell/analysis/select_vars/cross_sample_vars.vcf.gz"
+# INPUT_VCF = f"/data/project/worthey_lab/projects/CF_TLOAF_PFarrell/analysis/select_vars/cross_sample_vars.vcf.gz"
+INPUT_VCF = ".test/data/test.vcf"
 
 # VEP parameters
 VEP_CACHE = 'homo_sapiens_refseq'
@@ -22,9 +23,9 @@ REF_BUILD = "GRCh38"
 ENSEMBL_DATASET_VERSION = "101"
 
 
-# rule all:
-#     input:
-#         ANNOTATED_VCF,
+rule all:
+    input:
+        PROCESSED_DIR / "vep" / "annotated.vcf",
 
 
 rule get_vep_cache:
@@ -40,7 +41,7 @@ rule get_vep_cache:
     # wrapper:
     #     "0.59.2/bio/vep/cache"
     conda:
-        "config/env/vep_bcftools.yaml"
+        "configs/env/vep.yaml"
     shell:
         r"""
         vep_install --AUTO cfp \
@@ -91,7 +92,7 @@ rule annotate_variants:
     # wrapper:
     #     "0.64.0/bio/vep/annotate"
     conda:
-        "config/env/vep_bcftools.yaml"
+        "configs/env/vep.yaml"
     shell:
         r"""
         (bcftools view {input.calls} | \
