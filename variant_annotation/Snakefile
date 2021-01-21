@@ -37,8 +37,6 @@ rule get_vep_cache:
         plugins = "CADD"
     message:
         "Retrieves VEP cache data"
-    # log:
-    #     "logs/vep/cache.log"
     # wrapper:
     #     "0.59.2/bio/vep/cache"
     conda:
@@ -52,7 +50,7 @@ rule get_vep_cache:
             --CACHE_VERSION {params.release} \
             --CACHEDIR {output.cache} \
             --CONVERT \
-            --NO_UPDATE > {log}
+            --NO_UPDATE
         """
 
 
@@ -89,8 +87,6 @@ rule annotate_variants:
         species = SPECIES,
         build = REF_BUILD,
         refseq_flag = "--refseq" if 'refseq' in VEP_CACHE else "",
-    # log:
-    #     "logs/vep/annotate.log"
     threads: 4
     # wrapper:
     #     "0.64.0/bio/vep/annotate"
@@ -116,8 +112,7 @@ rule annotate_variants:
                 --custom {input.clinvar},clinvar,vcf,exact,0,ALLELEID,CLNSIG,CLNSIGCONF,GENEINFO \
                 --output_file STDOUT \
                 --stats_file {output.stats} | \
-            bcftools view -Ov > {output.calls}) \
-            &> {log}
+            bcftools view -Ov > {output.calls})
         """
 
 
