@@ -1,3 +1,3 @@
 # DITTO
 
-Diagnosis prediction tool using AI
+Diagnosis prediction tool using AI.
