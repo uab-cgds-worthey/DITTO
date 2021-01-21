@@ -30,6 +30,46 @@ CLINVAR="/data/project/worthey_lab/temp_datasets_central/mana/clinvar/clinvar_20
 #         ANNOTATED_VCF,
 
 
+rule get_vep_cache:
+    output:
+        cache = directory(f"data/external/resources/vep/{VEP_CACHE}/cache"),
+    params:
+        species=VEP_CACHE,
+        build=REF_BUILD,
+        release=ENSEMBL_DATASET_VERSION,
+        plugins="CADD"
+    message:
+        "Retrieves VEP cache data"
+    log:
+        "logs/vep/cache.log"
+    # wrapper:
+    #     "0.59.2/bio/vep/cache"
+    conda:
+        "config/env/vep_bcftools.yaml"
+    shell:
+        r"""
+        vep_install --AUTO cfp \
+            --SPECIES {params.species} \
+            --ASSEMBLY {params.build} \
+            --PLUGINS {params.plugins} \
+            --CACHE_VERSION {params.release} \
+            --CACHEDIR {output.cache} \
+            --CONVERT \
+            --NO_UPDATE > {log}
+        """
+
+
+rule get_vep_plugins:
+    output:
+        directory("data/external/resources/vep/plugins")
+    message:
+        "Downloads VEP plugins"
+    params:
+        release=ENSEMBL_DATASET_VERSION
+    wrapper:
+        "0.59.2/bio/vep/plugins"
+
+
 rule annotate_variants:
     input:
         calls=INPUT_VCF,
@@ -84,41 +124,3 @@ rule annotate_variants:
         """
 
 
-rule get_vep_cache:
-    output:
-        cache = directory(f"data/external/resources/vep/{VEP_CACHE}/cache"),
-    params:
-        species=VEP_CACHE,
-        build=REF_BUILD,
-        release=ENSEMBL_DATASET_VERSION,
-        plugins="CADD"
-    message:
-        "Retrieves VEP cache data"
-    log:
-        "logs/vep/cache.log"
-    # wrapper:
-    #     "0.59.2/bio/vep/cache"
-    conda:
-        "config/env/vep_bcftools.yaml"
-    shell:
-        r"""
-        vep_install --AUTO cfp \
-            --SPECIES {params.species} \
-            --ASSEMBLY {params.build} \
-            --PLUGINS {params.plugins} \
-            --CACHE_VERSION {params.release} \
-            --CACHEDIR {output.cache} \
-            --CONVERT \
-            --NO_UPDATE > {log}
-        """
-
-
-rule get_vep_plugins:
-    output:
-        directory("data/external/resources/vep/plugins")
-    message:
-        "Downloads VEP plugins"
-    params:
-        release=ENSEMBL_DATASET_VERSION
-    wrapper:
-        "0.59.2/bio/vep/plugins"
