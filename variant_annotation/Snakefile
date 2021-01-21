@@ -20,7 +20,7 @@ INPUT_VCF = ".test/data/test.vcf"
 VEP_CACHE = 'homo_sapiens_refseq'
 SPECIES = 'homo_sapiens'
 REF_BUILD = "GRCh38"
-ENSEMBL_DATASET_VERSION = "101"
+ENSEMBL_DATASET_VERSION = "102"
 
 
 rule all:
