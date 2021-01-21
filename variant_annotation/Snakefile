@@ -37,8 +37,8 @@ rule get_vep_cache:
         plugins = "CADD"
     message:
         "Retrieves VEP cache data"
-    log:
-        "logs/vep/cache.log"
+    # log:
+    #     "logs/vep/cache.log"
     # wrapper:
     #     "0.59.2/bio/vep/cache"
     conda:
@@ -89,8 +89,8 @@ rule annotate_variants:
         species = SPECIES,
         build = REF_BUILD,
         refseq_flag = "--refseq" if 'refseq' in VEP_CACHE else "",
-    log:
-        "logs/vep/annotate.log"
+    # log:
+    #     "logs/vep/annotate.log"
     threads: 4
     # wrapper:
     #     "0.64.0/bio/vep/annotate"
