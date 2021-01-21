@@ -4,25 +4,22 @@ Sets up VEP cache and plugins, and then uses them to annotate VCF
 
 from pathlib import Path
 
+# datasets to use for annotations
+configfile: "variant_annotation/configs/datasets.yaml"
 
-# VCF_BASENAME = "cross_sample_cftr_and_vars_of_interest"
-VCF_BASENAME = "cross_sample_vars"
-INPUT_VCF = f"/data/project/worthey_lab/projects/CF_TLOAF_PFarrell/analysis/select_vars/{VCF_BASENAME}.vcf.gz"
-ANNOTATED_VCF = f"data/processed/vep/{VCF_BASENAME}_annotated.vcf"
+EXTERNAL_DIR = Path("data/external")
+# RAW_DIR = Path("data/raw")
+# INTERIM_DIR = Path("data/interim")
+PROCESSED_DIR = Path("data/processed")
+
+
+INPUT_VCF = f"/data/project/worthey_lab/projects/CF_TLOAF_PFarrell/analysis/select_vars/cross_sample_vars.vcf.gz"
 
 # VEP parameters
 VEP_CACHE = 'homo_sapiens_refseq'
 SPECIES = 'homo_sapiens'
 REF_BUILD = "GRCh38"
-ENSEMBL_DATASET_VERSION="101"
-
-# datasets for annotation
-CADD_SNV="/data/project/worthey_lab/temp_datasets_central/mana/cadd/raw/hg38/v1.6/whole_genome_SNVs.tsv.gz",
-CADD_INDEL="/data/project/worthey_lab/temp_datasets_central/mana/cadd/raw/hg38/v1.6/gnomad.genomes.r3.0.indel.tsv.gz",
-GERP="/data/project/worthey_lab/temp_datasets_central/mana/gerp/processed/hg38/v1.6/gerp_score_hg38.bg.gz",
-# GNOMAD_EXOMES="/data/project/worthey_lab/temp_datasets_central/mana/gnomad/v2.1.1/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz",
-GNOMAD_GENOMES="/data/project/worthey_lab/temp_datasets_central/mana/gnomad/v3.0/data/gnomad.genomes.r3.0.sites.vcf.bgz",
-CLINVAR="/data/project/worthey_lab/temp_datasets_central/mana/clinvar/clinvar_20200830.vcf.gz"
+ENSEMBL_DATASET_VERSION = "101"
 
 
 # rule all:
@@ -32,12 +29,12 @@ CLINVAR="/data/project/worthey_lab/temp_datasets_central/mana/clinvar/clinvar_20
 
 rule get_vep_cache:
     output:
-        cache = directory(f"data/external/resources/vep/{VEP_CACHE}/cache"),
+        cache = directory(EXTERNAL_DIR / "vep" / "cache" / VEP_CACHE),
     params:
-        species=VEP_CACHE,
-        build=REF_BUILD,
-        release=ENSEMBL_DATASET_VERSION,
-        plugins="CADD"
+        species = VEP_CACHE,
+        build = REF_BUILD,
+        release = ENSEMBL_DATASET_VERSION,
+        plugins = "CADD"
     message:
         "Retrieves VEP cache data"
     log:
@@ -61,36 +58,36 @@ rule get_vep_cache:
 
 rule get_vep_plugins:
     output:
-        directory("data/external/resources/vep/plugins")
+        directory(EXTERNAL_DIR / "vep" / "plugins"),
     message:
         "Downloads VEP plugins"
     params:
-        release=ENSEMBL_DATASET_VERSION
+        release = ENSEMBL_DATASET_VERSION
     wrapper:
         "0.59.2/bio/vep/plugins"
 
 
 rule annotate_variants:
     input:
-        calls=INPUT_VCF,
-        cache=f"data/external/resources/vep/{VEP_CACHE}/cache",
-        plugins="data/external/resources/vep/plugins",
-        cadd_snv=CADD_SNV,
-        cadd_indel=CADD_INDEL,
-        gerp=GERP,
-        # gnomad_exomes=GNOMAD_EXOMES,
-        gnomad_genomes=GNOMAD_GENOMES,
-        clinvar=CLINVAR,
+        calls = INPUT_VCF,
+        cache = EXTERNAL_DIR / "vep" / "cache" / VEP_CACHE,
+        plugins = EXTERNAL_DIR / "vep" / "plugins",
+        cadd_snv = config['CADD_SNV'],
+        cadd_indel = config['CADD_INDEL'],
+        gerp = config['GERP'],
+        # gnomad_exomes = GNOMAD_EXOMES,
+        gnomad_genomes = config['GNOMAD_GENOMES'],
+        clinvar = config['CLINVAR'],
     output:
-        calls=ANNOTATED_VCF,
-        stats="data/processed/vep/stats.html"
+        calls = PROCESSED_DIR / "vep" / "annotated.vcf",
+        stats = PROCESSED_DIR / "vep" / "stats.html"
     message:
         "Annotated vcf using VEP with CADD, gnomad-exomes, gnomad-genomes and GERP. "
         f"VEP cache used: {VEP_CACHE}, ref build: {REF_BUILD}, Ensemble version: {ENSEMBL_DATASET_VERSION}"
     params:
-        release=ENSEMBL_DATASET_VERSION,
-        species=SPECIES,
-        build=REF_BUILD,
+        release = ENSEMBL_DATASET_VERSION,
+        species = SPECIES,
+        build = REF_BUILD,
         refseq_flag = "--refseq" if 'refseq' in VEP_CACHE else "",
     log:
         "logs/vep/annotate.log"
