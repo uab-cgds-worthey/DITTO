@@ -7,8 +7,8 @@ columns:
     #- AF_TGP
     - CLNREVSTAT
     - CLNSIG
-    #- CLNVC
-    #- MC
+    - CLNVC
+    - MC
     - Func.refGene
     - ExonicFunc.refGene
     - SIFT_score

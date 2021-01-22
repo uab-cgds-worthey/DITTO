@@ -26,9 +26,10 @@ def extract_col(config_dict,df):
     df.replace('.', np.nan, inplace=True)
     df.dropna(axis=1, how='all', inplace=True)
     df.dropna(axis=0, how='all', inplace=True)
-    print('CLNREVSTAT:', df['CLNREVSTAT'].nunique())
-    print('CLNVC:', df['CLNVC'].nunique())
-    print('MC:', df['MC'].nunique())
+    print('\nCLNREVSTAT:', df['CLNREVSTAT'].value_counts())
+    print('\nCLNVC:', df['CLNVC'].value_counts())
+    print('\nMC:', df['MC'].value_counts())
+    df = df.drop(['CLNVC','MC'], axis=1)
     # CLNREVSTAT, CLNVC, MC
     return df
 
@@ -40,7 +41,7 @@ def fill_na(df): #(config_dict,df):
     df = pd.read_csv('./data/interim/temp.csv')
     os.remove('./data/interim/temp.csv')
     df = pd.get_dummies(df, prefix_sep='_')
-    df.columns.to_csv('./data/processed/clinvar_columns.csv', index=False)
+    df.head(2).to_csv('./data/processed/clinvar_columns.csv', index=False)
     #lr = LinearRegression()
     #imp= IterativeImputer(estimator=lr, verbose=2, max_iter=10, tol=1e-10, imputation_order='roman')
     print('Filling NAs ....')
