@@ -71,12 +71,12 @@ rule annotate_variants:
         calls = INPUT_VCF,
         cache = EXTERNAL_DIR / "vep" / "cache" / VEP_CACHE,
         plugins = EXTERNAL_DIR / "vep" / "plugins",
-        cadd_snv = config['CADD_SNV'],
-        cadd_indel = config['CADD_INDEL'],
-        gerp = config['GERP'],
+        cadd_snv = config['cadd_snv'],
+        cadd_indel = config['cadd_indel'],
+        gerp = config['gerp'],
         # gnomad_exomes = GNOMAD_EXOMES,
-        gnomad_genomes = config['GNOMAD_GENOMES'],
-        clinvar = config['CLINVAR'],
+        gnomad_genomes = config['gnomad_genomes'],
+        clinvar = config['clinvar'],
     output:
         calls = PROCESSED_DIR / "vep" / "annotated.vcf",
         stats = PROCESSED_DIR / "vep" / "stats.html"
