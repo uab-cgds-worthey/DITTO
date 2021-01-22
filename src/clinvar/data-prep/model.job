@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+#SBATCH --job-name=Clinvar-prep
+#SBATCH --output=Clinvar-prep1.out
+#SBATCH --error=Clinvar-prep1.err
+#
+# Number of tasks needed for this job. Generally, used with MPI jobs
+#SBATCH --ntasks=1
+#SBATCH --partition=pascalnodes
+#
+# Time format = HH:MM:SS, DD-HH:MM:SS
+#SBATCH --time=11:59:58
+#
+# Number of CPUs allocated to each task. 
+#SBATCH --cpus-per-task=10
+#
+# Mimimum memory required per allocated  CPU  in  MegaBytes. 
+#SBATCH --mem-per-cpu=15G
+#
+# Send mail to the email address when the job fails
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-user=tmamidi@uab.edu
+
+#Set your environment here
+module load Anaconda3/2020.02
+#source activate testing
+source activate training
+
+#Run your commands here
+wget -P /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/ https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz
+gunzip /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/clinvar.vcf.gz
+###vcffilter -f "DP > 10 & MQ > 30 & QD > 20" SL156674.vcf > filtered_SL156674.vcf
+python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation/Annovar.py  /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/clinvar.vcf /data/scratch/tmamidi/ /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/interim/ /data/project/worthey_lab/tools/annovar/annovar_hg19_db
+until [ -f /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/interim/clinvar.out.hg19_multianno.vcf ]
+do
+    sleep 600
+done
+echo "Annovar completed!"
+python /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/src/clinvar/data-prep/parse_clinvar.py
+python /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/src/clinvar/data-prep/filter.py
+exit
+#python final.py
