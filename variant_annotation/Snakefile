@@ -14,7 +14,7 @@ PROCESSED_DIR = Path("data/processed")
 
 
 # INPUT_VCF = f"/data/project/worthey_lab/projects/CF_TLOAF_PFarrell/analysis/select_vars/cross_sample_vars.vcf.gz"
-INPUT_VCF = ".test/data/test.vcf"
+INPUT_VCF = ".test/data/testing_variants_hg38.vcf"
 
 # VEP parameters
 VEP_CACHE = 'homo_sapiens_refseq'
@@ -88,6 +88,7 @@ rule annotate_variants:
         species = SPECIES,
         build = REF_BUILD,
         refseq_flag = "--refseq" if 'refseq' in VEP_CACHE else "",
+        gnomad_fields="AC,AN,AF,AF_afr,AF_afr_female,AF_afr_male,AF_ami,AF_ami_female,AF_ami_male,AF_amr,AF_amr_female,AF_amr_male,AF_asj,AF_asj_female,AF_asj_male,AF_eas,AF_eas_female,AF_eas_male,AF_female,AF_fin,AF_fin_female,AF_fin_male,AF_male,AF_nfe,AF_nfe_female,AF_nfe_male,AF_oth,AF_oth_female,AF_oth_male,AF_raw,AF_sas,AF_sas_female,AF_sas_male",
     threads: 4
     # wrapper:
     #     "0.64.0/bio/vep/annotate"
@@ -109,7 +110,7 @@ rule annotate_variants:
                 --dir_plugins {input.plugins} \
                 --plugin CADD,{input.cadd_snv},{input.cadd_indel}\
                 --custom {input.gerp},GERP,bed \
-                --custom {input.gnomad_genomes},gnomADv3,vcf,exact,0,AC,AN,AF \
+                --custom {input.gnomad_genomes},gnomADv3,vcf,exact,0,{params.gnomad_fields} \
                 --custom {input.clinvar},clinvar,vcf,exact,0,ALLELEID,CLNSIG,CLNSIGCONF,GENEINFO \
                 --output_file STDOUT \
                 --stats_file {output.stats} | \
