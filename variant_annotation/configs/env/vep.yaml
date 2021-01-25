@@ -4,3 +4,4 @@ channels:
 dependencies:
   - ensembl-vep =102
   - bcftools =1.9
+  - tabix ==0.2.5
