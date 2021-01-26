@@ -2,7 +2,7 @@
     "__default__": {
         "ntasks": 1,
         "partition": "express",
-        "cpus-per-task": 1,
+        "cpus-per-task": "{threads}",
         "mem": "20G",
         "output": "logs/rule_logs/{rule}-%j.log",
         "error": "logs/rule_logs/{rule}-%j.err"
