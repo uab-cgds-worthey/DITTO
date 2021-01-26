@@ -1,16 +1,22 @@
 # Variant annotation
 
-Sets up Variant Effect Predictor (VEP) and annotates variants in vcf with chosen annotations.
+Annotated variants in VCF using Variant Effect Predictor (VEP).
+
+Script [`src/run_pipeline.sh`](src/run_pipeline.sh) runs the snakemake workflow, which sets up VEP and then uses it for annotation.
 
 
 ## How to run
 
-Script `run.sh` sets up and runs the snakemake workflow. This installs and sets up VEP and then uses it for annotation.
+* To run the pipeline locally (Note: Snakemake will still send jobs to cluster):
 
-* To run locally:
+    ```sh
+    cd variant_annotation
+    ./src/run_pipeline.sh
+    ```
 
-    `./run.sh`
+* To run the pipeline as slurm job:
 
-* To run as slurm job:
-
-    `sbatch run.sh`
+    ```sh
+    cd variant_annotation
+    sbatch src/run_pipeline.sh
+    ```

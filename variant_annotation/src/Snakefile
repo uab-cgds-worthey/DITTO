@@ -1,5 +1,7 @@
 """
-Sets up VEP cache and plugins, and then uses them to annotate VCF
+This pipeline annotates VCF using Variant Effect Predictor
+1. Sets up VEP cache and plugins
+2. Using cache, plugins and other locally available datasets, annoate variants in VCF
 """
 
 from pathlib import Path
@@ -12,17 +14,16 @@ EXTERNAL_DIR = Path("data/external")
 # INTERIM_DIR = Path("data/interim")
 PROCESSED_DIR = Path("data/processed")
 
-
-# INPUT_VCF = f"/data/project/worthey_lab/projects/CF_TLOAF_PFarrell/analysis/select_vars/cross_sample_vars.vcf.gz"
-INPUT_VCF = ".test/data/testing_variants_hg38.vcf"
-
-# VEP parameters
+#### VEP parameters ####
 VEP_CACHE = 'homo_sapiens_refseq'
 SPECIES = 'homo_sapiens'
 REF_BUILD = "GRCh38"
 ENSEMBL_DATASET_VERSION = "102"
 HGVS = False
 STATS = False
+
+INPUT_VCF = ".test/data/testing_variants_hg38.vcf"
+
 
 rule all:
     input:
@@ -42,7 +43,7 @@ rule get_vep_cache:
     # wrapper:
     #     "0.59.2/bio/vep/cache"
     conda:
-        "configs/env/vep.yaml"
+        "../configs/env/vep.yaml"
     shell:
         r"""
         vep_install --AUTO cfp \
@@ -99,7 +100,7 @@ rule annotate_variants:
     # wrapper:
     #     "0.64.0/bio/vep/annotate"
     conda:
-        "configs/env/vep.yaml"
+        "../configs/env/vep.yaml"
     shell:
         r"""
         (bcftools view {input.calls} | \
