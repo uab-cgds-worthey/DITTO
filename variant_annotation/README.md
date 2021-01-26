@@ -7,14 +7,23 @@ Script [`src/run_pipeline.sh`](src/run_pipeline.sh) runs the snakemake workflow,
 
 ## How to run
 
-* To run the pipeline locally (Note: Snakemake will still send jobs to cluster):
+1. Create necessary directories to store log files
+
+```sh
+cd variant_annotation
+mkdir -p logs/rule_logs
+```
+
+2. Run the snakemake pipeline
+
+- To run it locally (Note: Snakemake will still send jobs to cluster):
 
     ```sh
     cd variant_annotation
     ./src/run_pipeline.sh
     ```
 
-* To run the pipeline as slurm job:
+- To run it as slurm job:
 
     ```sh
     cd variant_annotation
