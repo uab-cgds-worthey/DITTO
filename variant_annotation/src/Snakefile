@@ -9,10 +9,6 @@ from pathlib import Path
 # datasets to use for annotations
 configfile: "configs/datasets.yaml"
 
-EXTERNAL_DIR = Path("data/external")
-# RAW_DIR = Path("data/raw")
-# INTERIM_DIR = Path("data/interim")
-PROCESSED_DIR = Path("data/processed")
 
 #### VEP parameters ####
 VEP_CACHE = 'homo_sapiens_refseq'
@@ -22,7 +18,13 @@ ENSEMBL_DATASET_VERSION = "102"
 HGVS = False
 STATS = False
 
-INPUT_VCF = ".test/data/testing_variants_hg38.vcf"
+
+INPUT_VCF = ".test/data/raw/testing_variants_hg38.vcf"
+if "testing_variants_hg38" in INPUT_VCF:    # to assist with developement
+    PROCESSED_DIR = Path(".test/data/processed")
+else:
+    PROCESSED_DIR = Path("data/processed")
+EXTERNAL_DIR = Path("data/external")
 
 
 rule all:
