@@ -1,0 +1,177 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Oct  1 01:11:09 2020
+
+@author: tarunmamidi
+"""
+import time
+import numpy as np; np.random.seed(5)  
+import optuna
+from optuna.integration import TFKerasPruningCallback
+from optuna.integration.tensorboard import TensorBoardCallback
+from optuna.samplers import TPESampler
+import tensorflow as tf
+import tensorflow.keras as keras
+try:
+    tf.get_logger().setLevel('INFO')
+except Exception as exc:
+    print(exc)
+import warnings
+warnings.simplefilter("ignore")
+#import ray
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, Activation
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import label_binarize
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import average_precision_score
+from sklearn.metrics import confusion_matrix
+import pandas as pd
+#from joblib import dump, load
+
+
+#EPOCHS = 150
+
+class Objective(object):
+    def __init__(self, train_x,test_x, train_y, test_y, var, x):
+        
+        self.train_x = train_x
+        self.test_x = test_x
+        self.train_y = train_y
+        self.test_y = test_y
+        self.var = var
+        self.x = x
+        #self.n_columns = 112
+        #self.CLASS = 2
+        
+    def __call__(self, config):
+            # Clear clutter from previous TensorFlow graphs.
+            tf.keras.backend.clear_session()
+            
+            # Metrics to be monitored by Optuna.
+            if tf.__version__ >= "2":
+                monitor = "val_accuracy"
+            else:
+                monitor = "val_acc"
+            n_layers = config.suggest_int('n_layers', 1, 200)
+            model = Sequential()
+            model.add(Dense(self.train_x.shape[1], input_shape=(self.train_x.shape[1],), activation=config.suggest_categorical("activation", ['tanh', 'softmax', 'elu', 'softplus', 'softsign', 'relu', 'sigmoid', 'hard_sigmoid', 'linear'])))
+            for i in range(n_layers):
+                num_hidden = config.suggest_int("n_units_l{}".format(i), 4, 300)
+                model.add(Dense(num_hidden, name = "dense_l{}".format(i), kernel_initializer=config.suggest_categorical("kernel_initializer_l{}".format(i),['uniform', 'lecun_uniform', 'normal', 'zero', 'glorot_normal', 'glorot_uniform', 'he_normal', 'he_uniform']), activation=config.suggest_categorical("activation_l{}".format(i), ['tanh', 'softmax', 'elu', 'softplus', 'softsign', 'relu', 'sigmoid', 'hard_sigmoid', 'linear'])))
+                model.add(Dropout( config.suggest_float("dropout_l{}".format(i), 0.0, 0.9), name = "dropout_l{}".format(i)))
+            model.add(Dense(units = self.train_y.shape[1], name = "dense_last", kernel_initializer=config.suggest_categorical("kernel_initializer",['uniform', 'lecun_uniform', 'normal', 'zero', 'glorot_normal', 'glorot_uniform', 'he_normal', 'he_uniform']),  activation = 'sigmoid'))
+            model.compile(loss='binary_crossentropy', optimizer=config.suggest_categorical("optimizer",['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']), metrics=['accuracy'])
+            #model.summary()
+            # Create callbacks for early stopping and pruning.
+            callbacks = [
+                tf.keras.callbacks.EarlyStopping(patience=10),
+                TFKerasPruningCallback(config, monitor),
+                ]
+            
+            # Train the model
+            model.fit(
+                self.train_x, self.train_y, 
+                validation_data=(self.test_x, self.test_y),
+                verbose=0,
+                shuffle=True,
+                callbacks=callbacks,
+                batch_size=config.suggest_int('batch_size', 100, 1000), 
+                epochs=150)
+
+    
+            # Evaluate the model accuracy on the validation set.
+            score = model.evaluate(self.test_x, self.test_y, verbose=0)
+            return score[1]
+        
+    def tuned_run(self, config): 
+            # Clear clutter from previous TensorFlow graphs.
+            print('running tuned params\n')
+            tf.keras.backend.clear_session()
+            model = Sequential()
+            model.add(Dense(self.train_x.shape[1], input_shape=(self.train_x.shape[1],), activation=config["activation"]))
+            for i in range(config['n_layers']):
+                model.add(Dense(config['n_units_l{}'.format(i)], name = "dense_l{}".format(i), kernel_initializer=config["kernel_initializer_l{}".format(i)], activation = config["activation_l{}".format(i)]))
+                model.add(Dropout( config["dropout_l{}".format(i)]))
+            model.add(Dense(units = self.train_y.shape[1], name = "dense_last", kernel_initializer=config["kernel_initializer"],  activation = 'sigmoid'))
+            model.compile(loss='binary_crossentropy', optimizer=config["optimizer"], metrics=['accuracy'])
+            #model.summary()
+            # Train the model
+            model.fit(
+                self.train_x, self.train_y, 
+                verbose=2,
+                batch_size=config['batch_size'], 
+                epochs=150)
+            # Evaluate the model accuracy on the validation set.
+            #score = model.evaluate(test_x, test_y, verbose=0)
+            return model
+
+    def show_result(self, study):
+            pruned_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED]
+            complete_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE]
+            print("Study statistics: ")
+            print("  Number of finished trials: ", len(study.trials))
+            print("  Number of pruned trials: ", len(pruned_trials))
+            print("  Number of complete trials: ", len(complete_trials))
+            print("Best trial:")
+            trial = study.best_trial
+            print("  Value: ", trial.value)
+            print("  Params: ")
+            for key, value in trial.params.items():
+                print("    {}: {}".format(key, value))
+            model = self.tuned_run(trial.params)
+            print('ran tuned model\n')
+            results = model.evaluate(self.test_x, self.test_y)
+            y_score = model.predict(self.test_x)
+            prc = average_precision_score(self.test_y, y_score, average=None)
+            prc_micro = average_precision_score(self.test_y, y_score, average='micro')
+            matrix = confusion_matrix(np.argmax(self.test_y.values, axis=1), np.argmax(y_score, axis=1))
+            print(f'Ditto-dev-v1-6class-md results:\nstorage ="sqlite:///Ditto-dev-v1.0.db"\nTest loss: {results[0]}\nTest accuracy: {results[1]}\nOverall precision score: {prc_micro}\nPrecision score: {prc}\nConfusion matrix:\n{matrix}\n', file=open("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto-dev-v1-results.csv", "a"))
+            # Calling `save('my_model')` creates a SavedModel folder `my_model`.
+            model.save("Ditto-v1.0")
+            model.save_weights("weights1.0.h5")
+            self.test_y = self.test_y.sort_index(ascending=True)
+            mis = np.where(np.argmax(self.test_y.values, axis=1) != np.argmax(y_score, axis=1))[0].tolist()
+            self.var = self.var.loc[self.var.index.isin(self.test_y.index)]
+            self.var = pd.concat([self.var, self.test_y], axis=1)
+
+            pred = pd.DataFrame(y_score, columns = ['pred_Benign','pred_Pathogenic'])
+            self.var = pd.concat([self.var.reset_index(drop=True), pred], axis=1)
+            self.var = self.var.loc[self.var.index.isin(mis)]
+            #var = pd.concat([var.reset_index(drop=True), x], axis=1)
+            misclass = self.var.merge(self.x, on='ID')
+            misclass.to_csv('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/misclassified_pb-6.csv', index = False)
+
+
+
+
+if __name__ == "__main__":
+    #Load data
+    x = pd.read_csv('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/clinvar-md.csv')
+    var = x[['AAChange.refGene','ID']]
+    X = x.drop(['AAChange.refGene','ID'], axis=1)
+    #var.to_csv('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/variant_ID_likely.csv')
+    X=X.values
+    y = pd.read_csv('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/clinvar-y-md.csv')
+    #Y = label_binarize(y, classes=['Benign', 'Likely_benign', 'Uncertain_significance', 'Likely_pathogenic', 'Pathogenic'])
+    Y = pd.get_dummies(y)
+    #Y = label_binarize(y, classes=['Benign', 'Pathogenic'])
+    train_x,test_x, train_y, test_y= train_test_split(X,Y,test_size=.30,random_state=42)
+    scaler = StandardScaler()
+    train_x = scaler.fit_transform(train_x)
+    test_x = scaler.transform(test_x)
+    start = time.perf_counter()
+    objective = Objective(train_x,test_x, train_y, test_y, var, x)
+    tensorboard_callback = TensorBoardCallback("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto-dev-v1.0-logs/", metric_name="accuracy")
+    print("data loaded\n")
+    study = optuna.create_study(sampler=TPESampler(**TPESampler.hyperopt_parameters()), study_name= "Ditto-dev-v1.0", storage ="sqlite:///Ditto-dev-v1.0.db", #study_name= "Ditto3",
+        direction="maximize", pruner=optuna.pruners.MedianPruner(n_startup_trials=150), load_if_exists=True #, pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
+    )
+    #study = optuna.load_study(study_name= "Ditto_all", sampler=TPESampler(**TPESampler.hyperopt_parameters()),storage ="sqlite:///Ditto_all.db") # study_name= "Ditto3", 
+    study.optimize(objective, n_trials=300,  callbacks=[tensorboard_callback], n_jobs = -1, gc_after_trial=True) #, n_jobs = -1 timeout=600,
+    finish = time.perf_counter()
+    ttime = (finish- start)/120
+    print(f'Total time in hrs: {ttime}')
+    objective.show_result(study)
+    
