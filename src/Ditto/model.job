@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+#SBATCH --job-name=SL212589
+#SBATCH --output=Ditto-v0-SL212589.out
+#SBATCH --error=Ditto-v0-SL212589.err
+#
+# Number of tasks needed for this job. Generally, used with MPI jobs
+#SBATCH --ntasks=5
+#SBATCH --partition=pascalnodes
+#
+# Time format = HH:MM:SS, DD-HH:MM:SS
+#SBATCH --time=11:59:58
+#
+# Number of CPUs allocated to each task. 
+#SBATCH --cpus-per-task=2
+#
+# Mimimum memory required per allocated  CPU  in  MegaBytes. 
+#SBATCH --mem-per-cpu=20G
+#
+# Send mail to the email address when the job fails
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-user=tmamidi@uab.edu
+
+#Set your environment here
+module load Anaconda3/2020.02
+#source activate testing
+source activate envi
+
+#Run your commands here
+#cp /data/project/worthey_lab/projects/PyxisMap/analysis/UDN/SL212589.vcf.gz /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/
+#gunzip /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/SL212589.vcf.gz
+###vcffilter -f "DP > 10 & MQ > 30 & QD > 20" SL156674.vcf > filtered_SL156674.vcf
+#python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation/Annovar_Tarun.py  /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/SL212589.vcf /data/scratch/tmamidi/ /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/interim/ /data/project/worthey_lab/tools/annovar/annovar_hg19_db
+#until [ -f /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/interim/SL212589.out.hg19_multianno.vcf ]
+#do
+#    sleep 600
+#done
+#echo "Annovar completed!"
+#python /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/src/DItto/parse_clinvar.py
+python /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/src/DItto/filter.py
+python /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/src/DItto/predict.py
+bgzip  /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/predicted_results_SL212589.tsv
+tabix -s 5 -b 6 -e 6 -f /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/predicted_results_SL212589.tsv.gz
+exit
+#python final.py
