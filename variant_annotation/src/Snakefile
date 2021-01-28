@@ -30,7 +30,7 @@ EXTERNAL_DIR = Path("data/external")
 
 rule all:
     input:
-        PROCESSED_DIR / "vep" / "annotated.vcf",
+        PROCESSED_DIR / "vep" / "annotated.vcf.gz",
 
 
 rule get_vep_cache:
@@ -84,7 +84,7 @@ rule annotate_variants:
         clinvar = config['clinvar'],
         dbNSFP = config['dbNSFP'],
     output:
-        calls = PROCESSED_DIR / "vep" / "annotated.vcf",
+        calls = PROCESSED_DIR / "vep" / "annotated.vcf.gz",
         # stats = PROCESSED_DIR / "vep" / "stats.html"
     message:
         "Annotated vcf using VEP with CADD, gnomad-exomes, gnomad-genomes and GERP. "
@@ -104,7 +104,7 @@ rule annotate_variants:
                         "CADD_phred,DANN_score,fathmm-MKL_coding_score,GenoCanyon_score,integrated_fitCons_score,GERP++_RS,phyloP100way_vertebrate,phyloP30way_mammalian," \
                         "phastCons100way_vertebrate,phastCons30way_mammalian,SiPhy_29way_logOdds,Eigen-raw_coding,Eigen-raw_coding_rankscore,Eigen-phred_coding," \
                         "Eigen-PC-raw_coding,Eigen-PC-raw_coding_rankscore,Eigen-PC-phred_coding",
-        warnings_file = lambda wildcards, output: str(output.calls).replace('.vcf', '_STDOUT_warnings.txt'),
+        warnings_file = lambda wildcards, output: str(output.calls).replace('.vcf.gz', '_STDOUT_warnings.txt'),
     threads: 8
     # wrapper:
     #     "0.64.0/bio/vep/annotate"
@@ -132,8 +132,10 @@ rule annotate_variants:
                 --custom {input.clinvar},clinvar,vcf,exact,0,{params.clinvar_fields} \
                 {params.stats_flag} \
                 --warning_file {params.warnings_file} \
-                --output_file STDOUT | \
-            bcftools view -Ov > {output.calls})
+                --output_file STDOUT \
+            | bcftools view -Ov \
+            | bgzip -c \
+            > {output.calls})
         """
 
 
