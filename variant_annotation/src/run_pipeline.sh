@@ -3,7 +3,7 @@
 #SBATCH --output=logs/vep-%j.log
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=4G
-#SBATCH --partition=short
+#SBATCH --partition=medium
 
 module reset
 module load Anaconda3/2020.02
