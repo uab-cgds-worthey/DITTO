@@ -97,8 +97,8 @@ rule annotate_variants:
         stats_flag = lambda wildcards, output: f"--stats_file {output.stats}" if STATS else "--no_stats",
         gnomad_fields = "AC,AN,AF,AF_afr,AF_afr_female,AF_afr_male,AF_ami,AF_ami_female,AF_ami_male,AF_amr,AF_amr_female,AF_amr_male,AF_asj,AF_asj_female,AF_asj_male,AF_eas,AF_eas_female,AF_eas_male,AF_female,AF_fin,AF_fin_female,AF_fin_male,AF_male,AF_nfe,AF_nfe_female,AF_nfe_male,AF_oth,AF_oth_female,AF_oth_male,AF_raw,AF_sas,AF_sas_female,AF_sas_male",
         clinvar_fields = "AF_ESP,AF_EXAC,AF_TGP,ALLELEID,CLNDN,CLNDNINCL,CLNDISDB,CLNDISDBINCL,CLNREVSTAT,CLNSIG,CLNSIGCONF,CLNSIGINCL,CLNVC,GENEINFO,MC,ORIGIN,RS,SSR",
-        dbNSFP_fields = "SIFT_score,Polyphen2_HDIV_score,Polyphen2_HVAR_score,LRT_score,MutationTaster_score,MutationAssessor_score,FATHMM_score,PROVEAN_score,VEST4_score,MetaSVM_score,MetaLR_score,M-CAP_score,CADD_phred,DANN_score,fathmm-MKL_coding_score,GenoCanyon_score,integrated_fitCons_score,GERP++_RS,phyloP100way_vertebrate,phyloP30way_mammalian,phastCons100way_vertebrate,phastCons30way_mammalian,SiPhy_29way_logOdds,Eigen-raw_coding,Eigen-raw_coding_rankscore,Eigen-phred_coding,Eigen-PC-raw_coding,Eigen-PC-raw_coding_rankscore,Eigen-PC-phred_coding",
-    threads: 4
+        dbNSFP_fields = "LRT_score,MutationTaster_score,MutationAssessor_score,FATHMM_score,PROVEAN_score,VEST4_score,MetaSVM_score,MetaLR_score,M-CAP_score,CADD_phred,DANN_score,fathmm-MKL_coding_score,GenoCanyon_score,integrated_fitCons_score,GERP++_RS,phyloP100way_vertebrate,phyloP30way_mammalian,phastCons100way_vertebrate,phastCons30way_mammalian,SiPhy_29way_logOdds,Eigen-raw_coding,Eigen-raw_coding_rankscore,Eigen-phred_coding,Eigen-PC-raw_coding,Eigen-PC-raw_coding_rankscore,Eigen-PC-phred_coding",
+    threads: 8
     # wrapper:
     #     "0.64.0/bio/vep/annotate"
     conda:
@@ -115,6 +115,7 @@ rule annotate_variants:
                 --species {params.species} \
                 --assembly {params.build} \
                 {params.refseq_flag} {params.hgvs_flag} \
+                --sift s --polyphen s \
                 --dir_cache {input.cache} \
                 --dir_plugins {input.plugins} \
                 --plugin CADD,{input.cadd_snv},{input.cadd_indel} \
