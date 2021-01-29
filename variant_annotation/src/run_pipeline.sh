@@ -49,7 +49,7 @@ while [ "$1" != "" ]; do
 done
 
 # ensure required info set either from CLI or as environement variables (when executed by slurm)
-if [[ -z INPUT_VCF || -z DATASETS_CONFIG || -z OUT_DIR ]]; then
+if [[ -z $INPUT_VCF || -z $DATASETS_CONFIG || -z $OUT_DIR ]]; then
     echo "Missing required input, check usage"
     usage
     exit 1
