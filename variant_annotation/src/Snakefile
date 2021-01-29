@@ -112,7 +112,8 @@ rule annotate_variants:
         "../configs/env/vep.yaml"
     shell:
         r"""
-        (bcftools view {input.calls} | \
+        # using bcftools view as it might catch vcf-related errors (https://stackoverflow.com/a/63371639/3998252)
+        bcftools view {input.calls} | \
             vep --fork {threads} \
                 --format vcf \
                 --vcf \
@@ -132,10 +133,8 @@ rule annotate_variants:
                 --custom {input.clinvar},clinvar,vcf,exact,0,{params.clinvar_fields} \
                 {params.stats_flag} \
                 --warning_file {params.warnings_file} \
-                --output_file STDOUT \
-            | bcftools view -Ov \
-            | bgzip -c \
-            > {output.calls})
+                --compress_output bgzip \
+                --output_file {output.calls}
         """
 
 
