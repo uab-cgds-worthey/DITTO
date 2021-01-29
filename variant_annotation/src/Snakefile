@@ -18,19 +18,25 @@ ENSEMBL_DATASET_VERSION = "102"
 HGVS = False
 STATS = False
 
-
-# INPUT_VCF = "/data/project/worthey_lab/projects/CF_TLOAF_PFarrell/analysis/LW000012/vcf/LW000012.vcf.gz"
-INPUT_VCF = ".test/data/raw/testing_variants_hg38.vcf"
-if "testing_variants_hg38" in INPUT_VCF:    # to assist with developement
+# INPUT_VCF = ".test/data/raw/testing_variants_hg38.vcf"
+INPUT_VCF = config["vcf"]
+if "testing_variants_hg38" in Path(INPUT_VCF).name:    # to assist with developement
     PROCESSED_DIR = Path(".test/data/processed")
 else:
     PROCESSED_DIR = Path("data/processed")
 EXTERNAL_DIR = Path("data/external")
 
+if not (INPUT_VCF.endswith('vcf') or INPUT_VCF.endswith('vcf.gz')):
+    print (f"Error: Input filename not in expected format: {INPUT_VCF}")
+    raise SystemExit(1)
+
+OUTPUT_VCF = PROCESSED_DIR / "vep" / ((Path(INPUT_VCF).name).rstrip(".gz").rstrip(".vcf") + "_annotated.vcf.gz")
+
 
 rule all:
     input:
-        PROCESSED_DIR / "vep" / "annotated.vcf.gz",
+        # PROCESSED_DIR / "vep" / "annotated.vcf.gz",
+        OUTPUT_VCF
 
 
 rule get_vep_cache:
@@ -84,7 +90,7 @@ rule annotate_variants:
         clinvar = config['clinvar'],
         dbNSFP = config['dbNSFP'],
     output:
-        calls = PROCESSED_DIR / "vep" / "annotated.vcf.gz",
+        calls = OUTPUT_VCF,
         # stats = PROCESSED_DIR / "vep" / "stats.html"
     message:
         "Annotated vcf using VEP with CADD, gnomad-exomes, gnomad-genomes and GERP. "

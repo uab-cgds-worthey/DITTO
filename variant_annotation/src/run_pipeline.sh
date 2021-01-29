@@ -9,8 +9,11 @@ module reset
 module load Anaconda3/2020.02
 module load snakemake/5.9.1-foss-2018b-Python-3.6.6
 
+INPUT_VCF='.test/data/raw/testing_variants_hg38.vcf'
+
 snakemake \
 	--snakefile "src/Snakefile" \
+	--config "vcf=${INPUT_VCF}" \
 	--use-conda \
 	--profile 'configs/snakemake_slurm_profile/{{cookiecutter.profile_name}}' \
 	--cluster-config 'configs/cluster_config.json' \
