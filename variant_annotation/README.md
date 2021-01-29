@@ -44,7 +44,7 @@ describes that formatting process that will need to be performed.
 
  - dbNSFP data is extracted from dbNSFP zip found [here](https://sites.google.com/site/jpopgen/dbNSFP)
  - per chromosome tab-seperated value files are extracted from the zip, sorted by GRCh38/hg38 coordinates, joined
- into a single file, and bgzipped
+ into a single file, bgzipped and indexed.
 
 All other dataset files listed in the config file are in usable in the format provided by their originating source.
 
