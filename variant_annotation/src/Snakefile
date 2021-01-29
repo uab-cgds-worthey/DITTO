@@ -18,19 +18,17 @@ ENSEMBL_DATASET_VERSION = "102"
 HGVS = False
 STATS = False
 
-# INPUT_VCF = ".test/data/raw/testing_variants_hg38.vcf"
+### I/O parameters
 INPUT_VCF = config["vcf"]
-if "testing_variants_hg38" in Path(INPUT_VCF).name:    # to assist with developement
-    PROCESSED_DIR = Path(".test/data/processed")
-else:
-    PROCESSED_DIR = Path("data/processed")
+PROCESSED_DIR = Path(config["outdir"])
 EXTERNAL_DIR = Path("data/external")
 
 if not (INPUT_VCF.endswith('vcf') or INPUT_VCF.endswith('vcf.gz')):
-    print (f"Error: Input filename not in expected format: {INPUT_VCF}")
+    print (f"Error: Input file extension not in expected format: found {INPUT_VCF}, expecting *.vcf or *.vcf.gz")
     raise SystemExit(1)
 
-OUTPUT_VCF = PROCESSED_DIR / "vep" / ((Path(INPUT_VCF).name).rstrip(".gz").rstrip(".vcf") + "_annotated.vcf.gz")
+INPUT_VCF = Path(INPUT_VCF)
+OUTPUT_VCF = PROCESSED_DIR / ((INPUT_VCF.name).rstrip(".gz").rstrip(".vcf") + "_vep-annotated.vcf.gz")
 
 
 rule all:
@@ -48,8 +46,6 @@ rule get_vep_cache:
         plugins = "CADD"
     message:
         "Retrieves VEP cache data"
-    # wrapper:
-    #     "0.59.2/bio/vep/cache"
     conda:
         "../configs/env/vep.yaml"
     shell:
@@ -89,7 +85,6 @@ rule annotate_variants:
         dbNSFP = config['dbNSFP'],
     output:
         calls = OUTPUT_VCF,
-        # stats = PROCESSED_DIR / "vep" / "stats.html"
     message:
         "Annotated vcf using VEP with CADD, gnomad-exomes, gnomad-genomes and GERP. "
         f"VEP cache used: {VEP_CACHE}, ref build: {REF_BUILD}, Ensemble version: {ENSEMBL_DATASET_VERSION}"
@@ -110,8 +105,6 @@ rule annotate_variants:
                         "Eigen-PC-raw_coding,Eigen-PC-raw_coding_rankscore,Eigen-PC-phred_coding",
         warnings_file = lambda wildcards, output: str(output.calls).replace('.vcf.gz', '_STDOUT_warnings.txt'),
     threads: 8
-    # wrapper:
-    #     "0.64.0/bio/vep/annotate"
     conda:
         "../configs/env/vep.yaml"
     shell:
@@ -140,5 +133,3 @@ rule annotate_variants:
                 --compress_output bgzip \
                 --output_file {output.calls}
         """
-
-
