@@ -5,13 +5,14 @@
 #SBATCH --mem-per-cpu=4G
 #SBATCH --partition=medium
 
+set -euo pipefail
 
 usage() {
     echo "usage: $0"
     echo ""
     echo "required:"
-    echo "    -v | --vcf [file]           path to VCF file to annotate"
-    echo "    -o | --out [dir]           path to directory to place annotated VCF file"
+    echo "    -v | --vcf [file]        path to VCF file to annotate"
+    echo "    -o | --out [dir]         path to directory to place annotated VCF file"
     echo "    -d | --datasets [file]   path to datasets config YAML file"
     echo ""
     echo "options:"

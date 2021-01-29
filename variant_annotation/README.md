@@ -30,6 +30,24 @@ clinvar: "/path/to/data/clinvar/data/grch38/20210119/clinvar_20210119.vcf.gz"
 dbNSFP: "/path/to/data/dbnsfp/processed/v4.1a_20200616/dbNSFP4.1a_variant.complete.bgz"
 ```
 
+## Datasets in custom format
+
+Two of the datasets listed in the datasets YAML require custom formatting for use with the VEP annotator. The following
+describes that formatting process that will need to be performed.
+
+**gerp:**
+
+ - GERP is extracted from the annotation database distributed by CADD found [here](https://cadd.gs.washington.edu/download)
+ - Format GERP base-wise RS scores from extracted annotation file into final compressed BedGraph file
+
+**dbNSFP:**
+
+ - dbNSFP data is extracted from dbNSFP zip found [here](https://sites.google.com/site/jpopgen/dbNSFP)
+ - per chromosome tab-seperated value files are extracted from the zip, sorted by GRCh38/hg38 coordinates, joined
+ into a single file, and bgzipped
+
+All other dataset files listed in the config file are in usable in the format provided by their originating source.
+
 ## How to run
 
 - To run in current session (Note: only runs main Snakemake process in current session, Snakemake will still send jobs
