@@ -7,7 +7,7 @@ This pipeline annotates VCF using Variant Effect Predictor
 from pathlib import Path
 
 # datasets to use for annotations
-configfile: "configs/datasets.yaml"
+configfile: config["datasets"]
 
 
 #### VEP parameters ####
