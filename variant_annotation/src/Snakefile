@@ -35,7 +35,6 @@ OUTPUT_VCF = PROCESSED_DIR / "vep" / ((Path(INPUT_VCF).name).rstrip(".gz").rstri
 
 rule all:
     input:
-        # PROCESSED_DIR / "vep" / "annotated.vcf.gz",
         OUTPUT_VCF
 
 
@@ -85,7 +84,6 @@ rule annotate_variants:
         cadd_snv = config['cadd_snv'],
         cadd_indel = config['cadd_indel'],
         gerp = config['gerp'],
-        # gnomad_exomes = GNOMAD_EXOMES,
         gnomad_genomes = config['gnomad_genomes'],
         clinvar = config['clinvar'],
         dbNSFP = config['dbNSFP'],
