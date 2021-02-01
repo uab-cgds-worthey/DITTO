@@ -60,7 +60,7 @@ class Ditto(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_c
         self.model.fit(x_train, y_train.ravel())
         y_score = self.model.predict_proba(x_test)
         accuracy = average_precision_score(y_test, np.argmax(y_score, axis=1), average=None)
-        print(accuracy)
+        #print(accuracy)
         return {"mean_accuracy": accuracy}
 
     def save_checkpoint(self, checkpoint_dir):
@@ -140,7 +140,7 @@ if __name__ == "__main__":
         stop={
             "training_iteration": 50,
         },
-        num_samples=10,
+        num_samples=4,
         fail_fast=True,
         config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
             "n_estimators" : tune.randint(50, 200),
@@ -154,5 +154,5 @@ if __name__ == "__main__":
     print("Best hyperparameters found were: ", analysis.best_config)
     
     clf = Ditto().results(analysis.best_config)
-    pickle.dump(clf, open("Randomforest.pkl", 'wb'))
+    pickle.dump(clf, open("./models/Randomforest.pkl", 'wb'))
     

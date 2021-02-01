@@ -129,8 +129,8 @@ class Objective(object):
             matrix = confusion_matrix(np.argmax(self.test_y.values, axis=1), np.argmax(y_score, axis=1))
             print(f'Ditto-dev-v1-6class-md results:\nstorage ="sqlite:///Ditto-dev-v1.0.db"\nTest loss: {results[0]}\nTest accuracy: {results[1]}\nOverall precision score: {prc_micro}\nPrecision score: {prc}\nConfusion matrix:\n{matrix}\n', file=open("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto-dev-v1-results.csv", "a"))
             # Calling `save('my_model')` creates a SavedModel folder `my_model`.
-            model.save("Ditto-v1.0")
-            model.save_weights("weights1.0.h5")
+            model.save("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/models/Ditto/Ditto-v1.0")
+            model.save_weights("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/models/Ditto/weights1.0.h5")
             self.test_y = self.test_y.sort_index(ascending=True)
             mis = np.where(np.argmax(self.test_y.values, axis=1) != np.argmax(y_score, axis=1))[0].tolist()
             self.var = self.var.loc[self.var.index.isin(self.test_y.index)]
@@ -166,10 +166,10 @@ if __name__ == "__main__":
     tensorboard_callback = TensorBoardCallback("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto-dev-v1.0-logs/", metric_name="accuracy")
     print("data loaded\n")
     study = optuna.create_study(sampler=TPESampler(**TPESampler.hyperopt_parameters()), study_name= "Ditto-dev-v1.0", storage ="sqlite:///Ditto-dev-v1.0.db", #study_name= "Ditto3",
-        direction="maximize", pruner=optuna.pruners.MedianPruner(n_startup_trials=150), load_if_exists=True #, pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
+        direction="maximize", pruner=optuna.pruners.MedianPruner(n_startup_trials=50), load_if_exists=True #, pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
     )
     #study = optuna.load_study(study_name= "Ditto_all", sampler=TPESampler(**TPESampler.hyperopt_parameters()),storage ="sqlite:///Ditto_all.db") # study_name= "Ditto3", 
-    study.optimize(objective, n_trials=300,  callbacks=[tensorboard_callback], n_jobs = -1, gc_after_trial=True) #, n_jobs = -1 timeout=600,
+    study.optimize(objective, n_trials=100,  callbacks=[tensorboard_callback], n_jobs = -1, gc_after_trial=True) #, n_jobs = -1 timeout=600,
     finish = time.perf_counter()
     ttime = (finish- start)/120
     print(f'Total time in hrs: {ttime}')
