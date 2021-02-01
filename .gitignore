@@ -63,6 +63,9 @@ target/
 # DotEnv configuration
 .env
 
+# conda
+.conda
+
 # Database
 *.db
 *.rdb
@@ -78,3 +81,23 @@ target/
 
 #snakemake
 .snakemake/
+# data/
+variant_annotation/data/
+
+#snakemake
+.snakemake/
+
+
+# exclude test data used for development
+to_be_deleted/test_data/data/ref
+to_be_deleted/test_data/data/reads
+
+#logs
+logs/
+
+# vscode
+.vscode/
+
+# .java/fonts dir get created when creating fastqc conda env
+.java/
+
