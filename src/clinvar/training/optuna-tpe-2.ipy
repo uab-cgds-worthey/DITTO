@@ -54,7 +54,7 @@ class Objective(object):
                 monitor = "val_accuracy"
             else:
                 monitor = "val_acc"
-            n_layers = config.suggest_int('n_layers', 1, 200)
+            n_layers = config.suggest_int('n_layers', 1, 100)
             model = Sequential()
             model.add(Dense(self.train_x.shape[1], input_shape=(self.train_x.shape[1],), activation=config.suggest_categorical("activation", ['tanh', 'softmax', 'elu', 'softplus', 'softsign', 'relu', 'sigmoid', 'hard_sigmoid', 'linear'])))
             for i in range(n_layers):
