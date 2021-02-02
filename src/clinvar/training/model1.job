@@ -32,4 +32,4 @@ module load cuDNN/7.6.2.24-CUDA-10.1.243
 
 #Run your commands here
 #python Tune_RF_PB2.py
-python optuna-tpe-2.ipy
+python /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/src/clinvar/training/optuna-tpe-2.ipy
