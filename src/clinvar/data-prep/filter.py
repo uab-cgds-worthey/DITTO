@@ -26,9 +26,9 @@ def extract_col(config_dict,df):
     df.replace('.', np.nan, inplace=True)
     df.dropna(axis=1, how='all', inplace=True)
     df.dropna(axis=0, how='all', inplace=True)
-    print('\nCLNREVSTAT:', df['CLNREVSTAT'].value_counts())
-    print('\nCLNVC:', df['CLNVC'].value_counts())
-    print('\nMC:', df['MC'].value_counts())
+    print('\nCLNREVSTAT:\n', df['CLNREVSTAT'].value_counts())
+    print('\nCLNVC:\n', df['CLNVC'].value_counts())
+    print('\nMC:\n', df['MC'].value_counts())
     df = df.drop(['CLNVC','MC'], axis=1)
     # CLNREVSTAT, CLNVC, MC
     return df
@@ -78,8 +78,8 @@ def main(var_f, config_f):
     #df.dtypes.to_csv('../../data/interim/head.csv')
     print('Data shape=', df.shape)
     print('Class shape=', y.shape)
-    df.to_csv('./data/processed/clinvar-md.csv', index=False)
-    y.to_csv('./data/processed/clinvar-y-md.csv', index=False)
+    df.to_csv('./data/processed/clinvar1-md.csv', index=False)
+    y.to_csv('./data/processed/clinvar1-y-md.csv', index=False)
     return None
 
 if __name__ == "__main__":

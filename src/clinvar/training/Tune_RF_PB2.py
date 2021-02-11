@@ -117,6 +117,7 @@ if __name__ == "__main__":
         perturbation_interval=20,
         #resample_probability=0.25,
         quantile_fraction=0.25,  # copy bottom % with top %
+        log_config=True,
         # Specifies the search space for these hyperparams
         hyperparam_bounds={
             "n_estimators" : [50, 200],
@@ -130,17 +131,21 @@ if __name__ == "__main__":
         verbose=0,
         scheduler=pbt,
         reuse_actors=True,
-        checkpoint_freq=20,
         resources_per_trial={
         #    "cpu": 1,
             "gpu": 1
         },
+        #global_checkpoint_period=np.inf,   # Do not save checkpoints based on time interval
+        checkpoint_freq = 20,        # Save checkpoint every time the checkpoint_score_attr improves
+        checkpoint_at_end = True,   
+        keep_checkpoints_num = 2,   # Keep only the best checkpoint
+        checkpoint_score_attr = 'mean_accuracy', # Metric used to compare checkpoints
         metric="mean_accuracy",
         mode="max",
         stop={
             "training_iteration": 50,
         },
-        num_samples=4,
+        num_samples=30,
         fail_fast=True,
         config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
             "n_estimators" : tune.randint(50, 200),
