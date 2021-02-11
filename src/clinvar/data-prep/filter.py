@@ -65,7 +65,7 @@ def main(var_f, config_f):
     config_dict = get_col_configs(config_f)
     print('Config file loaded!\nNow loading data.....\n')
     # read clinvar data
-    df = pd.read_csv(var_f)
+    df = pd.read_csv(var_f, sep='\t')
     print('Data Loaded !....')
     df = extract_col(config_dict,df)
     print('Columns extracted !....')
@@ -84,7 +84,12 @@ def main(var_f, config_f):
 
 if __name__ == "__main__":
     os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/')
-    var_f = "./data/external/clinvar.out.hg19_multianno.csv"
+    var_f = "./data/processed/clinvar_vep-annotated.tsv"
     config_f = "./configs/col_config.yaml"
     
     main(var_f, config_f)
+
+df.shape
+df.clinvar_MC.unique()
+df.clinvar_CLNSIG.unique()
+df.clinvar_CLNVC.unique()

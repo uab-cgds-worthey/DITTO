@@ -84,7 +84,7 @@ done
 
 
 #Run your commands here
-#wget -P /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/ https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/clinvar.vcf.gz
+#wget -P /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/ https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz
 #gunzip /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/clinvar.vcf.gz
 ####vcffilter -f "DP > 10 & MQ > 30 & QD > 20" SL156674.vcf > filtered_SL156674.vcf
 #python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation/Annovar.py  /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/clinvar.vcf /data/scratch/tmamidi/ /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/interim/ /data/project/worthey_lab/tools/annovar/annovar_hg19_db

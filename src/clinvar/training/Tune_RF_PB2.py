@@ -131,10 +131,10 @@ if __name__ == "__main__":
         verbose=0,
         scheduler=pbt,
         reuse_actors=True,
-        resources_per_trial={
-        #    "cpu": 1,
-            "gpu": 1
-        },
+        #resources_per_trial={
+        ##    "cpu": 1,
+        #    "gpu": 1
+        #},
         #global_checkpoint_period=np.inf,   # Do not save checkpoints based on time interval
         checkpoint_freq = 20,        # Save checkpoint every time the checkpoint_score_attr improves
         checkpoint_at_end = True,   
@@ -145,8 +145,9 @@ if __name__ == "__main__":
         stop={
             "training_iteration": 50,
         },
-        num_samples=30,
+        num_samples=10,
         fail_fast=True,
+        queue_trials=True,
         config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
             "n_estimators" : tune.randint(50, 200),
             "min_samples_split" : tune.randint(2, 6),

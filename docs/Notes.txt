@@ -355,3 +355,4 @@ ping Hazel in cheaha - curl -d '{"terms": ["HP:0001337", "HP:0010242"]}' -H "Con
 Looking in to other annotation tools - Trying out Exomiser
 Download Exomiser zip from the release page mentioned here and follow the readme in that folder - https://github.com/exomiser/Exomiser
 prioritizing variants - http://exomiser.github.io/Exomiser/manual/7/analysis_file_config/
+
