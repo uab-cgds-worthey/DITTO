@@ -31,13 +31,13 @@ ray.init(ignore_reinit_error=True)
 
 
 #Load data
-X = pd.read_csv('clinvar-lr.csv')
-var = X[['AAChange.refGene','ID']]
-X = X.drop(['AAChange.refGene', 'ID'], axis=1)
+X = pd.read_csv('clinvar1-md.csv')
+var = X[['SYMBOL','Feature','Consequence','ID']]
+X = X.drop(['SYMBOL','Feature','Consequence', 'ID'], axis=1)
 X = X.values
 # X[1]
 # var
-y = pd.read_csv('clinvar-y-lr.csv')
+y = pd.read_csv('clinvar1-y-md.csv')
 #Y = pd.get_dummies(y)
 Y = label_binarize(y.values, classes=['Benign', 'Pathogenic']) #'Benign', 'Likely_benign', 'Uncertain_significance', 'Likely_pathogenic', 'Pathogenic'
 
@@ -58,13 +58,13 @@ classifiers = [
 	#KNeighborsClassifier(),
 	#SVC(probability=True),
     DecisionTreeClassifier(),
-    RandomForestClassifier(),
-    AdaBoostClassifier(),
-    GradientBoostingClassifier(),
-	BaggingClassifier(),
-	ExtraTreesClassifier(),
-    BalancedRandomForestClassifier(),
-    EasyEnsembleClassifier() # doctest: +SKIP
+    RandomForestClassifier()
+    #AdaBoostClassifier(),
+    #GradientBoostingClassifier(),
+	#BaggingClassifier(),
+	#ExtraTreesClassifier(),
+    #BalancedRandomForestClassifier(),
+    #EasyEnsembleClassifier() # doctest: +SKIP
 ]
 
 # @ray.remote
@@ -100,12 +100,12 @@ def classifier(clf, X_train, X_test, Y_train, Y_test):
    list1 = [clf ,prc, prc_micro, score, matrix, finish]
    return list1
 
-print('Model\tprecision_score\taverage_precision_score\tTrain_score\tTime(min)\tConfusion_matrix[Benign, Pathogenic]')
+print('Model\tprecision_score\taverage_precision_score\tTrain_score\tTime(min)\tConfusion_matrix[Benign, Pathogenic]', file=open("ML_results.csv", "a"))
 for i in classifiers:
    list1 = ray.get(classifier.remote(i, X_train, X_test, Y_train, Y_test))
    #list1 = classifier(i, X_train, X_test, Y_train, Y_test)
    
-   print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[5]}\n{list1[4]}')
+   print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[5]}\n{list1[4]}', file=open("ML_results.csv", "a"))
 
 
 #clf = OneVsRestClassifier(DecisionTreeClassifier())

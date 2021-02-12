@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
+pd.set_option('display.max_rows', None)
 import numpy as np
 from tqdm import tqdm 
 import yaml
 import os
-from sklearn.linear_model import LinearRegression
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
+#from sklearn.linear_model import LinearRegression
+#from sklearn.experimental import enable_iterative_imputer
+#from sklearn.impute import IterativeImputer
 #import pickle
 
 def get_col_configs(config_f):
@@ -21,25 +22,30 @@ def get_col_configs(config_f):
 def extract_col(config_dict,df):
     print('Extracting columns and rows according to config file !....')
     df = df[config_dict['columns']]
-    df= df.loc[df['CLNSIG'].isin(config_dict['ClinicalSignificance']['6-class'])]
+    df= df.loc[df['clinvar_CLNSIG'].isin(config_dict['ClinicalSignificance']['6-class'])]
     print('Dropping empty columns and rows...')
-    df.replace('.', np.nan, inplace=True)
-    df.dropna(axis=1, how='all', inplace=True)
-    df.dropna(axis=0, how='all', inplace=True)
-    print('\nCLNREVSTAT:\n', df['CLNREVSTAT'].value_counts())
-    print('\nCLNVC:\n', df['CLNVC'].value_counts())
-    print('\nMC:\n', df['MC'].value_counts())
-    df = df.drop(['CLNVC','MC'], axis=1)
+    #df.replace('.', np.nan, inplace=True)
+    #df[df.isnull().sum(axis=1)]
+    df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
+    df.dropna(axis=0, thresh=(df.shape[1]/2), inplace=True)
+    print('\nclinvar_CLNSIG:\n', df['clinvar_CLNSIG'].value_counts(), file=open("./data/processed/stats.csv", "a"))
+    print('\nclinvar_CLNREVSTAT:\n', df['clinvar_CLNREVSTAT'].value_counts(), file=open("./data/processed/stats.csv", "a"))
+    print('\nConsequence:\n', df['Consequence'].value_counts(), file=open("./data/processed/stats.csv", "a"))
+    print('\nIMPACT:\n', df['IMPACT'].value_counts(), file=open("./data/processed/stats.csv", "a"))
+    print('\nBIOTYPE:\n', df['BIOTYPE'].value_counts(), file=open("./data/processed/stats.csv", "a"))
+    #df = df.drop(['CLNVC','MC'], axis=1)
     # CLNREVSTAT, CLNVC, MC
     return df
 
 def fill_na(df): #(config_dict,df):
     #df1  = pd.DataFrame()
-    var = df['AAChange.refGene']
-    df = df.drop('AAChange.refGene', axis=1)
-    df.to_csv('./data/interim/temp.csv', index=False)
-    df = pd.read_csv('./data/interim/temp.csv')
-    os.remove('./data/interim/temp.csv')
+    var = df[['SYMBOL','Feature','Consequence']]
+    df = df.drop(['SYMBOL','Feature','Consequence'], axis=1)
+    df.dtypes.to_csv('./data/processed/columns.csv')
+    #df.to_csv('./data/interim/temp.csv', index=False)
+    #df = pd.read_csv('./data/interim/temp.csv')
+    #os.remove('./data/interim/temp.csv')
+    print('One-hot encoding...')
     df = pd.get_dummies(df, prefix_sep='_')
     df.head(2).to_csv('./data/processed/clinvar_columns.csv', index=False)
     #lr = LinearRegression()
@@ -50,6 +56,7 @@ def fill_na(df): #(config_dict,df):
     #pickle.dump(imp, filehandler)
     #df = pd.DataFrame(df, columns = columns)
     df=df.fillna(df.median())
+    df = df.reset_index(drop=True)
     df['ID'] = [f'var_{num}' for num in range(len(df))]
     #for key in tqdm(config_dict['Fill_NAs']):
     #    if key in df.columns:
@@ -70,26 +77,21 @@ def main(var_f, config_f):
     df = extract_col(config_dict,df)
     print('Columns extracted !....')
     df.isnull().sum(axis = 0).to_csv('./data/processed/NA-count-6-class.csv')
-    y = df.CLNSIG.str.replace(r'/Likely_pathogenic','').str.replace(r'/Likely_benign','')
+    y = df.clinvar_CLNSIG.str.replace(r'/Likely_pathogenic','').str.replace(r'/Likely_benign','')
     y = y.str.replace(r'Likely_benign','Benign').str.replace(r'Likely_pathogenic','Pathogenic')
-    df = df.drop('CLNSIG', axis=1)
+    df = df.drop('clinvar_CLNSIG', axis=1)
     df = fill_na(df) #(config_dict,df)
     #print dataframe shape
     #df.dtypes.to_csv('../../data/interim/head.csv')
-    print('Data shape=', df.shape)
-    print('Class shape=', y.shape)
-    df.to_csv('./data/processed/clinvar1-md.csv', index=False)
-    y.to_csv('./data/processed/clinvar1-y-md.csv', index=False)
+    print('\nData shape=', df.shape, file=open("./data/processed/stats.csv", "a"))
+    print('Class shape=', y.shape, file=open("./data/processed/stats.csv", "a"))
+    df.to_csv('./data/processed/clinvar-md.csv', index=False)
+    y.to_csv('./data/processed/clinvar-y-md.csv', index=False)
     return None
 
 if __name__ == "__main__":
     os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/')
-    var_f = "./data/processed/clinvar_vep-annotated.tsv"
-    config_f = "./configs/col_config.yaml"
+    var_f = "./data/processed/vep/clinvar_vep-annotated.tsv"
+    config_f = "./configs/columns_config.yaml"
     
     main(var_f, config_f)
-
-df.shape
-df.clinvar_MC.unique()
-df.clinvar_CLNSIG.unique()
-df.clinvar_CLNVC.unique()

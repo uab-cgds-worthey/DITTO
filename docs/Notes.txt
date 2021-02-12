@@ -2,7 +2,7 @@ Getting started
 ===============
 
 ############# 6/5/20 ###################################
-srun --ntasks=1 --cpus-per-task=1 --mem-per-cpu=200G --time=01:59:00 --partition=pascalnodes --job-name=classify --pty /bin/bash
+srun --ntasks=1 --cpus-per-task=1 --mem-per-cpu=200G --time=01:59:00 --partition=express --job-name=classify --pty /bin/bash
 Using conda envi to install and work on tools
     module load Anaconda3/2020.02
     source activate testing         #for GPU Neural Networks
@@ -356,3 +356,8 @@ Looking in to other annotation tools - Trying out Exomiser
 Download Exomiser zip from the release page mentioned here and follow the readme in that folder - https://github.com/exomiser/Exomiser
 prioritizing variants - http://exomiser.github.io/Exomiser/manual/7/analysis_file_config/
 
+################### 2/10/21 ######################################################################
+Started from scratch and using VEP for annotation.
+Downloaded new clinvar db and annotated using VEP along with parser that Brandon wrote.
+Filtered the data and used it for classification.
+Realized that gnomad allele frequencies and CADD scores are available for all variants but dbnsfp have more than 80% missing data.
