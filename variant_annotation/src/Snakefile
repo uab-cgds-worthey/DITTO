@@ -104,7 +104,7 @@ rule annotate_variants:
                         "phastCons100way_vertebrate,phastCons30way_mammalian,SiPhy_29way_logOdds,Eigen-raw_coding,Eigen-raw_coding_rankscore,Eigen-phred_coding," \
                         "Eigen-PC-raw_coding,Eigen-PC-raw_coding_rankscore,Eigen-PC-phred_coding",
         warnings_file = lambda wildcards, output: str(output.calls).replace('.vcf.gz', '_STDOUT_warnings.txt'),
-    threads: 8
+    threads: 4
     conda:
         "../configs/env/vep.yaml"
     shell:

@@ -2,7 +2,7 @@
 #SBATCH --job-name=vep
 #SBATCH --output=logs/vep-%j.log
 #SBATCH --cpus-per-task=1
-#SBATCH --mem-per-cpu=4G
+#SBATCH --mem-per-cpu=40G
 #SBATCH --partition=medium
 
 set -eo pipefail

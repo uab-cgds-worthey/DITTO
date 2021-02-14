@@ -27,12 +27,12 @@ def extract_col(config_dict,df):
     #df.replace('.', np.nan, inplace=True)
     #df[df.isnull().sum(axis=1)]
     df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
-    df.dropna(axis=0, thresh=(df.shape[1]/2), inplace=True)
-    print('\nclinvar_CLNSIG:\n', df['clinvar_CLNSIG'].value_counts(), file=open("./data/processed/stats.csv", "a"))
-    print('\nclinvar_CLNREVSTAT:\n', df['clinvar_CLNREVSTAT'].value_counts(), file=open("./data/processed/stats.csv", "a"))
-    print('\nConsequence:\n', df['Consequence'].value_counts(), file=open("./data/processed/stats.csv", "a"))
-    print('\nIMPACT:\n', df['IMPACT'].value_counts(), file=open("./data/processed/stats.csv", "a"))
-    print('\nBIOTYPE:\n', df['BIOTYPE'].value_counts(), file=open("./data/processed/stats.csv", "a"))
+    df.dropna(axis=0, how='all', inplace=True)  #thresh=(df.shape[1]/1.2)
+    print('\nclinvar_CLNSIG:\n', df['clinvar_CLNSIG'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
+    print('\nclinvar_CLNREVSTAT:\n', df['clinvar_CLNREVSTAT'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
+    print('\nConsequence:\n', df['Consequence'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
+    print('\nIMPACT:\n', df['IMPACT'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
+    print('\nBIOTYPE:\n', df['BIOTYPE'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
     #df = df.drop(['CLNVC','MC'], axis=1)
     # CLNREVSTAT, CLNVC, MC
     return df
@@ -41,13 +41,13 @@ def fill_na(df): #(config_dict,df):
     #df1  = pd.DataFrame()
     var = df[['SYMBOL','Feature','Consequence']]
     df = df.drop(['SYMBOL','Feature','Consequence'], axis=1)
-    df.dtypes.to_csv('./data/processed/columns.csv')
+    df.dtypes.to_csv('./data/processed/columns1.csv')
     #df.to_csv('./data/interim/temp.csv', index=False)
     #df = pd.read_csv('./data/interim/temp.csv')
     #os.remove('./data/interim/temp.csv')
     print('One-hot encoding...')
     df = pd.get_dummies(df, prefix_sep='_')
-    df.head(2).to_csv('./data/processed/clinvar_columns.csv', index=False)
+    df.head(2).to_csv('./data/processed/clinvar_columns1.csv', index=False)
     #lr = LinearRegression()
     #imp= IterativeImputer(estimator=lr, verbose=2, max_iter=10, tol=1e-10, imputation_order='roman')
     print('Filling NAs ....')
@@ -76,17 +76,17 @@ def main(var_f, config_f):
     print('Data Loaded !....')
     df = extract_col(config_dict,df)
     print('Columns extracted !....')
-    df.isnull().sum(axis = 0).to_csv('./data/processed/NA-count-6-class.csv')
+    df.isnull().sum(axis = 0).to_csv('./data/processed/NA-counts-6-class.csv')
     y = df.clinvar_CLNSIG.str.replace(r'/Likely_pathogenic','').str.replace(r'/Likely_benign','')
     y = y.str.replace(r'Likely_benign','Benign').str.replace(r'Likely_pathogenic','Pathogenic')
     df = df.drop('clinvar_CLNSIG', axis=1)
     df = fill_na(df) #(config_dict,df)
     #print dataframe shape
     #df.dtypes.to_csv('../../data/interim/head.csv')
-    print('\nData shape=', df.shape, file=open("./data/processed/stats.csv", "a"))
-    print('Class shape=', y.shape, file=open("./data/processed/stats.csv", "a"))
-    df.to_csv('./data/processed/clinvar-md.csv', index=False)
-    y.to_csv('./data/processed/clinvar-y-md.csv', index=False)
+    print('\nData shape=', df.shape, file=open("./data/processed/stats1.csv", "a"))
+    print('Class shape=', y.shape, file=open("./data/processed/stats1.csv", "a"))
+    df.to_csv('./data/processed/clinvar1-md.csv', index=False)
+    y.to_csv('./data/processed/clinvar1-y-md.csv', index=False)
     return None
 
 if __name__ == "__main__":

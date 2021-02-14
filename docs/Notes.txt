@@ -2,7 +2,7 @@ Getting started
 ===============
 
 ############# 6/5/20 ###################################
-srun --ntasks=1 --cpus-per-task=1 --mem-per-cpu=200G --time=01:59:00 --partition=express --job-name=classify --pty /bin/bash
+srun --ntasks=1 --cpus-per-task=1 --mem-per-cpu=50G --time=01:59:00 --partition=express --job-name=classify --pty /bin/bash
 Using conda envi to install and work on tools
     module load Anaconda3/2020.02
     source activate testing         #for GPU Neural Networks
@@ -361,3 +361,9 @@ Started from scratch and using VEP for annotation.
 Downloaded new clinvar db and annotated using VEP along with parser that Brandon wrote.
 Filtered the data and used it for classification.
 Realized that gnomad allele frequencies and CADD scores are available for all variants but dbnsfp have more than 80% missing data.
+
+################### 2/11/21 ######################################################################
+Variant annotation on HGMD variants since Clinvar variants have 100% accuracy.
+Had to tabix index the HGMD variant file.
+`./src/run_pipeline.sh -s -v ../../../../../manual_datasets_central/hgmd/2020q4/hgmd_pro_2020.4_hg38.vcf.gz -o ../data/processed/HGMD -d ~/.ditto_datasets.yaml`
+

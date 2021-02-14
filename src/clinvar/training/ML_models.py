@@ -31,6 +31,7 @@ ray.init(ignore_reinit_error=True)
 
 
 #Load data
+print('\nUsing clinvar1-md.csv..\n', file=open("ML_results.csv", "a"))
 X = pd.read_csv('clinvar1-md.csv')
 var = X[['SYMBOL','Feature','Consequence','ID']]
 X = X.drop(['SYMBOL','Feature','Consequence', 'ID'], axis=1)
@@ -58,12 +59,12 @@ classifiers = [
 	#KNeighborsClassifier(),
 	#SVC(probability=True),
     DecisionTreeClassifier(),
-    RandomForestClassifier()
-    #AdaBoostClassifier(),
-    #GradientBoostingClassifier(),
+    RandomForestClassifier(),
+    AdaBoostClassifier(),
+    GradientBoostingClassifier(),
 	#BaggingClassifier(),
-	#ExtraTreesClassifier(),
-    #BalancedRandomForestClassifier(),
+	ExtraTreesClassifier(),
+    BalancedRandomForestClassifier()
     #EasyEnsembleClassifier() # doctest: +SKIP
 ]
 
@@ -107,7 +108,7 @@ for i in classifiers:
    
    print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[5]}\n{list1[4]}', file=open("ML_results.csv", "a"))
 
-
+print('done!')
 #clf = OneVsRestClassifier(DecisionTreeClassifier())
 #clf.fit(X_train, Y_train)
 #y_score = clf.predict_proba(X_test)

@@ -1,22 +1,21 @@
 #!/bin/bash
 #
 #SBATCH --job-name=Ditto
-#SBATCH --output=DNN.out
-#SBATCH --error=DNN.err
+#SBATCH --output=DNN1.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
-#SBATCH --ntasks=20
-#SBATCH --partition=pascalnodes-medium
+#SBATCH --ntasks=6
+#SBATCH --partition=pascalnodes
 #SBATCH --gres=gpu:4
 #
 # Time format = HH:MM:SS, DD-HH:MM:SS
-#SBATCH --time=23:59:00
+#SBATCH --time=01:59:00
 #
 # Number of CPUs allocated to each task. 
 #SBATCH --cpus-per-task=1
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes. 
-#SBATCH --mem-per-cpu=4G
+#SBATCH --mem-per-cpu=5G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
