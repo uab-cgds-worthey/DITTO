@@ -384,3 +384,4 @@ Run the pipeline for annotation-
 Things to note down - 
 However there is one more thing. Briefly looking at the HGMD dataset, I noticed a deletion SV of size 30 bases. And this makes me wonder what's their min. size definition for a SV. More common limit is 50 bases, but this is opinionated and hence not a surprise they have smaller ones included.
 So removing variants based on string SVTYPE would also remove "large" indels. I think this is acceptable but this needs to be kept in mind. Or better yet, log these decisions somewhere.
+
