@@ -367,3 +367,20 @@ Variant annotation on HGMD variants since Clinvar variants have 100% accuracy.
 Had to tabix index the HGMD variant file.
 `./src/run_pipeline.sh -s -v ../../../../../manual_datasets_central/hgmd/2020q4/hgmd_pro_2020.4_hg38.vcf.gz -o ../data/processed/HGMD -d ~/.ditto_datasets.yaml`
 
+################### 2/15/21 ######################################################################
+So Tarun has been having trouble annotating HGMD dataset, and after a bit of troubleshooting, it appears this is (highly) likely due to SVs present in them.
+Some background: VEP by default can annotate SVs and the max size they allow by default is 10Mb. Also of note is that, VEP by default annotates 5000 variants in parallel. Such parallelization appears to be true for SVs as well.
+Taken together, it appears parallelizing SV annotation requires large memory. We tried 100G mem but that was not sufficient either.
+I believe we can make the VEP annotation work for SVs by tweaking some settings but my current thinking is that SVs should be out of scope for ditto. At the least, some profiling/analysis on HGMD SVs must be performed before the decision to include them in ditto.
+Also, I looked for SVs in clinvar (by searching for SVTYPE tag), and I'm surprised they didn't have any.
+PS- I looked at the one of the deletion SVs (size 637Kb), which was successfully annotated. That particular line in VCF had 14578054 characters. Yup, 14.5 million characters
+
+Removing SV from HGMD and working with modified VCF-
+`grep -v SVTYPE hgmd_pro_2020.4_hg38.vcf > modified_hgmd.vcf`
+
+Run the pipeline for annotation-
+`./src/run_pipeline.sh -s -v ../data/external/modified_hgmd.vcf -o ../data/processed/vep -d ~/.ditto_datasets.yaml`
+
+Things to note down - 
+However there is one more thing. Briefly looking at the HGMD dataset, I noticed a deletion SV of size 30 bases. And this makes me wonder what's their min. size definition for a SV. More common limit is 50 bases, but this is opinionated and hence not a surprise they have smaller ones included.
+So removing variants based on string SVTYPE would also remove "large" indels. I think this is acceptable but this needs to be kept in mind. Or better yet, log these decisions somewhere.
