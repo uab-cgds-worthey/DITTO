@@ -27,7 +27,7 @@ def extract_col(config_dict,df):
     #df.replace('.', np.nan, inplace=True)
     #df[df.isnull().sum(axis=1)]
     df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
-    df.dropna(axis=0, how='all', inplace=True)  #thresh=(df.shape[1]/1.2)
+    df.dropna(axis=0, thresh=(df.shape[1]*0.7), inplace=True)  #thresh=(df.shape[1]/1.2)
     print('\nhgmd_class:\n', df['hgmd_class'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
     print('\nclinvar_CLNSIG:\n', df['clinvar_CLNSIG'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
     print('\nclinvar_CLNREVSTAT:\n', df['clinvar_CLNREVSTAT'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
@@ -48,7 +48,7 @@ def fill_na(df): #(config_dict,df):
     #os.remove('./data/interim/temp.csv')
     print('One-hot encoding...')
     df = pd.get_dummies(df, prefix_sep='_')
-    df.head(2).to_csv('./data/processed/clinvar_columns1.csv', index=False)
+    df.head(2).to_csv('./data/processed/hgmd_columns.csv', index=False)
     #lr = LinearRegression()
     #imp= IterativeImputer(estimator=lr, verbose=2, max_iter=10, tol=1e-10, imputation_order='roman')
     print('Filling NAs ....')
@@ -75,20 +75,23 @@ def main(var_f, config_f):
     # read clinvar data
     df = pd.read_csv(var_f, sep='\t')
     print('Data Loaded !....')
+    print('\nData shape (Before filtering) =', df.shape, file=open("./data/processed/stats1.csv", "a"))
     df = extract_col(config_dict,df)
     print('Columns extracted !....')
     df.isnull().sum(axis = 0).to_csv('./data/processed/NA-counts.csv')
-    #y = df.clinvar_CLNSIG.str.replace(r'/Likely_pathogenic','').str.replace(r'/Likely_benign','')
-    #y = y.str.replace(r'Likely_benign','Benign').str.replace(r'Likely_pathogenic','Pathogenic')
-    y = df.hgmd_class
+    #print('\n Unique Impact (Class):\n', df.hgmd_class.unique(), file=open("./data/processed/stats1.csv", "a"))
+    y = df.hgmd_class.str.replace(r'DFP','high_impact').str.replace(r'DM\?','high_impact').str.replace(r'DM','high_impact')
+    y = y.str.replace(r'DP','low_impact').str.replace(r'FP','low_impact')
+    print('\nImpact (Class):\n', y.value_counts(), file=open("./data/processed/stats1.csv", "a"))
+    #y = df.hgmd_class
     df = df.drop('hgmd_class', axis=1)
     df = fill_na(df) #(config_dict,df)
     #print dataframe shape
     #df.dtypes.to_csv('../../data/interim/head.csv')
-    print('\nData shape=', df.shape, file=open("./data/processed/stats1.csv", "a"))
+    print('\nData shape (After filtering) =', df.shape, file=open("./data/processed/stats1.csv", "a"))
     print('Class shape=', y.shape, file=open("./data/processed/stats1.csv", "a"))
-    df.to_csv('./data/processed/clinvar1-md.csv', index=False)
-    y.to_csv('./data/processed/clinvar1-y-md.csv', index=False)
+    df.to_csv('./data/processed/hgmd-md.csv', index=False)
+    y.to_csv('./data/processed/hgmd-y-md.csv', index=False)
     return None
 
 if __name__ == "__main__":

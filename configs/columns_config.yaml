@@ -79,7 +79,6 @@ ClinicalSignificance:
   -  FP
   -  DM?
   -  DM
-  -  R
 
 col_conv:
   -  FATHMM_score

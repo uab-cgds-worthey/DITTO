@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-#SBATCH --job-name=Clinvar-prep
-#SBATCH --output=Clinvar-prep.out
-#SBATCH --error=Clinvar-prep.err
+#SBATCH --job-name=Data-prep
+#SBATCH --output=Data-prep.out
+#SBATCH --error=Data-prep.err
 #
 ### Modify this according to your Ray workload.
 #SBATCH --nodes=1
