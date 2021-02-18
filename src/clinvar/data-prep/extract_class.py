@@ -29,4 +29,4 @@ with open('hgmd_vep-annotated.tsv', "w") as out:
                         out.write(new_line + "\n")
                         #print(line+"\t"+class_dict[var_info])
             else:
-                out.write(line.rstrip("\n") + "\tClass\n")
+                out.write(line.rstrip("\n") + "\thgmd_class\n")

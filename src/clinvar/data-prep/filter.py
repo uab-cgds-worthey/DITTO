@@ -22,12 +22,13 @@ def get_col_configs(config_f):
 def extract_col(config_dict,df):
     print('Extracting columns and rows according to config file !....')
     df = df[config_dict['columns']]
-    df= df.loc[df['clinvar_CLNSIG'].isin(config_dict['ClinicalSignificance']['6-class'])]
+    df= df.loc[df['hgmd_class'].isin(config_dict['ClinicalSignificance'])]
     print('Dropping empty columns and rows...')
     #df.replace('.', np.nan, inplace=True)
     #df[df.isnull().sum(axis=1)]
     df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
     df.dropna(axis=0, how='all', inplace=True)  #thresh=(df.shape[1]/1.2)
+    print('\nhgmd_class:\n', df['hgmd_class'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
     print('\nclinvar_CLNSIG:\n', df['clinvar_CLNSIG'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
     print('\nclinvar_CLNREVSTAT:\n', df['clinvar_CLNREVSTAT'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
     print('\nConsequence:\n', df['Consequence'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
@@ -76,10 +77,11 @@ def main(var_f, config_f):
     print('Data Loaded !....')
     df = extract_col(config_dict,df)
     print('Columns extracted !....')
-    df.isnull().sum(axis = 0).to_csv('./data/processed/NA-counts-6-class.csv')
-    y = df.clinvar_CLNSIG.str.replace(r'/Likely_pathogenic','').str.replace(r'/Likely_benign','')
-    y = y.str.replace(r'Likely_benign','Benign').str.replace(r'Likely_pathogenic','Pathogenic')
-    df = df.drop('clinvar_CLNSIG', axis=1)
+    df.isnull().sum(axis = 0).to_csv('./data/processed/NA-counts.csv')
+    #y = df.clinvar_CLNSIG.str.replace(r'/Likely_pathogenic','').str.replace(r'/Likely_benign','')
+    #y = y.str.replace(r'Likely_benign','Benign').str.replace(r'Likely_pathogenic','Pathogenic')
+    y = df.hgmd_class
+    df = df.drop('hgmd_class', axis=1)
     df = fill_na(df) #(config_dict,df)
     #print dataframe shape
     #df.dtypes.to_csv('../../data/interim/head.csv')
@@ -91,7 +93,7 @@ def main(var_f, config_f):
 
 if __name__ == "__main__":
     os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/')
-    var_f = "./data/processed/vep/clinvar_vep-annotated.tsv"
+    var_f = "./data/processed/HGMD/hgmd_vep-annotated.tsv"
     config_f = "./configs/columns_config.yaml"
     
     main(var_f, config_f)

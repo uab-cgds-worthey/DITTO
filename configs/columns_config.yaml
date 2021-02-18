@@ -71,48 +71,15 @@ columns:
   -  clinvar_AF_TGP
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
+  -  hgmd_class
   
 ClinicalSignificance:
-    2-class:
-      - Benign
-      - Pathogenic
-    3-class:
-      - Benign
-      - Uncertain_significance
-      - Pathogenic
-    4-class:
-      - Benign
-      - Benign/Likely_benign
-      - Pathogenic/Likely_pathogenic
-      - Pathogenic
-    5-class:
-      - Benign
-      - Uncertain_significance
-      - Pathogenic
-      - Likely_pathogenic
-      - Likely_benign
-    6-class:
-      - Benign
-      - Benign/Likely_benign
-      - Pathogenic/Likely_pathogenic
-      - Pathogenic
-      - Likely_pathogenic
-      - Likely_benign
-    optional:
-      - not provided
-      - Benign/Likely_benign
-      - Pathogenic/Likely_pathogenic
-      - Conflicting interpretations of pathogenicity
-      - drug response
-      - association
-      - risk factor
-      - protective
-      - Affects
-      - conflicting data from submitters
-      - other
-      - no interpretation for the single variant  # concerns compound hets
-      - "-"
-      - association not found   # not certain what this exactly refers to. Need to investigate
+  -  DP
+  -  DFP
+  -  FP
+  -  DM?
+  -  DM
+  -  R
 
 col_conv:
   -  FATHMM_score
