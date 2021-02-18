@@ -367,7 +367,7 @@ Variant annotation on HGMD variants since Clinvar variants have 100% accuracy.
 Had to tabix index the HGMD variant file.
 `./src/run_pipeline.sh -s -v ../../../../../manual_datasets_central/hgmd/2020q4/hgmd_pro_2020.4_hg38.vcf.gz -o ../data/processed/HGMD -d ~/.ditto_datasets.yaml`
 
-################### 2/15/21 ######################################################################
+################### 2/15&17/21 ######################################################################
 So Tarun has been having trouble annotating HGMD dataset, and after a bit of troubleshooting, it appears this is (highly) likely due to SVs present in them.
 Some background: VEP by default can annotate SVs and the max size they allow by default is 10Mb. Also of note is that, VEP by default annotates 5000 variants in parallel. Such parallelization appears to be true for SVs as well.
 Taken together, it appears parallelizing SV annotation requires large memory. We tried 100G mem but that was not sufficient either.
@@ -375,11 +375,27 @@ I believe we can make the VEP annotation work for SVs by tweaking some settings 
 Also, I looked for SVs in clinvar (by searching for SVTYPE tag), and I'm surprised they didn't have any.
 PS- I looked at the one of the deletion SVs (size 637Kb), which was successfully annotated. That particular line in VCF had 14578054 characters. Yup, 14.5 million characters
 
+One more error - 
+So here is the issue that is causing trouble when annotating HGMD vcf with VEP. (To be more specific, bcftools is the one that has trouble). Info field PHEN is not supposed to include semicolon character, 
+
 Removing SV from HGMD and working with modified VCF-
-`grep -v SVTYPE hgmd_pro_2020.4_hg38.vcf > modified_hgmd.vcf`
+Converting VCF of chromosomes '1' to 'chr1' and removing special characters from INFO column - 
+`
+cp /data/project/worthey_lab/manual_datasets_central/hgmd/2020q4/hgmd_pro_2020.4_hg38.vcf ./
+sed -E -i 's/(^[^#]+)/chr\1/' <vcf file path>
+sed -E 's/(^[^#]+)(=")([^;"]+)(;)+([^;]*?)(")/\1\2\3%3B\5\6/' hgmd_pro_2020.4_hg38.vcf > hgmd_pro_2020.4_hg38_fixed_info.vcf`
+
+or use the VCF that was editied by Brandon
+cp /data/project/worthey_lab/projects/experimental_pipelines/brandon_test/hgmd_fix/hgmd_pro_2020.4_hg38_fixed_info.vcf ./
+grep -v SVTYPE hgmd_pro_2020.4_hg38_fixed_info.vcf > modified_hgmd.vcf
+bcftools norm -f /data/project/worthey_lab/datasets_central/human_reference_genome/processed/GRCh38/no_alt_rel20190408/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna hgmd_pro_2020.4_hg38_edited.vcf -Oz -o hgmd_pro_2020.4_hg38_edited.vcf.gz
+module load tabix
+#bgzip -c modified_hgmd.vcf > modified_hgmd.vcf.gz
+tabix -fp vcf hgmd_pro_2020.4_hg38_edited.vcf.gz`
+module load Anaconda3/2020.02
 
 Run the pipeline for annotation-
-`./src/run_pipeline.sh -s -v ../data/external/modified_hgmd.vcf -o ../data/processed/vep -d ~/.ditto_datasets.yaml`
+`./src/run_pipeline.sh -s -v ../data/external/hgmd_pro_2020.4_hg38_edited.vcf.gz -o ../data/processed/HGMD -d ~/.ditto_datasets.yaml`
 
 Things to note down - 
 However there is one more thing. Briefly looking at the HGMD dataset, I noticed a deletion SV of size 30 bases. And this makes me wonder what's their min. size definition for a SV. More common limit is 50 bases, but this is opinionated and hence not a surprise they have smaller ones included.
