@@ -381,6 +381,10 @@ So here is the issue that is causing trouble when annotating HGMD vcf with VEP. 
 Removing SV from HGMD and working with modified VCF-
 Converting VCF of chromosomes '1' to 'chr1' and removing special characters from INFO column - 
 `
+module load Anaconda3/2020.02
+module load tabix
+module load BCFtools
+
 cp /data/project/worthey_lab/manual_datasets_central/hgmd/2020q4/hgmd_pro_2020.4_hg38.vcf ./
 sed -E -i 's/(^[^#]+)/chr\1/' <vcf file path>
 sed -E 's/(^[^#]+)(=")([^;"]+)(;)+([^;]*?)(")/\1\2\3%3B\5\6/' hgmd_pro_2020.4_hg38.vcf > hgmd_pro_2020.4_hg38_fixed_info.vcf`
@@ -389,10 +393,9 @@ or use the VCF that was editied by Brandon
 cp /data/project/worthey_lab/projects/experimental_pipelines/brandon_test/hgmd_fix/hgmd_pro_2020.4_hg38_fixed_info.vcf ./
 grep -v SVTYPE hgmd_pro_2020.4_hg38_fixed_info.vcf > modified_hgmd.vcf
 bcftools norm -f /data/project/worthey_lab/datasets_central/human_reference_genome/processed/GRCh38/no_alt_rel20190408/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna hgmd_pro_2020.4_hg38_edited.vcf -Oz -o hgmd_pro_2020.4_hg38_edited.vcf.gz
-module load tabix
 #bgzip -c modified_hgmd.vcf > modified_hgmd.vcf.gz
 tabix -fp vcf hgmd_pro_2020.4_hg38_edited.vcf.gz`
-module load Anaconda3/2020.02
+
 
 Run the pipeline for annotation-
 `./src/run_pipeline.sh -s -v ../data/external/hgmd_pro_2020.4_hg38_edited.vcf.gz -o ../data/processed/HGMD -d ~/.ditto_datasets.yaml`

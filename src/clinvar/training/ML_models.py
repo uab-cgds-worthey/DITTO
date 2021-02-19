@@ -3,20 +3,22 @@ import numpy as np
 import pandas as pd
 import time
 import ray
+import pickle
 from sklearn.preprocessing import StandardScaler
 #from sklearn.feature_selection import RFE
 #from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import average_precision_score
+from sklearn.metrics import roc_auc_score
+from sklearn.metrics import accuracy_score
 #from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import confusion_matrix
 #from skopt import BayesSearchCV
 #from sklearn.model_selection import cross_val_score
 #from sklearn.model_selection import RepeatedStratifiedKFold
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, BaggingClassifier, ExtraTreesClassifier
 from imblearn.ensemble import BalancedRandomForestClassifier
 from imblearn.ensemble import EasyEnsembleClassifier
@@ -57,56 +59,41 @@ X_test = scaler.transform(X_test)
 #Classifiers I wish to use
 classifiers = [
 	#KNeighborsClassifier(),
-	#SVC(probability=True),
-    DecisionTreeClassifier(),
-    RandomForestClassifier(),
+	#SVC(class_weight='balanced', probability=True),
+    DecisionTreeClassifier(class_weight='balanced'),
+    LogisticRegression(class_weight='balanced'),
+    RandomForestClassifier(class_weight='balanced'),
     AdaBoostClassifier(),
-    GradientBoostingClassifier(),
+    #GradientBoostingClassifier(),
 	#BaggingClassifier(),
-	ExtraTreesClassifier(),
-    BalancedRandomForestClassifier()
-    #EasyEnsembleClassifier() # doctest: +SKIP
+	ExtraTreesClassifier(class_weight='balanced_subsample'),
+    BalancedRandomForestClassifier(),
+    EasyEnsembleClassifier() # doctest: +SKIP
 ]
-
-# @ray.remote
-# def classifier(model, X_train, X_test, column):
-#     #print(classifier, file=open("all-model-scores.csv", "a"))
-#     model = RFE(model)
-#     model.fit(X_train, Y_train)
-#     df = pd.DataFrame(model.ranking_,index=column,columns=['Rank']).sort_values(by='Rank',ascending=True)
-#     df.to_csv('ranking.csv', mode='a')
-#     finish = time.perf_counter()
-#     list1 = [model, finish]
-#     return list1
-
-# for i in classifiers:
-#     list1 = ray.get(classifier.remote(i, X_train, X_test, columns))
-#     time=(list1[1]-start)/60
-#     print(f'{list1[0]}\t{time}')
-
 
 @ray.remote
 def classifier(clf, X_train, X_test, Y_train, Y_test):
-   #print(classifier, file=open("all-model-scores.csv", "a"))
-   #clf = OneVsRestClassifier(model)
    start = time.perf_counter()
-   clf.fit(X_train, Y_train)
+   #class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
+   clf.fit(X_train, Y_train) #, class_weight=class_weights)
    y_score = clf.predict_proba(X_test)
    prc = average_precision_score(Y_test, np.argmax(y_score, axis=1), average=None)
-   prc_micro = average_precision_score(Y_test, np.argmax(y_score, axis=1), average='micro')
+   roc_auc = roc_auc_score(Y_test, np.argmax(y_score, axis=1))
+   accuracy = accuracy_score(Y_test, np.argmax(y_score, axis=1))
    score = clf.score(X_train, Y_train)
    #matrix = confusion_matrix(np.argmax(Y_test, axis=1), np.argmax(y_score, axis=1))
    matrix = confusion_matrix(Y_test, np.argmax(y_score, axis=1))
    finish = (time.perf_counter()-start)/60
-   list1 = [clf ,prc, prc_micro, score, matrix, finish]
+   clf_name = str(type(clf)).split("'")[1].split(".")[3]
+   list1 = [clf_name ,prc, roc_auc, accuracy, score, matrix, finish]
+   pickle.dump(clf, open("./models/"+clf_name+".pkl", 'wb'))
    return list1
 
-print('Model\tprecision_score\taverage_precision_score\tTrain_score\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open("ML_results.csv", "a"))
+print('Model\tprecision_score\troc_auc\tAccuracy\tTrain_score\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open("ML_results.csv", "a"))
 for i in classifiers:
    list1 = ray.get(classifier.remote(i, X_train, X_test, Y_train, Y_test))
-   #list1 = classifier(i, X_train, X_test, Y_train, Y_test)
-   
-   print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[5]}\n{list1[4]}', file=open("ML_results.csv", "a"))
+   print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[6]}\n{list1[5]}', file=open("ML_results.csv", "a"))
+
 
 print('done!')
 #clf = OneVsRestClassifier(DecisionTreeClassifier())
