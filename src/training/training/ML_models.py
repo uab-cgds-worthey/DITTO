@@ -4,17 +4,19 @@ import pandas as pd
 import time
 import ray
 import pickle
+import shap
 from sklearn.preprocessing import StandardScaler
 #from sklearn.feature_selection import RFE
 #from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, cross_validate, cross_val_predict
 from sklearn.preprocessing import label_binarize
-from sklearn.metrics import average_precision_score, roc_auc_score, accuracy_score, confusion_matrix
+from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 #from sklearn.multiclass import OneVsRestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, BaggingClassifier, ExtraTreesClassifier
 from imblearn.ensemble import BalancedRandomForestClassifier, EasyEnsembleClassifier
+import matplotlib.pyplot as plt
 
 import os
 os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
@@ -25,10 +27,11 @@ ray.init(ignore_reinit_error=True)
 
 
 #Load data
-print('\nUsing merged_data-md.csv..\n', file=open("ML_results.csv", "a"))
+print('\nUsing merged_data-md.csv..', file=open("ML_results.csv", "a"))
 X = pd.read_csv('merged_data-md.csv')
 var = X[['SYMBOL','Feature','Consequence','ID']]
 X = X.drop(['SYMBOL','Feature','Consequence', 'ID'], axis=1)
+feature_names = X.columns
 X = X.values
 # X[1]
 # var
@@ -52,9 +55,9 @@ X_test = scaler.transform(X_test)
 classifiers = [
 	#KNeighborsClassifier(),
 	#SVC(class_weight='balanced', probability=True),
-    #DecisionTreeClassifier(class_weight='balanced'),
+    DecisionTreeClassifier(class_weight='balanced')
     #LogisticRegression(class_weight='balanced'),
-    RandomForestClassifier(class_weight='balanced')
+    #RandomForestClassifier(class_weight='balanced'),
     #AdaBoostClassifier(),
     ##GradientBoostingClassifier(),
 	##BaggingClassifier(),
@@ -64,34 +67,43 @@ classifiers = [
 ]
 
 @ray.remote
-def classifier(clf, X_train, X_test, Y_train, Y_test):
+def classifier(clf, X_train, X_test, Y_train, Y_test,feature_names):
    start = time.perf_counter()
-   score = cross_validate(clf, X_train, Y_train, cv=5, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
+   score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
    clf = score['estimator'][np.argmax(score['test_score'])]
-   y_score = cross_val_predict(clf, X_train, Y_train, cv=5, n_jobs=-1, verbose=0)
+   #y_score = cross_val_predict(clf, X_train, Y_train, cv=5, n_jobs=-1, verbose=0)
    #class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
    #clf.fit(X_train, Y_train) #, class_weight=class_weights)
-   #y_score = clf.predict_proba(X_test)
-   #prc = average_precision_score(Y_test, np.argmax(y_score, axis=1), average=None)
-   #roc_auc = roc_auc_score(Y_test, y_score)
+   y_score = clf.predict(X_test)
+   prc = precision_score(Y_test,y_score, average="weighted")
+   recall  = recall_score(Y_test,y_score, average="weighted")
+   roc_auc = roc_auc_score(Y_test, y_score)
    #roc_auc = roc_auc_score(Y_test, np.argmax(y_score, axis=1))
-   #accuracy = accuracy_score(Y_test, np.argmax(y_score, axis=1))
+   accuracy = accuracy_score(Y_test, y_score)
    #score = clf.score(X_train, Y_train)
    #matrix = confusion_matrix(np.argmax(Y_test, axis=1), np.argmax(y_score, axis=1))
-   #matrix = confusion_matrix(Y_test, np.argmax(y_score, axis=1))
+   matrix = confusion_matrix(Y_test, y_score,)
    finish = (time.perf_counter()-start)/60
    clf_name = str(type(clf)).split("'")[1].split(".")[3]
 
+   # explain all the predictions in the test set
+   background = shap.kmeans(X_train, 6)
+   explainer = shap.KernelExplainer(clf.predict, background)
+   background = X_test[np.random.choice(X_test.shape[0], 1000, replace=False)]
+   shap_values = explainer.shap_values(background)
+   shap.summary_plot(shap_values, X_test, feature_names, show=False)
+   #shap.plots.waterfall(shap_values[0], max_display=15)
+   plt.savefig("./models/"+clf_name + "_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+
    #list1 = [clf_name ,prc, roc_auc, accuracy, score, matrix, finish]
-   list1 = [clf_name, np.mean(score['train_score']), np.mean(score['test_score']),  finish, y_score]
+   list1 = [clf_name, np.mean(score['train_score']), np.mean(score['test_score']), prc, recall, roc_auc, accuracy, finish, matrix]
    pickle.dump(clf, open("./models/"+clf_name+".pkl", 'wb'))
    return list1
 
-print('Model\tTrain_score\tTest_score\tTime(min)', file=open("ML_results.csv", "a"))    #\tConfusion_matrix[low_impact, high_impact]
+print('Model\tTrain_score(train_data)\tTest_score(train_data)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open("ML_results.csv", "a"))    #\tConfusion_matrix[low_impact, high_impact]
 for i in classifiers:
-   list1 = ray.get(classifier.remote(i, X_train, X_test, Y_train, Y_test))
-   print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}', file=open("ML_results.csv", "a"))
-   #print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[6]}\n{list1[5]}', file=open("ML_results.csv", "a"))
+   list1 = ray.get(classifier.remote(i, X_train, X_test, Y_train, Y_test,feature_names))
+   print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\n{list1[8]}', file=open("ML_results.csv", "a"))
 
 
 print('done!')
