@@ -27,7 +27,7 @@ def extract_col(config_dict,df):
     #df.replace('.', np.nan, inplace=True)
     #df[df.isnull().sum(axis=1)]
     df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
-    df.dropna(axis=0, thresh=(df.shape[1]*0.7), inplace=True)  #thresh=(df.shape[1]/1.2)
+    df.dropna(axis=0, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[1]/1.2)
     print('\nhgmd_class:\n', df['hgmd_class'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
     print('\nclinvar_CLNSIG:\n', df['clinvar_CLNSIG'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
     print('\nclinvar_CLNREVSTAT:\n', df['clinvar_CLNREVSTAT'].value_counts(), file=open("./data/processed/stats1.csv", "a"))
@@ -92,13 +92,13 @@ def main(var_f, config_f):
     #df.dtypes.to_csv('../../data/interim/head.csv')
     print('\nData shape (After filtering) =', df.shape, file=open("./data/processed/stats1.csv", "a"))
     print('Class shape=', y.shape, file=open("./data/processed/stats1.csv", "a"))
-    df.to_csv('./data/processed/hgmd-md.csv', index=False)
-    y.to_csv('./data/processed/hgmd-y-md.csv', index=False)
+    df.to_csv('./data/processed/merged_data-md.csv', index=False)
+    y.to_csv('./data/processed/merged_data-y-md.csv', index=False)
     return None
 
 if __name__ == "__main__":
     os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/')
-    var_f = "./data/processed/merged_sig_norm_vep-annotated.tsv"
+    var_f = "./data/processed/merged_sig_norm_class_vep-annotated.tsv"
     config_f = "./configs/columns_config.yaml"
     
     main(var_f, config_f)

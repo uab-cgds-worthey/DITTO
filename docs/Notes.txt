@@ -448,4 +448,7 @@ Run variant annotation as shown in ReadMe file -
     `./src/run_pipeline.sh -s -v ../data/interim/merged_sig_norm.vcf.gz -o ../data/processed -d ~/.ditto_datasets.yaml`
 Parse the annotated vcf file - 
     `python parse_annotated_vars.py -i ../data/processed/merged_sig_norm_vep-annotated.vcf.gz -o ../data/processed/merged_sig_norm_vep-annotated.tsv`
-
+Extract Class information for all these variants - 
+    `python extract_class.py`
+Filter, stats and prep the data - 
+    `python filter.py`

@@ -83,8 +83,8 @@ ClinicalSignificance:
   -  Benign/Likely_benign
   -  Pathogenic/Likely_pathogenic
   -  Pathogenic
-  -  Likely_pathogenic
-  -  Likely_benign
+  #-  Likely_pathogenic
+  #-  Likely_benign
 
 CLNREVSTAT:
   -  criteria_provided,_multiple_submitters,_no_conflicts
