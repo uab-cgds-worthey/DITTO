@@ -2,6 +2,8 @@
 import os
 import gzip
 import yaml
+import re
+regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
 
 os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/')
 vcf = 'merged.vcf.gz'
@@ -18,7 +20,7 @@ with open(output, "w") as out:
             if not line.startswith("#"):
                         line = line.rstrip("\n")
                         cols = line.split("\t")
-                        if len(cols[3]) < 1000 and len(cols[4]) < 1000:
+                        if (len(cols[3]) < 1000) and (len(cols[4]) < 1000) and (regex.search(cols[3]) == None) and (regex.search(cols[4]) == None):
                             var_info = cols[0]+"\t"+cols[1]+"\t"+cols[2]+"\t"+cols[3]+"\t"+cols[4]
                             if 'CLASS' in cols[7]:
                                 var_class = cols[7].split(";")[0].split("=")[1]
