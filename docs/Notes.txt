@@ -408,3 +408,37 @@ Things to note down -
 However there is one more thing. Briefly looking at the HGMD dataset, I noticed a deletion SV of size 30 bases. And this makes me wonder what's their min. size definition for a SV. More common limit is 50 bases, but this is opinionated and hence not a surprise they have smaller ones included.
 So removing variants based on string SVTYPE would also remove "large" indels. I think this is acceptable but this needs to be kept in mind. Or better yet, log these decisions somewhere.
 
+################### 2/21/21 ######################################################################
+Current workflow:
+`module load Anaconda3/2020.02
+module load tabix
+module load BCFtools`
+Download Clinvar - 
+    `wget -P /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/ https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz
+    tabix -fp vcf clinvar.vcf.gz `
+Check chromosomes and keep note for modifications - 
+    `zgrep -v ^# clinvar.vcf.gz | cut -f1 -d$'\t' | sort -u`
+Copy HGMD VCF - 
+    `cp /data/project/worthey_lab/manual_datasets_central/hgmd/2020q4/hgmd_pro_2020.4_hg38.vcf ./`
+Check chromosomes and keep note for modifications - 
+    `zgrep -v ^# hgmd_pro_2020.4_hg38.vcf.gz | cut -f1 -d$'\t' | sort -u`
+Fix the INFO column and index for merging - 
+    `sed -E 's/(^[^#]+)(=")([^;"]+)(;)+([^;]*?)(")/\1\2\3%3B\5\6/' hgmd_pro_2020.4_hg38.vcf > hgmd_pro_2020.4_hg38_fixed_info.vcf`
+    bgzip -c  hgmd_pro_2020.4_hg38_fixed_info.vcf > hgmd_pro_2020.4_hg38_fixed_info.vcf.gz
+    tabix -fp vcf hgmd_pro_2020.4_hg38_fixed_info.vcf.gz `
+Filter variants by size and class - 
+    `python ../../src/training/data-prep/extract_variants.py`
+Add `chr` to chromosomes columns - 
+    `sed -E -i 's/(^[^#]+)/chr\1/' ../interim/merged_sig.vcf `
+Fix chromosome issues noted before - 
+    `sed -i 's/^chrMT/chrM/g' ../interim/merged_sig.vcf 
+    grep -v ^chrNW ../interim/merged_sig.vcf > ../interim/merged_sig_chr_fix.vcf`
+Check chromosomes and fix any remaining issues - 
+    `grep -v ^# ../interim/merged_sig_chr_fix.vcf | cut -f1 -d$'\t' | sort -u`
+Normalize the variants using reference genome - 
+    `bcftools norm -f /data/project/worthey_lab/datasets_central/human_reference_genome/processed/GRCh38/no_alt_rel20190408/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna ../interim/merged_sig_chr_fix.vcf -Oz -o ../interim/merged_sig_norm.vcf.gz`
+Tabix index the file - 
+    `tabix -fp vcf ../interim/merged_sig_norm.vcf.gz`
+Run variant annotation as shown in ReadMe file - 
+    `./src/run_pipeline.sh -s -v ../data/interim/merged_sig_norm.vcf.gz -o ../data/processed -d ~/.ditto_datasets.yaml`
+

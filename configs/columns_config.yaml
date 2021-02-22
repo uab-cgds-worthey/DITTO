@@ -86,6 +86,10 @@ ClinicalSignificance:
   -  Likely_pathogenic
   -  Likely_benign
 
+CLNREVSTAT:
+  -  criteria_provided,_multiple_submitters,_no_conflicts
+  -  criteria_provided,_single_submitter 
+
 col_conv:
   -  FATHMM_score
   -  MutationAssessor_score

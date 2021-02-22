@@ -81,7 +81,9 @@ def main(var_f, config_f):
     df.isnull().sum(axis = 0).to_csv('./data/processed/NA-counts.csv')
     #print('\n Unique Impact (Class):\n', df.hgmd_class.unique(), file=open("./data/processed/stats1.csv", "a"))
     y = df.hgmd_class.str.replace(r'DFP','high_impact').str.replace(r'DM\?','high_impact').str.replace(r'DM','high_impact')
+    y = y.str.replace(r'Pathogenic/Likely_pathogenic','high_impact').str.replace(r'Likely_pathogenic','high_impact').str.replace(r'Pathogenic','high_impact')
     y = y.str.replace(r'DP','low_impact').str.replace(r'FP','low_impact')
+    y = y.str.replace(r'Benign/Likely_benign','low_impact').str.replace(r'Likely_benign','low_impact').str.replace(r'Benign','low_impact')
     print('\nImpact (Class):\n', y.value_counts(), file=open("./data/processed/stats1.csv", "a"))
     #y = df.hgmd_class
     df = df.drop('hgmd_class', axis=1)
@@ -96,7 +98,7 @@ def main(var_f, config_f):
 
 if __name__ == "__main__":
     os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/')
-    var_f = "./data/processed/HGMD/hgmd_vep-annotated.tsv"
+    var_f = "./data/processed/merged_sig_norm_vep-annotated.tsv"
     config_f = "./configs/columns_config.yaml"
     
     main(var_f, config_f)
