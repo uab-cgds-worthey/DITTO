@@ -16,7 +16,7 @@
 #
 ### Modify this according to your Ray workload.
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=50GB
+#SBATCH --mem=100GB
 ### Similarly, you can also specify the number of GPUs per node.
 ### Modify this according to your Ray workload. Sometimes this
 ### should be 'gres' instead.

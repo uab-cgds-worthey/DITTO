@@ -27,15 +27,15 @@ ray.init(ignore_reinit_error=True)
 
 
 #Load data
-print('\nUsing merged_data1-md.csv..', file=open("ML_results1.csv", "a"))
-X = pd.read_csv('merged_data1-md.csv')
+print('\nUsing merged_data-null.csv..', file=open("ML_results1.csv", "a"))
+X = pd.read_csv('merged_data-null.csv')
 var = X[['SYMBOL','Feature','Consequence','ID']]
 X = X.drop(['SYMBOL','Feature','Consequence', 'ID'], axis=1)
 feature_names = X.columns.tolist()
 X = X.values
 # X[1]
 # var
-y = pd.read_csv('merged_data1-y-md.csv')
+y = pd.read_csv('merged_data-y-null.csv')
 #Y = pd.get_dummies(y)
 Y = label_binarize(y.values, classes=['low_impact', 'high_impact']) #'Benign', 'Likely_benign', 'Uncertain_significance', 'Likely_pathogenic', 'Pathogenic'
 
@@ -97,11 +97,11 @@ def classifier(clf, X_train, X_test, Y_train, Y_test,background,feature_names):
    plt.figure()
    shap.summary_plot(shap_values, background, feature_names, show=False)
    #shap.plots.waterfall(shap_values[0], max_display=15)
-   plt.savefig("./models/"+clf_name + "_features1.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+   plt.savefig("./models/"+clf_name + "_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
 
    #list1 = [clf_name ,prc, roc_auc, accuracy, score, matrix, finish]
    list1 = [clf_name, np.mean(score['train_score']), np.mean(score['test_score']), prc, recall, roc_auc, accuracy, finish, matrix]
-   pickle.dump(clf, open("./models/"+clf_name+".pkl", 'wb'))
+   pickle.dump(clf, open("./models/"+clf_name+"_null.pkl", 'wb'))
    return list1
 
 print('Model\tTrain_score(train_data)\tTest_score(train_data)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open("ML_results1.csv", "a"))    #\tConfusion_matrix[low_impact, high_impact]

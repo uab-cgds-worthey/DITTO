@@ -27,7 +27,7 @@ def extract_col(config_dict,df, stats):
     #df.replace('.', np.nan, inplace=True)
     #df[df.isnull().sum(axis=1)]
     df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
-    df.dropna(axis=0, thresh=(df.shape[1]*0.5), inplace=True)  #thresh=(df.shape[1]/1.2)
+    df.dropna(axis=0, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[1]/1.2)
     print('\nhgmd_class:\n', df['hgmd_class'].value_counts(), file=open(stats, "a"))
     print('\nclinvar_CLNSIG:\n', df['clinvar_CLNSIG'].value_counts(), file=open(stats, "a"))
     print('\nclinvar_CLNREVSTAT:\n', df['clinvar_CLNREVSTAT'].value_counts(), file=open(stats, "a"))
@@ -56,7 +56,7 @@ def fill_na(df): #(config_dict,df):
     #filehandler = open('./data/processed/imputer.pkl', 'wb') 
     #pickle.dump(imp, filehandler)
     #df = pd.DataFrame(df, columns = columns)
-    df=df.fillna(df.median())
+    df=df.fillna(0) #(df.median())
     df = df.reset_index(drop=True)
     df['ID'] = [f'var_{num}' for num in range(len(df))]
     #for key in tqdm(config_dict['Fill_NAs']):
@@ -92,13 +92,13 @@ def main(var_f, config_f, stats):
     #df.dtypes.to_csv('../../data/interim/head.csv')
     print('\nData shape (After filtering) =', df.shape, file=open(stats, "a"))
     print('Class shape=', y.shape,file=open(stats, "a"))
-    #df.to_csv('./data/processed/merged_data1-md.csv', index=False)
-    #y.to_csv('./data/processed/merged_data1-y-md.csv', index=False)
+    df.to_csv('./data/processed/merged_data-null.csv', index=False)
+    y.to_csv('./data/processed/merged_data-y-null.csv', index=False)
     return None
 
 if __name__ == "__main__":
     os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/')
     var_f = "./data/processed/merged_sig_norm_class_vep-annotated.tsv"
     config_f = "./configs/columns_config.yaml"
-    stats = "./data/processed/stats.csv"
+    stats = "./data/processed/stats1.csv"
     main(var_f, config_f, stats)
