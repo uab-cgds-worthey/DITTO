@@ -27,15 +27,15 @@ ray.init(ignore_reinit_error=True)
 
 
 #Load data
-print('\nUsing merged_data-md.csv..', file=open("ML_results.csv", "a"))
-X = pd.read_csv('merged_data-md.csv')
+print('\nUsing merged_data1-md.csv..', file=open("ML_results1.csv", "a"))
+X = pd.read_csv('merged_data1-md.csv')
 var = X[['SYMBOL','Feature','Consequence','ID']]
 X = X.drop(['SYMBOL','Feature','Consequence', 'ID'], axis=1)
-feature_names = X.columns
+feature_names = X.columns.tolist()
 X = X.values
 # X[1]
 # var
-y = pd.read_csv('merged_data-y-md.csv')
+y = pd.read_csv('merged_data1-y-md.csv')
 #Y = pd.get_dummies(y)
 Y = label_binarize(y.values, classes=['low_impact', 'high_impact']) #'Benign', 'Likely_benign', 'Uncertain_significance', 'Likely_pathogenic', 'Pathogenic'
 
@@ -51,23 +51,26 @@ scaler = StandardScaler().fit(X_train)
 X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
 
+# explain all the predictions in the test set
+background = shap.kmeans(X_train, 6)
+
 #Classifiers I wish to use
 classifiers = [
 	#KNeighborsClassifier(),
 	#SVC(class_weight='balanced', probability=True),
-    DecisionTreeClassifier(class_weight='balanced')
-    #LogisticRegression(class_weight='balanced'),
-    #RandomForestClassifier(class_weight='balanced'),
-    #AdaBoostClassifier(),
-    ##GradientBoostingClassifier(),
-	##BaggingClassifier(),
-	#ExtraTreesClassifier(class_weight='balanced_subsample'),
-    #BalancedRandomForestClassifier(),
-    #EasyEnsembleClassifier() # doctest: +SKIP
+    DecisionTreeClassifier(class_weight='balanced'),
+    LogisticRegression(class_weight='balanced'),
+    RandomForestClassifier(class_weight='balanced'),
+    AdaBoostClassifier(),
+    #GradientBoostingClassifier(),
+	#BaggingClassifier(),
+	ExtraTreesClassifier(class_weight='balanced_subsample'),
+    BalancedRandomForestClassifier(),
+    EasyEnsembleClassifier() # doctest: +SKIP
 ]
 
 @ray.remote
-def classifier(clf, X_train, X_test, Y_train, Y_test,feature_names):
+def classifier(clf, X_train, X_test, Y_train, Y_test,background,feature_names):
    start = time.perf_counter()
    score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
    clf = score['estimator'][np.argmax(score['test_score'])]
@@ -91,19 +94,20 @@ def classifier(clf, X_train, X_test, Y_train, Y_test,feature_names):
    explainer = shap.KernelExplainer(clf.predict, background)
    background = X_test[np.random.choice(X_test.shape[0], 1000, replace=False)]
    shap_values = explainer.shap_values(background)
-   shap.summary_plot(shap_values, X_test, feature_names, show=False)
+   plt.figure()
+   shap.summary_plot(shap_values, background, feature_names, show=False)
    #shap.plots.waterfall(shap_values[0], max_display=15)
-   plt.savefig("./models/"+clf_name + "_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+   plt.savefig("./models/"+clf_name + "_features1.pdf", format='pdf', dpi=1000, bbox_inches='tight')
 
    #list1 = [clf_name ,prc, roc_auc, accuracy, score, matrix, finish]
    list1 = [clf_name, np.mean(score['train_score']), np.mean(score['test_score']), prc, recall, roc_auc, accuracy, finish, matrix]
    pickle.dump(clf, open("./models/"+clf_name+".pkl", 'wb'))
    return list1
 
-print('Model\tTrain_score(train_data)\tTest_score(train_data)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open("ML_results.csv", "a"))    #\tConfusion_matrix[low_impact, high_impact]
+print('Model\tTrain_score(train_data)\tTest_score(train_data)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open("ML_results1.csv", "a"))    #\tConfusion_matrix[low_impact, high_impact]
 for i in classifiers:
-   list1 = ray.get(classifier.remote(i, X_train, X_test, Y_train, Y_test,feature_names))
-   print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\n{list1[8]}', file=open("ML_results.csv", "a"))
+   list1 = ray.get(classifier.remote(i, X_train, X_test, Y_train, Y_test,background,feature_names))
+   print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\n{list1[8]}', file=open("ML_results1.csv", "a"))
 
 
 print('done!')

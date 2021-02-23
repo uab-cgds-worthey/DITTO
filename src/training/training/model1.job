@@ -1,8 +1,7 @@
 #!/bin/bash
 #
 #SBATCH --job-name=Ditto
-#SBATCH --output=DNN.out
-#SBATCH --error=DNN.err
+#SBATCH --output=DNN1.out
 #
 ### Modify this according to your Ray workload.
 #SBATCH --nodes=2
