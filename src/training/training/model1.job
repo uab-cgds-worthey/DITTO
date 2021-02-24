@@ -4,11 +4,11 @@
 #SBATCH --output=DNN1.out
 #
 ### Modify this according to your Ray workload.
-#SBATCH --nodes=2
+#SBATCH --nodes=3
 #SBATCH --exclusive
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
-#SBATCH --tasks-per-node=1
+#SBATCH --tasks-per-node=3
 #SBATCH --partition=pascalnodes
 #
 # Time format = HH:MM:SS, DD-HH:MM:SS
@@ -20,7 +20,7 @@
 ### Similarly, you can also specify the number of GPUs per node.
 ### Modify this according to your Ray workload. Sometimes this
 ### should be 'gres' instead.
-#SBATCH --gpus-per-task=5
+#SBATCH --gpus-per-task=1
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL

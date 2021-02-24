@@ -452,3 +452,9 @@ Extract Class information for all these variants -
     `python extract_class.py`
 Filter, stats and prep the data - 
     `python filter.py`
+
+################### 2/22/21 ######################################################################
+Working with cross validation and SHAP feature importances. No matter how I filter the data, accuracy remains 99%.
+
+
+Go ontology, PPI, regulatory network, enzyme activity, binding pockets

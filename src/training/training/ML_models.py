@@ -17,25 +17,28 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, BaggingClassifier, ExtraTreesClassifier
 from imblearn.ensemble import BalancedRandomForestClassifier, EasyEnsembleClassifier
 import matplotlib.pyplot as plt
-
+import yaml
 import os
 os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
 
 # Start Ray.
 ray.init(ignore_reinit_error=True)
 
+output = "/models/ML_results_snp.csv"
 
+with open("../../configs/columns_config.yaml") as fh:
+        config_dict = yaml.safe_load(fh)
 
 #Load data
-print('\nUsing merged_data-null.csv..', file=open("ML_results1.csv", "a"))
-X = pd.read_csv('merged_data-null.csv')
-var = X[['SYMBOL','Feature','Consequence','ID']]
-X = X.drop(['SYMBOL','Feature','Consequence', 'ID'], axis=1)
+print('\nUsing merged_data-snp.csv..', file=open(output, "a"))
+X = pd.read_csv('merged_data-snp.csv')
+var = df[config_dict['snps']]
+X = X.drop(config_dict['snps'], axis=1)
 feature_names = X.columns.tolist()
 X = X.values
 # X[1]
 # var
-y = pd.read_csv('merged_data-y-null.csv')
+y = pd.read_csv('merged_data-y-snp.csv')
 #Y = pd.get_dummies(y)
 Y = label_binarize(y.values, classes=['low_impact', 'high_impact']) #'Benign', 'Likely_benign', 'Uncertain_significance', 'Likely_pathogenic', 'Pathogenic'
 
@@ -47,9 +50,9 @@ Y = label_binarize(y.values, classes=['low_impact', 'high_impact']) #'Benign', '
 #pd.DataFrame(x_scaled, columns= columns).to_csv('scaled_data.csv', index=False)
 
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=.30, random_state=42)
-scaler = StandardScaler().fit(X_train)
-X_train = scaler.transform(X_train)
-X_test = scaler.transform(X_test)
+#scaler = StandardScaler().fit(X_train)
+#X_train = scaler.transform(X_train)
+#X_test = scaler.transform(X_test)
 
 # explain all the predictions in the test set
 background = shap.kmeans(X_train, 6)
@@ -97,17 +100,17 @@ def classifier(clf, X_train, X_test, Y_train, Y_test,background,feature_names):
    plt.figure()
    shap.summary_plot(shap_values, background, feature_names, show=False)
    #shap.plots.waterfall(shap_values[0], max_display=15)
-   plt.savefig("./models/"+clf_name + "_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+   plt.savefig("./models/"+clf_name + "_snp_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
 
    #list1 = [clf_name ,prc, roc_auc, accuracy, score, matrix, finish]
    list1 = [clf_name, np.mean(score['train_score']), np.mean(score['test_score']), prc, recall, roc_auc, accuracy, finish, matrix]
-   pickle.dump(clf, open("./models/"+clf_name+"_null.pkl", 'wb'))
+   pickle.dump(clf, open("./models/"+clf_name+"_snp.pkl", 'wb'))
    return list1
 
-print('Model\tTrain_score(train_data)\tTest_score(train_data)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open("ML_results1.csv", "a"))    #\tConfusion_matrix[low_impact, high_impact]
+print('Model\tTrain_score(train_data)\tTest_score(train_data)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
 for i in classifiers:
    list1 = ray.get(classifier.remote(i, X_train, X_test, Y_train, Y_test,background,feature_names))
-   print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\n{list1[8]}', file=open("ML_results1.csv", "a"))
+   print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\n{list1[8]}', file=open(output, "a"))
 
 
 print('done!')

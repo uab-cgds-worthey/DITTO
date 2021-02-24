@@ -1,5 +1,7 @@
 # columns to be needed in dataset
 columns:
+  -  Reference Allele
+  -  Alternate Allele
   -  Consequence
   -  IMPACT
   -  SYMBOL
@@ -79,16 +81,19 @@ ClinicalSignificance:
   -  FP
   -  DM?
   -  DM
-  -  Benign
+  #-  Benign
   -  Benign/Likely_benign
-  -  Pathogenic/Likely_pathogenic
+  #-  Pathogenic/Likely_pathogenic
   -  Pathogenic
   -  Likely_pathogenic
-  #-  Likely_benign
+  -  Likely_benign
 
 CLNREVSTAT:
-  -  criteria_provided,_multiple_submitters,_no_conflicts
-  -  criteria_provided,_single_submitter 
+  -  criteria_provided
+  -  _multiple_submitters
+  -  _no_conflicts
+  -  criteria_provided
+  -  _single_submitter 
 
 col_conv:
   -  FATHMM_score
@@ -97,3 +102,15 @@ col_conv:
   -  VEST4_score
   -  GERP
   -  MutationTaster_score
+
+snps:
+  -  SYMBOL
+  -  Feature
+  -  Consequence
+  -  clinvar_CLNREVSTAT
+  -  clinvar_CLNSIG
+  -  clinvar_AF_TGP
+  -  clinvar_AF_EXAC
+  -  clinvar_AF_ESP
+  -  Alternate Allele
+  -  Reference Allele
