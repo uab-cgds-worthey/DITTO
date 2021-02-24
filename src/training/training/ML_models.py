@@ -30,7 +30,7 @@ def data_parsing(var,config_dict,output):
     labels = 'merged_data-y-'+var+'.csv'
     #print(f'{data}\t{labels}')
     #Load data
-    print('\nUsing' +data+' ..', file=open(output, "a"))
+    print('\nUsing ' +data+' ..', file=open(output, "a"))
     X = pd.read_csv(data)
     var = X[config_dict['ML_VAR']]
     X = X.drop(config_dict['ML_VAR'], axis=1)
@@ -51,7 +51,7 @@ def data_parsing(var,config_dict,output):
 
 
 @ray.remote
-def classifier(clf, X_train, X_test, Y_train, Y_test,background,feature_names):
+def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_names):
    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
    start = time.perf_counter()
    score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
@@ -79,11 +79,11 @@ def classifier(clf, X_train, X_test, Y_train, Y_test,background,feature_names):
    plt.figure()
    shap.summary_plot(shap_values, background, feature_names, show=False)
    #shap.plots.waterfall(shap_values[0], max_display=15)
-   plt.savefig("./models/"+clf_name + "_cons_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+   plt.savefig("./models/"+clf_name +"_"+ var+"_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
 
    #list1 = [clf_name ,prc, roc_auc, accuracy, score, matrix, finish]
    list1 = [clf_name, np.mean(score['train_score']), np.mean(score['test_score']), prc, recall, roc_auc, accuracy, finish, matrix]
-   pickle.dump(clf, open("./models/"+clf_name+"_cons.pkl", 'wb'))
+   pickle.dump(clf, open("./models/"+clf_name+"_"+var+".pkl", 'wb'))
    return list1
 
 if __name__ == "__main__":
@@ -101,19 +101,20 @@ if __name__ == "__main__":
             BalancedRandomForestClassifier(),
             EasyEnsembleClassifier() # doctest: +SKIP
         ]
-    output = "models/ML_results.csv"
-    print('Training datasets....', file=open(output, "a"))
+    
+    
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
     variants = ['snv','non-snv','snv-protein-coding']
     for var in variants:
+        output = "models/ML_results_"+var+"_.csv"
         print('Working with '+var+' dataset...', file=open(output, "a"))
         print('Working with '+var+' dataset...')
         X_train, X_test, Y_train, Y_test, background, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
         print('Model\tTrain_score(train_data)\tTest_score(train_data)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
         for i in classifiers:
-           list1 = ray.get(classifier.remote(i, X_train, X_test, Y_train, Y_test,background,feature_names))
+           list1 = ray.get(classifier.remote(i,var, X_train, X_test, Y_train, Y_test,background,feature_names))
            print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\n{list1[8]}', file=open(output, "a"))
            print('done!')
 

@@ -35,7 +35,10 @@ def extract_col(config_dict,df, stats):
     else:
         df= df.loc[df['hgmd_class'].isin(config_dict['Clin_snv'])]
         df=df[(df['Alternate Allele'].str.len() < 2) & (df['Reference Allele'].str.len() < 2)]
-        #df = df[df['BIOTYPE']=='protein_coding']
+        if 'protein' in stats:
+            df = df[df['BIOTYPE']=='protein_coding']
+        else:
+            pass
         print('\nData shape (snv) =', df.shape, file=open(stats, "a"))
     print('Dropping empty columns and rows...')
     #df.dropna(axis=1, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[0]/4)
@@ -114,16 +117,16 @@ if __name__ == "__main__":
     print('Data Loaded !....')
     config_f = "./configs/columns_config.yaml"
 
-    #For non-snv variants
-    #stats = "./data/processed/stats-non-snv.csv"
-    #print("Filtering non-snv variants with at-least 50 percent data for each variant...", file=open(stats, "a"))
-    #print("Filtering non-snv variants with at-least 50 percent data for each variant...")
-    #column_info = './data/processed/non_snv_columns.csv'
-    #null_info = './data/processed/NA-counts-non-snv.csv'
-    #df,y = main(var_f, config_f, stats, column_info, null_info)
-    #df.to_csv('./data/processed/merged_data-non-snv.csv', index=False)
-    #y.to_csv('./data/processed/merged_data-y-non-snv.csv', index=False)
-    #del df,y
+    For non-snv variants
+    stats = "./data/processed/stats-non-snv.csv"
+    print("Filtering non-snv variants with at-least 50 percent data for each variant...", file=open(stats, "a"))
+    print("Filtering non-snv variants with at-least 50 percent data for each variant...")
+    column_info = './data/processed/non_snv_columns.csv'
+    null_info = './data/processed/NA-counts-non-snv.csv'
+    df,y = main(var_f, config_f, stats, column_info, null_info)
+    df.to_csv('./data/processed/merged_data-non-snv.csv', index=False)
+    y.to_csv('./data/processed/merged_data-y-non-snv.csv', index=False)
+    del df,y
 
     #For snv variants
     stats = "./data/processed/stats-snv.csv"
@@ -134,3 +137,14 @@ if __name__ == "__main__":
     df,y = main(var_f, config_f, stats, column_info, null_info)
     df.to_csv('./data/processed/merged_data-snv.csv', index=False)
     y.to_csv('./data/processed/merged_data-y-snv.csv', index=False)
+    del df,y
+
+    #For protein coding snv variants
+    stats = "./data/processed/stats-snv-protein-coding.csv"
+    print("Filtering protein coding snv variants with at-least 50 percent data for each variant...", file=open(stats, "a"))
+    print("Filtering protein coding snv variants with at-least 50 percent data for each variant...")
+    column_info = './data/processed/protein_coding_snv_columns.csv'
+    null_info = './data/processed/NA-counts-snv-protein-coding.csv'
+    df,y = main(var_f, config_f, stats, column_info, null_info)
+    df.to_csv('./data/processed/merged_data-snv-protein-coding.csv', index=False)
+    y.to_csv('./data/processed/merged_data-y-snv-protein-coding.csv', index=False)
