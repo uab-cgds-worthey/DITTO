@@ -68,9 +68,6 @@ columns:
   -  gnomADv3_AF_sas
   -  gnomADv3_AF_sas_female
   -  gnomADv3_AF_sas_male
-  -  clinvar_AF_ESP
-  -  clinvar_AF_EXAC
-  -  clinvar_AF_TGP
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
   -  hgmd_class
@@ -81,12 +78,39 @@ ClinicalSignificance:
   -  FP
   -  DM?
   -  DM
-  #-  Benign
+  -  Benign
+  -  Benign/Likely_benign
+  -  Pathogenic/Likely_pathogenic
+  -  Pathogenic
+  -  Likely_pathogenic
+  -  Likely_benign
+
+Clin_snv:
+  -  DP
+  -  DFP
+  -  FP
+  -  DM?
+  -  DM
+  -  Benign
   -  Benign/Likely_benign
   #-  Pathogenic/Likely_pathogenic
   -  Pathogenic
   -  Likely_pathogenic
-  -  Likely_benign
+  #-  Likely_benign
+
+Clin_non_snv:
+  -  DP
+  -  DFP
+  -  FP
+  -  DM?
+  -  DM
+  -  Benign
+  -  Benign/Likely_benign
+  #-  Pathogenic/Likely_pathogenic
+  -  Pathogenic
+  -  Likely_pathogenic
+  #-  Likely_benign
+
 
 CLNREVSTAT:
   -  criteria_provided
@@ -103,14 +127,27 @@ col_conv:
   -  GERP
   -  MutationTaster_score
 
-snps:
+ML_VAR:
   -  SYMBOL
   -  Feature
   -  Consequence
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
-  -  clinvar_AF_TGP
-  -  clinvar_AF_EXAC
-  -  clinvar_AF_ESP
   -  Alternate Allele
   -  Reference Allele
+  -  ID
+
+var:
+  -  SYMBOL
+  -  Feature
+  -  Consequence
+  -  clinvar_CLNREVSTAT
+  -  clinvar_CLNSIG
+  -  Alternate Allele
+  -  Reference Allele
+
+Consequence:
+  -  missense_variant
+  #-  synonymous_variant
+  #-  intron_variant
+  #-  stop_gained
