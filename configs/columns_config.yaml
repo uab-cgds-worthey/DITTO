@@ -85,7 +85,7 @@ ClinicalSignificance:
   -  Likely_pathogenic
   -  Likely_benign
 
-Clin_snv:
+Clinsig_train:
   -  DP
   -  DFP
   -  FP
@@ -93,23 +93,12 @@ Clin_snv:
   -  DM
   -  Benign
   -  Benign/Likely_benign
-  #-  Pathogenic/Likely_pathogenic
   -  Pathogenic
   -  Likely_pathogenic
-  #-  Likely_benign
 
-Clin_non_snv:
-  -  DP
-  -  DFP
-  -  FP
-  -  DM?
-  -  DM
-  -  Benign
-  -  Benign/Likely_benign
-  #-  Pathogenic/Likely_pathogenic
-  -  Pathogenic
-  -  Likely_pathogenic
-  #-  Likely_benign
+Clinsig_test:
+  -  Pathogenic/Likely_pathogenic
+  -  Likely_benign
 
 
 CLNREVSTAT:

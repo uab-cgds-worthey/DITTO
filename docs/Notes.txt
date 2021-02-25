@@ -458,3 +458,16 @@ Working with cross validation and SHAP feature importances. No matter how I filt
 
 
 Go ontology, PPI, regulatory network, enzyme activity, binding pockets
+
+
+################### 2/24/21 ######################################################################
+Switching from pandas and scikit-learn to RAPIDS - 
+conda create -n rapids-0.17 -c rapidsai -c nvidia -c conda-forge \
+    -c defaults rapids-blazing=0.17 python=3.7 cudatoolkit=10.1
+conda activate rapids-0.17
+
+RAPIDS didn't actually work. So exiting from it.
+However, there is a good documentation on it - https://towardsdatascience.com/how-to-use-gpus-for-machine-learning-with-the-new-nvidia-data-science-workstation-64ef37460fa0
+
+One more thing to checkout, "pycaret" - https://github.com/pycaret/pycaret
+

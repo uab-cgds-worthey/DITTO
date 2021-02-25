@@ -1,6 +1,9 @@
+
+#https://towardsdatascience.com/how-to-use-gpus-for-machine-learning-with-the-new-nvidia-data-science-workstation-64ef37460fa0
+
 #from numpy import mean
 import numpy as np
-import pandas as pd
+import cudf as pd
 import time
 import ray
 # Start Ray.
@@ -10,7 +13,8 @@ import shap
 #from sklearn.preprocessing import StandardScaler
 #from sklearn.feature_selection import RFE
 #from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split, cross_validate
+import cuml
+from cuml.preprocessing.model_selection import train_test_split, cross_validate
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 #from sklearn.multiclass import OneVsRestClassifier
@@ -50,7 +54,7 @@ def data_parsing(var,config_dict,output):
     return X_train, X_test, Y_train, Y_test, background, feature_names
 
 
-@ray.remote(num_cpus=3, num_gpus=3)
+@ray.remote(num_gpus=3)
 def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_names):
    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
    start = time.perf_counter()
