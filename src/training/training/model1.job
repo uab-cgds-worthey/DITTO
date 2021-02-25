@@ -4,19 +4,19 @@
 #SBATCH --output=DNN1.out
 #
 ### Modify this according to your Ray workload.
-#SBATCH --nodes=3
+#SBATCH --nodes=2
 #SBATCH --exclusive
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
-#SBATCH --tasks-per-node=10
+#SBATCH --tasks-per-node=7
 #SBATCH --partition=pascalnodes-medium
 #
 # Time format = HH:MM:SS, DD-HH:MM:SS
 #SBATCH --time=47:59:58
 #
 ### Modify this according to your Ray workload.
-##SBATCH --cpus-per-task=1
-#SBATCH --mem=35GB
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=50GB
 ### Similarly, you can also specify the number of GPUs per node.
 ### Modify this according to your Ray workload. Sometimes this
 ### should be 'gres' instead.
