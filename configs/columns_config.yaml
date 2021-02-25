@@ -140,3 +140,77 @@ Consequence:
   #-  synonymous_variant
   #-  intron_variant
   #-  stop_gained
+
+snv_columns: 
+  SIFT: 0.5
+  PolyPhen: 0.5
+  CADD_PHRED: 20
+  DANN_score: 0.5
+  Eigen-PC-phred_coding: 20
+  Eigen-PC-raw_coding: 0   #functional annotations. input range - -3.252 to 8.426.
+  Eigen-PC-raw_coding_rankscore: 0
+  Eigen-phred_coding: 20
+  Eigen-raw_coding: 0
+  Eigen-raw_coding_rankscore: 0
+  GERP++_RS: 0
+  GenoCanyon_score: 0.5
+  LRT_score: 0.5  #The score ranges from 0 to 1 and a larger score signifies that the codon is more constrained or a NS is more likely to be deleterious.
+  M-CAP_score: 0.5   # range - 0 to 1
+  MetaLR_score: 0.5  # range - 0 to 1
+  MetaSVM_score: 0.5   # range - -2 to 3
+  SiPhy_29way_logOdds: 15 # input range - 0 to 33.272. SiPhy score based on 29 mammals genomes. The larger the score, the more conserved the site.
+  fathmm-MKL_coding_score: 0.5  # range - 0 to 1. This is for non-coding variants - functional prediction tool
+  integrated_fitCons_score: 0.5 # range - 0 to 1
+  phastCons100way_vertebrate: 0.5
+  phastCons30way_mammalian: 0.5
+  phyloP100way_vertebrate: 20
+  phyloP30way_mammalian: 20
+  gnomADv3_AF: 0
+  gnomADv3_AF_afr: 0
+  gnomADv3_AF_afr_female: 0
+  gnomADv3_AF_afr_male: 0
+  gnomADv3_AF_ami: 0
+  gnomADv3_AF_ami_female: 0
+  gnomADv3_AF_ami_male: 0
+  gnomADv3_AF_amr: 0
+  gnomADv3_AF_amr_female: 0
+  gnomADv3_AF_amr_male: 0
+  gnomADv3_AF_asj: 0
+  gnomADv3_AF_asj_female: 0
+  gnomADv3_AF_asj_male: 0
+  gnomADv3_AF_eas: 0
+  gnomADv3_AF_eas_female: 0
+  gnomADv3_AF_eas_male: 0
+  gnomADv3_AF_female: 0
+  gnomADv3_AF_fin: 0
+  gnomADv3_AF_fin_female: 0
+  gnomADv3_AF_fin_male: 0
+  gnomADv3_AF_male: 0
+  gnomADv3_AF_nfe: 0
+  gnomADv3_AF_nfe_female: 0
+  gnomADv3_AF_nfe_male: 0
+  gnomADv3_AF_oth: 0
+  gnomADv3_AF_oth_female: 0
+  gnomADv3_AF_oth_male: 0
+  gnomADv3_AF_raw: 0
+  gnomADv3_AF_sas: 0
+  gnomADv3_AF_sas_female: 0
+  gnomADv3_AF_sas_male: 0
+  IMPACT_HIGH: 0
+  IMPACT_LOW: 0
+  IMPACT_MODERATE: 0
+  IMPACT_MODIFIER: 0
+  BIOTYPE_RNase_MRP_RNA: 0
+  BIOTYPE_RNase_P_RNA: 0
+  BIOTYPE_antisense_RNA: 0
+  BIOTYPE_guide_RNA: 0
+  BIOTYPE_lncRNA: 0
+  BIOTYPE_miRNA: 0
+  BIOTYPE_misc_RNA: 0
+  BIOTYPE_ncRNA_pseudogene: 0
+  BIOTYPE_protein_coding: 0
+  BIOTYPE_scRNA: 0
+  BIOTYPE_snRNA: 0
+  BIOTYPE_snoRNA: 0
+  BIOTYPE_telomerase_RNA: 0
+  BIOTYPE_transcribed_pseudogene: 0
