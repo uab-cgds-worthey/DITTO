@@ -471,3 +471,28 @@ However, there is a good documentation on it - https://towardsdatascience.com/ho
 
 One more thing to checkout, "pycaret" - https://github.com/pycaret/pycaret
 
+Voting classifier is working!!!!
+`
+Model: Ditto_snv
+Train_mean_score(train_data)[min, max]: 0.9895633354353022[0.9891826455224171, 0.9897574431754781]
+Test_mean_score(train_data)[min, max]: 0.9553676109956326[0.9553676109956326, 0.9553676109956326]
+Precision(test_data): 0.9940970722021246
+Recall: 0.8649082940969867
+roc_auc: 0.9292058306929102
+Accuracy: 0.8649082940969867
+Confusion_matrix[low_impact, high_impact]:
+[[1254381  197263]
+ [     51    8898]]
+`
+`
+Model: Ditto_non_snv
+Train_mean_score(train_data)[min, max]: 0.9935592590759252[0.9930853864700828, 0.9939860042957113]
+Test_mean_score(train_data)[min, max]: 0.9376182240663085[0.9376182240663085, 0.9376182240663085]
+Precision(test_data): 0.8891183584829964
+Recall: 0.5681611375869461
+roc_auc: 0.7449727925202043
+Accuracy: 0.5681611375869461
+Confusion_matrix[low_impact, high_impact]:
+[[27399 27952]
+ [   48  9440]]
+ `

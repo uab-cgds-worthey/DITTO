@@ -1,14 +1,14 @@
 #!/bin/bash
 #
 #SBATCH --job-name=Ditto-v0
-#SBATCH --output=Ditto_non_snv.out
+#SBATCH --output=Ditto_snv.out
 #
 ### Modify this according to your Ray workload.
 #SBATCH --nodes=3
 #SBATCH --exclusive
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
-#SBATCH --ntasks=3
+#SBATCH --ntasks=5
 #SBATCH --partition=express
 #
 # Time format = HH:MM:SS, DD-HH:MM:SS
@@ -18,7 +18,7 @@
 #SBATCH --cpus-per-task=10
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes. 
-#SBATCH --mem-per-cpu=4G
+#SBATCH --mem-per-cpu=7G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
@@ -30,5 +30,5 @@ module load Anaconda3/2020.02
 source activate training
 
 #Run your commands here
-#python Ditto.py
-python Ditto_non_snv.py
+python Ditto_snv.py
+#python Ditto_non_snv.py

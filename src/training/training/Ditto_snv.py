@@ -43,6 +43,7 @@ y = X_train.hgmd_class.str.replace(r'DFP','high_impact').str.replace(r'DM\?','hi
 y = y.str.replace(r'Pathogenic/Likely_pathogenic','high_impact').str.replace(r'Likely_pathogenic','high_impact').str.replace(r'Pathogenic','high_impact')
 y = y.str.replace(r'DP','low_impact').str.replace(r'FP','low_impact')
 y = y.str.replace(r'Benign/Likely_benign','low_impact').str.replace(r'Likely_benign','low_impact').str.replace(r'Benign','low_impact')
+print('\nTrain_class:\n', y.value_counts())
 Y_train = label_binarize(y.values, classes=['low_impact', 'high_impact'])
 X_train = X_train.drop('hgmd_class', axis=1)
 X_train = pd.get_dummies(X_train, prefix_sep='_')
@@ -66,6 +67,7 @@ y = X_test.hgmd_class.str.replace(r'DFP','high_impact').str.replace(r'DM\?','hig
 y = y.str.replace(r'Pathogenic/Likely_pathogenic','high_impact').str.replace(r'Likely_pathogenic','high_impact').str.replace(r'Pathogenic','high_impact')
 y = y.str.replace(r'DP','low_impact').str.replace(r'FP','low_impact')
 y = y.str.replace(r'Benign/Likely_benign','low_impact').str.replace(r'Likely_benign','low_impact').str.replace(r'Benign','low_impact')
+print('\nTest_class:\n', y.value_counts())
 Y_test = label_binarize(y.values, classes=['low_impact', 'high_impact'])
 X_test = X_test.drop('hgmd_class', axis=1)
 X_test = pd.get_dummies(X_test, prefix_sep='_')
@@ -115,7 +117,7 @@ print(f'Precision(test_data): {prc}\nRecall: {recall}\nroc_auc: {roc_auc}\nAccur
 
 print(f'Calculating SHAP values...')
 # explain all the predictions in the test set
-background = shap.kmeans(X_train, 6)
+background = shap.kmeans(X_train, 10)
 explainer = shap.KernelExplainer(model.predict, background)
 background = X_test[np.random.choice(X_test.shape[0], 1000, replace=False)]
 shap_values = explainer.shap_values(background)
