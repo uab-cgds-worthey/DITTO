@@ -27,15 +27,10 @@ with open("../../configs/columns_config.yaml") as fh:
 df = pd.read_csv('merged_sig_norm_class_vep-annotated.tsv', sep='\t')
 print('Data Loaded!')
 df = df[config_dict['columns']]
-df=df[(df['Alternate Allele'].str.len() < 2) & (df['Reference Allele'].str.len() < 2)]
-print(f'Total SNVs: {df.shape[0]}')
-#var = df[config_dict['var']]
+df=df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
+print(f'Total non SNVs: {df.shape[0]}')
 df = df.drop(config_dict['var'], axis=1)
-#df.dropna(axis=0, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
-#df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
 
-#training data
-#train = df.loc[df['hgmd_class'].isin(config_dict['Clinsig_test'])]
 X_train= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
 X_train.dropna(axis=0, thresh=(X_train.shape[1]*0.3), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
 print('\nhgmd_class:\n', X_train['hgmd_class'].value_counts())
@@ -47,20 +42,22 @@ Y_train = label_binarize(y.values, classes=['low_impact', 'high_impact'])
 X_train = X_train.drop('hgmd_class', axis=1)
 X_train = pd.get_dummies(X_train, prefix_sep='_')
 df1=pd.DataFrame()
-for key in tqdm(config_dict['snv_columns']):
+for key in tqdm(config_dict['non_snv_columns']):
     if key in X_train.columns:
-        df1[key] = X_train[key].fillna(config_dict['snv_columns'][key]).astype('float64')
+        df1[key] = X_train[key].fillna(config_dict['non_snv_columns'][key]).astype('float64')
     else:
-        df1[key] = config_dict['snv_columns'][key]
+        df1[key] = config_dict['non_snv_columns'][key]
 
 X_train = df1
 del df1
 feature_names = X_train.columns.tolist()
-print(f'SNVs to train: {X_train.shape[0]}')
+print(f'non SNVs to train: {X_train.shape[0]}')
 X_train = X_train.values
 
 #training data
 X_test = df.loc[df['hgmd_class'].isin(config_dict['Clinsig_test'])]
+#X_train= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
+#df = df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
 print('\nhgmd_class:\n', X_test['hgmd_class'].value_counts())
 y = X_test.hgmd_class.str.replace(r'DFP','high_impact').str.replace(r'DM\?','high_impact').str.replace(r'DM','high_impact')
 y = y.str.replace(r'Pathogenic/Likely_pathogenic','high_impact').str.replace(r'Likely_pathogenic','high_impact').str.replace(r'Pathogenic','high_impact')
@@ -70,16 +67,16 @@ Y_test = label_binarize(y.values, classes=['low_impact', 'high_impact'])
 X_test = X_test.drop('hgmd_class', axis=1)
 X_test = pd.get_dummies(X_test, prefix_sep='_')
 df1=pd.DataFrame()
-for key in tqdm(config_dict['snv_columns']):
+for key in tqdm(config_dict['non_snv_columns']):
     if key in X_test.columns:
-        df1[key] = X_test[key].fillna(config_dict['snv_columns'][key]).astype('float64')
+        df1[key] = X_test[key].fillna(config_dict['non_snv_columns'][key]).astype('float64')
     else:
-        df1[key] = config_dict['snv_columns'][key]
+        df1[key] = config_dict['non_snv_columns'][key]
 
 X_test = df1
 del df1,df
 #feature_names = X_train.columns.tolist()
-print(f'SNVs to test: {X_test.shape[0]}')
+print(f'non SNVs to test: {X_test.shape[0]}')
 X_test = X_test.values
 
 model = VotingClassifier(estimators=[
@@ -110,7 +107,7 @@ roc_auc = roc_auc_score(Y_test, y_score)
 accuracy = accuracy_score(Y_test, y_score)
 matrix = confusion_matrix(Y_test, y_score,)
 #print(f'Model: Ditto\nTrain_score(train_data): {score}')
-print(f'Model: Ditto\nTrain_mean_score(train_data)[min, max]: {train_score}[{train_min}, {train_max}]\nTest_mean_score(train_data)[min, max]: {test_score}[{test_min}, {test_max}]')
+print(f'Model: Ditto_non_snv\nTrain_mean_score(train_data)[min, max]: {train_score}[{train_min}, {train_max}]\nTest_mean_score(train_data)[min, max]: {test_score}[{test_min}, {test_max}]')
 print(f'Precision(test_data): {prc}\nRecall: {recall}\nroc_auc: {roc_auc}\nAccuracy: {accuracy}\nConfusion_matrix[low_impact, high_impact]:\n{matrix}')
 
 print(f'Calculating SHAP values...')
@@ -122,5 +119,5 @@ shap_values = explainer.shap_values(background)
 plt.figure()
 shap.summary_plot(shap_values, background, feature_names, show=False)
 #shap.plots.waterfall(shap_values[0], max_display=15)
-plt.savefig("./models/Ditto_snv_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
-pickle.dump(model, open("./models/Ditto_snv.pkl", 'wb'))
+plt.savefig("./models/Ditto_non_snv_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+pickle.dump(model, open("./models/Ditto_non_snv.pkl", 'wb'))
