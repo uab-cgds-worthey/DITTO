@@ -89,24 +89,21 @@ Clinsig_train:
   -  DP
   -  DFP
   -  FP
-  -  DM?
   -  DM
   -  Benign
-  -  Benign/Likely_benign
   -  Pathogenic
   -  Likely_pathogenic
 
 Clinsig_test:
   -  Pathogenic/Likely_pathogenic
+  -  DM?
   -  Likely_benign
+  -  Benign/Likely_benign
 
 
 CLNREVSTAT:
-  -  criteria_provided
-  -  _multiple_submitters
-  -  _no_conflicts
-  -  criteria_provided
-  -  _single_submitter 
+  -  criteria_provided,_multiple_submitters,_no_conflicts
+  -  criteria_provided,_single_submitter 
 
 col_conv:
   -  FATHMM_score

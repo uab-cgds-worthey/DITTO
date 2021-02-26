@@ -34,10 +34,6 @@ def extract_col(config_dict,df, stats):
         #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
         df=df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
         print('\nData shape (non-snv) =', df.shape, file=open(stats, "a"))
-        #print('Dropping empty columns and rows...')
-        #df.dropna(axis=1, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[0]/4)
-        #df.dropna(axis=0, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
-        #df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
     else:
         #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
         df=df[(df['Alternate Allele'].str.len() < 2) & (df['Reference Allele'].str.len() < 2)]

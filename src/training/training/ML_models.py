@@ -30,21 +30,21 @@ os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/
 def data_parsing(var,config_dict,output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     #Load data
-    print('\nUsing ' +data+' ..', file=open(output, "a"))
-    X_train = pd.read_csv('train_'+var+'/merged_data-train_'+var+'.csv')
+    print('\nUsing merged_data-train_' +var+' ..', file=open(output, "a"))
+    X_train = pd.read_csv('train_snv/merged_data-train_snv.csv')
     var = X_train[config_dict['ML_VAR']]
     X_train = X_train.drop(config_dict['ML_VAR'], axis=1)
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
-    Y_train = pd.read_csv('train_'+var+'/merged_data-y-train_'+var+'.csv')
+    Y_train = pd.read_csv('train_snv/merged_data-y-train_snv.csv')
     Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']) 
 
-    X_test = pd.read_csv('test_'+var+'/merged_data-test_'+var+'.csv')
+    X_test = pd.read_csv('test_snv/merged_data-test_snv.csv')
     var = X_test[config_dict['ML_VAR']]
     X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
     #feature_names = X_test.columns.tolist()
     X_test = X_test.values
-    Y_test = pd.read_csv('test_'+var+'/merged_data-y-test_'+var+'.csv')
+    Y_test = pd.read_csv('test_snv/merged_data-y-test_snv.csv')
     print('Data Loaded!')
     #Y = pd.get_dummies(y)
     Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']) 

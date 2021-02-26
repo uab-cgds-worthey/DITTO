@@ -20,7 +20,7 @@ with open(output, "w") as out:
             if not line.startswith("#"):
                         line = line.rstrip("\n")
                         cols = line.split("\t")
-                        if (len(cols[3]) < 1000) and (len(cols[4]) < 1000) and (regex.search(cols[3]) == None) and (regex.search(cols[4]) == None):
+                        if (len(cols[3]) < 30000) and (len(cols[4]) < 30000) and (regex.search(cols[3]) == None) and (regex.search(cols[4]) == None):
                             var_info = cols[0]+"\t"+cols[1]+"\t"+cols[2]+"\t"+cols[3]+"\t"+cols[4]
                             if 'CLASS' in cols[7]:
                                 var_class = cols[7].split(";")[0].split("=")[1]

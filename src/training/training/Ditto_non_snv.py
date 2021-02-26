@@ -46,6 +46,10 @@ Y_test = pd.read_csv('test_non_snv/merged_data-y-test_non_snv.csv')
 Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact'])
 print('Data Loaded!')
 
+#scaler = StandardScaler().fit(X_train)
+#X_train = scaler.transform(X_train)
+#X_test = scaler.transform(X_test)
+
 model = VotingClassifier(estimators=[
         ('DecisionTreeClassifier',DecisionTreeClassifier(class_weight='balanced')),
         ('SGDClassifier',SGDClassifier(class_weight='balanced', n_jobs=-1)),
