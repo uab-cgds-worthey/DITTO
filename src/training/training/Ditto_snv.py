@@ -49,9 +49,9 @@ print('Data Loaded!')
 model = VotingClassifier(estimators=[
         ('DecisionTreeClassifier',DecisionTreeClassifier(class_weight='balanced')),
         ('SGDClassifier',SGDClassifier(class_weight='balanced', n_jobs=-1)),
-        ('RandomForestClassifier',RandomForestClassifier(class_weight='balanced')),
+        ('RandomForestClassifier',RandomForestClassifier(class_weight='balanced', n_jobs=-1)),
         ('AdaBoostClassifier',AdaBoostClassifier()),
-	    ('ExtraTreesClassifier',ExtraTreesClassifier(class_weight='balanced')),
+	    ('ExtraTreesClassifier',ExtraTreesClassifier(class_weight='balanced', n_jobs=-1)),
         ('BalancedRandomForestClassifier',BalancedRandomForestClassifier()),
         ('GaussianNB',GaussianNB()),
         ('LinearDiscriminantAnalysis',LinearDiscriminantAnalysis()),

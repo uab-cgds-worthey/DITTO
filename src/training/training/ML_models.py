@@ -97,9 +97,9 @@ if __name__ == "__main__":
     classifiers = [
         	DecisionTreeClassifier(class_weight='balanced'),
             SGDClassifier(class_weight='balanced', n_jobs=-1),
-            RandomForestClassifier(class_weight='balanced'),
+            RandomForestClassifier(class_weight='balanced', n_jobs=-1),
             AdaBoostClassifier(),
-            ExtraTreesClassifier(class_weight='balanced'),
+            ExtraTreesClassifier(class_weight='balanced', n_jobs=-1),
             BalancedRandomForestClassifier(),
             GaussianNB(),
             LinearDiscriminantAnalysis(),
