@@ -8,15 +8,18 @@ from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, ExtraTreesClassifier
-from imblearn.ensemble import BalancedRandomForestClassifier, EasyEnsembleClassifier
+from sklearn.naive_bayes import GaussianNB
+from imblearn.ensemble import BalancedRandomForestClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import matplotlib.pyplot as plt
 import yaml
 import os
 from sklearn.ensemble import VotingClassifier
+import warnings
+warnings.simplefilter("ignore")
 os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
 
 print("Loading data....")
@@ -24,72 +27,35 @@ print("Loading data....")
 with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-df = pd.read_csv('merged_sig_norm_class_vep-annotated.tsv', sep='\t')
-print('Data Loaded!')
-df = df[config_dict['columns']]
-df=df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
-print(f'Total non SNVs: {df.shape[0]}')
-df = df.drop(config_dict['var'], axis=1)
-
-X_train= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
-X_train.dropna(axis=0, thresh=(X_train.shape[1]*0.3), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
-print('\nhgmd_class:\n', X_train['hgmd_class'].value_counts())
-y = X_train.hgmd_class.str.replace(r'DFP','high_impact').str.replace(r'DM\?','high_impact').str.replace(r'DM','high_impact')
-y = y.str.replace(r'Pathogenic/Likely_pathogenic','high_impact').str.replace(r'Likely_pathogenic','high_impact').str.replace(r'Pathogenic','high_impact')
-y = y.str.replace(r'DP','low_impact').str.replace(r'FP','low_impact')
-y = y.str.replace(r'Benign/Likely_benign','low_impact').str.replace(r'Likely_benign','low_impact').str.replace(r'Benign','low_impact')
-print('\nTrain_class:\n', y.value_counts())
-Y_train = label_binarize(y.values, classes=['low_impact', 'high_impact'])
-X_train = X_train.drop('hgmd_class', axis=1)
-X_train = pd.get_dummies(X_train, prefix_sep='_')
-df1=pd.DataFrame()
-for key in tqdm(config_dict['non_snv_columns']):
-    if key in X_train.columns:
-        df1[key] = X_train[key].fillna(config_dict['non_snv_columns'][key]).astype('float64')
-    else:
-        df1[key] = config_dict['non_snv_columns'][key]
-
-X_train = df1
-del df1
+X_train = pd.read_csv('train_non_snv/merged_data-train_non_snv.csv')
+#var = X_train[config_dict['ML_VAR']]
+X_train = X_train.drop(config_dict['ML_VAR'], axis=1)
 feature_names = X_train.columns.tolist()
-print(f'non SNVs to train: {X_train.shape[0]}')
 X_train = X_train.values
+Y_train = pd.read_csv('train_non_snv/merged_data-y-train_non_snv.csv')
+Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']) 
 
-#training data
-X_test = df.loc[df['hgmd_class'].isin(config_dict['Clinsig_test'])]
-#X_train= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
-#df = df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
-print('\nhgmd_class:\n', X_test['hgmd_class'].value_counts())
-y = X_test.hgmd_class.str.replace(r'DFP','high_impact').str.replace(r'DM\?','high_impact').str.replace(r'DM','high_impact')
-y = y.str.replace(r'Pathogenic/Likely_pathogenic','high_impact').str.replace(r'Likely_pathogenic','high_impact').str.replace(r'Pathogenic','high_impact')
-y = y.str.replace(r'DP','low_impact').str.replace(r'FP','low_impact')
-y = y.str.replace(r'Benign/Likely_benign','low_impact').str.replace(r'Likely_benign','low_impact').str.replace(r'Benign','low_impact')
-print('\nTest_class:\n', y.value_counts())
-Y_test = label_binarize(y.values, classes=['low_impact', 'high_impact'])
-X_test = X_test.drop('hgmd_class', axis=1)
-X_test = pd.get_dummies(X_test, prefix_sep='_')
-df1=pd.DataFrame()
-for key in tqdm(config_dict['non_snv_columns']):
-    if key in X_test.columns:
-        df1[key] = X_test[key].fillna(config_dict['non_snv_columns'][key]).astype('float64')
-    else:
-        df1[key] = config_dict['non_snv_columns'][key]
 
-X_test = df1
-del df1,df
-#feature_names = X_train.columns.tolist()
-print(f'non SNVs to test: {X_test.shape[0]}')
+X_test = pd.read_csv('test_non_snv/merged_data-test_non_snv.csv')
+#var = X_test[config_dict['ML_VAR']]
+X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
+#feature_names = X_test.columns.tolist()
 X_test = X_test.values
+Y_test = pd.read_csv('test_non_snv/merged_data-y-test_non_snv.csv')
+#Y = pd.get_dummies(y)
+Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact'])
+print('Data Loaded!')
 
 model = VotingClassifier(estimators=[
         ('DecisionTreeClassifier',DecisionTreeClassifier(class_weight='balanced')),
-        ('LogisticRegression',LogisticRegression(class_weight='balanced')),
+        ('SGDClassifier',SGDClassifier(class_weight='balanced', n_jobs=-1)),
         ('RandomForestClassifier',RandomForestClassifier(class_weight='balanced')),
         ('AdaBoostClassifier',AdaBoostClassifier()),
 	    ('ExtraTreesClassifier',ExtraTreesClassifier(class_weight='balanced')),
         ('BalancedRandomForestClassifier',BalancedRandomForestClassifier()),
         ('GaussianNB',GaussianNB()),
-        ('LinearDiscriminantAnalysis',LinearDiscriminantAnalysis())
+        ('LinearDiscriminantAnalysis',LinearDiscriminantAnalysis()),
+        ('MLPClassifier',MLPClassifier())
         #,('EasyEnsembleClassifier',EasyEnsembleClassifier()) 
         ], voting='hard', n_jobs=-1, verbose=1)
 

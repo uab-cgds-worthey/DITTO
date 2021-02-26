@@ -18,25 +18,25 @@ columns:
   -  Eigen-phred_coding
   -  Eigen-raw_coding
   -  Eigen-raw_coding_rankscore
-  #-  FATHMM_score
+  -  FATHMM_score
   -  GERP++_RS
   -  GenoCanyon_score
   -  LRT_score
   -  M-CAP_score
   -  MetaLR_score
   -  MetaSVM_score
-  #-  MutationAssessor_score
-  #-  MutationTaster_score
-  #-  PROVEAN_score
+  -  MutationAssessor_score
+  -  MutationTaster_score
+  -  PROVEAN_score
   -  SiPhy_29way_logOdds
-  #-  VEST4_score
+  -  VEST4_score
   -  fathmm-MKL_coding_score
   -  integrated_fitCons_score
   -  phastCons100way_vertebrate
   -  phastCons30way_mammalian
   -  phyloP100way_vertebrate
   -  phyloP30way_mammalian
-  #-  GERP
+  -  GERP
   -  gnomADv3_AF
   -  gnomADv3_AF_afr
   -  gnomADv3_AF_afr_female
@@ -145,6 +145,12 @@ snv_columns:
   SIFT: 0.5
   PolyPhen: 0.5
   CADD_PHRED: 20
+  FATHMM_score: 0         #weighted for human inherited- disease mutations with Disease Ontology (FATHMMori). Scores range from -18.09 to 11.0. This is for coding and MKL for non-coding variants
+  MutationAssessor_score: 0   #MutationAssessor functional impact combined score (MAori). The score ranges from -5.135 to 6.49 in dbNSFP.
+  PROVEAN_score: 0           # range - -14 to 13.57
+  VEST4_score: 0.5           # range - 0 to 1
+  GERP: 0 #ranges from -12.36 to 6.18
+  MutationTaster_score: 0.5
   DANN_score: 0.5
   Eigen-PC-phred_coding: 20
   Eigen-PC-raw_coding: 0   #functional annotations. input range - -3.252 to 8.426.
@@ -217,6 +223,7 @@ snv_columns:
 
 non_snv_columns:  
   CADD_PHRED: 20
+  GERP: 0
   gnomADv3_AF: 0
   gnomADv3_AF_afr: 0
   gnomADv3_AF_afr_female: 0

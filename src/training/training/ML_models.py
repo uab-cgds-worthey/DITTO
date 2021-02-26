@@ -15,9 +15,12 @@ from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 #from sklearn.multiclass import OneVsRestClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, BaggingClassifier, ExtraTreesClassifier
-from imblearn.ensemble import BalancedRandomForestClassifier, EasyEnsembleClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, ExtraTreesClassifier
+from sklearn.naive_bayes import GaussianNB
+from imblearn.ensemble import BalancedRandomForestClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import matplotlib.pyplot as plt
 import yaml
 import os
@@ -26,27 +29,31 @@ os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/
 @ray.remote(num_cpus=3)
 def data_parsing(var,config_dict,output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    data = 'merged_data-'+var+'.csv'
-    labels = 'merged_data-y-'+var+'.csv'
-    #print(f'{data}\t{labels}')
     #Load data
     print('\nUsing ' +data+' ..', file=open(output, "a"))
-    X = pd.read_csv(data)
-    var = X[config_dict['ML_VAR']]
-    X = X.drop(config_dict['ML_VAR'], axis=1)
-    feature_names = X.columns.tolist()
-    X = X.values
-    y = pd.read_csv(labels)
+    X_train = pd.read_csv('train_'+var+'/merged_data-train_'+var+'.csv')
+    var = X_train[config_dict['ML_VAR']]
+    X_train = X_train.drop(config_dict['ML_VAR'], axis=1)
+    feature_names = X_train.columns.tolist()
+    X_train = X_train.values
+    Y_train = pd.read_csv('train_'+var+'/merged_data-y-train_'+var+'.csv')
+    Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']) 
+
+    X_test = pd.read_csv('test_'+var+'/merged_data-test_'+var+'.csv')
+    var = X_test[config_dict['ML_VAR']]
+    X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
+    #feature_names = X_test.columns.tolist()
+    X_test = X_test.values
+    Y_test = pd.read_csv('test_'+var+'/merged_data-y-test_'+var+'.csv')
     print('Data Loaded!')
     #Y = pd.get_dummies(y)
-    Y = label_binarize(y.values, classes=['low_impact', 'high_impact']) #'Benign', 'Likely_benign', 'Uncertain_significance', 'Likely_pathogenic', 'Pathogenic'
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=.30, random_state=42)
-    del X,y
+    Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']) 
+    
     #scaler = StandardScaler().fit(X_train)
     #X_train = scaler.transform(X_train)
     #X_test = scaler.transform(X_test)
     # explain all the predictions in the test set
-    background = shap.kmeans(X_train, 6)
+    background = shap.kmeans(X_train, 10)
     return X_train, X_test, Y_train, Y_test, background, feature_names
 
 
@@ -71,45 +78,45 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_name
    clf_name = str(type(clf)).split("'")[1].split(".")[3]
 
    # explain all the predictions in the test set
-   background = shap.kmeans(X_train, 6)
+   #background = shap.kmeans(X_train, 6)
    explainer = shap.KernelExplainer(clf.predict, background)
    background = X_test[np.random.choice(X_test.shape[0], 1000, replace=False)]
    shap_values = explainer.shap_values(background)
    plt.figure()
    shap.summary_plot(shap_values, background, feature_names, show=False)
    #shap.plots.waterfall(shap_values[0], max_display=15)
-   plt.savefig("./models/"+clf_name +"_"+ var+"_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+   plt.savefig("./models/"+var+"/"+clf_name +"_"+ var+"_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
    finish = (time.perf_counter()-start)/60
    #list1 = [clf_name ,prc, roc_auc, accuracy, score, matrix, finish]
    list1 = [clf_name, np.mean(score['train_score']), np.mean(score['test_score']), prc, recall, roc_auc, accuracy, finish, matrix]
-   pickle.dump(clf, open("./models/"+clf_name+"_"+var+".pkl", 'wb'))
+   pickle.dump(clf, open("./models/"+var+"/"+clf_name+"_"+var+".pkl", 'wb'))
    return list1
 
 if __name__ == "__main__":
     #Classifiers I wish to use
     classifiers = [
-        	#KNeighborsClassifier(),
-        	#SVC(class_weight='balanced', probability=True),
-            DecisionTreeClassifier(class_weight='balanced'),
-            LogisticRegression(class_weight='balanced'),
+        	DecisionTreeClassifier(class_weight='balanced'),
+            SGDClassifier(class_weight='balanced', n_jobs=-1),
             RandomForestClassifier(class_weight='balanced'),
             AdaBoostClassifier(),
-            #GradientBoostingClassifier(),
-        	#BaggingClassifier(),
-        	ExtraTreesClassifier(class_weight='balanced_subsample'),
+            ExtraTreesClassifier(class_weight='balanced'),
             BalancedRandomForestClassifier(),
-            EasyEnsembleClassifier() # doctest: +SKIP
+            GaussianNB(),
+            LinearDiscriminantAnalysis(),
+            GradientBoostingClassifier(),
+            MLPClassifier()
         ]
     
     
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    variants = ['snv','non-snv','snv-protein-coding']
+    variants = ['snv','non_snv','snv_protein_coding']
     for var in variants:
-        os.mkdir('models/'+var)
+        if not os.path.exists('models/'+var):
+            os.mkdir('models/'+var)
         output = "models/"+var+"/ML_results_"+var+"_.csv"
-        print('Working with '+var+' dataset...', file=open(output, "a"))
+        print('Working with '+var+' dataset...', file=open(output, "w"))
         print('Working with '+var+' dataset...')
         X_train, X_test, Y_train, Y_test, background, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
         print('Model\tTrain_score(train_data)\tTest_score(train_data)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]

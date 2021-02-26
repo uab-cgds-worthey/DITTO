@@ -19,13 +19,18 @@ def get_col_configs(config_f):
     # print(config_dict)
     return config_dict
 
+
 def extract_col(config_dict,df, stats):
     print('Extracting columns and rows according to config file !....')
     df = df[config_dict['columns']]
     #df = df[config_dict['Consequence']]
     #df= df.loc[df['Consequence'].isin(config_dict['Consequence'])]
-    df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
-    if 'non-snv' in stats:
+    if 'train' in stats:
+        df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
+    else:
+        df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_test'])]
+    
+    if 'non_snv' in stats:
         #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
         df=df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
         print('\nData shape (non-snv) =', df.shape, file=open(stats, "a"))
@@ -41,10 +46,11 @@ def extract_col(config_dict,df, stats):
         else:
             pass
         print('\nData shape (snv) =', df.shape, file=open(stats, "a"))
-    print('Dropping empty columns and rows...')
-    #df.dropna(axis=1, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[0]/4)
-    df.dropna(axis=0, thresh=(df.shape[1]*0.5), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
-    df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
+    if 'train' in stats:
+        print('Dropping empty columns and rows...')
+        #df.dropna(axis=1, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[0]/4)
+        df.dropna(axis=0, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
+        df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
     print('\nhgmd_class:\n', df['hgmd_class'].value_counts(), file=open(stats, "a"))
     print('\nclinvar_CLNSIG:\n', df['clinvar_CLNSIG'].value_counts(), file=open(stats, "a"))
     print('\nclinvar_CLNREVSTAT:\n', df['clinvar_CLNREVSTAT'].value_counts(), file=open(stats, "a"))
@@ -55,14 +61,16 @@ def extract_col(config_dict,df, stats):
     # CLNREVSTAT, CLNVC, MC
     return df
 
-def fill_na(df,config_dict, column_info): #(config_dict,df):
+def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     #df1  = pd.DataFrame()
     var = df[config_dict['var']]
     df = df.drop(config_dict['var'], axis=1)
-    #df.dtypes.to_csv('./data/processed/columns1.csv')
-    #df.to_csv('./data/interim/temp.csv', index=False)
-    #df = pd.read_csv('./data/interim/temp.csv')
-    #os.remove('./data/interim/temp.csv')
+    print('parsing difficult columns......')
+    if 'non_snv' in stats:
+        df['GERP'] = [np.mean([float(item.replace('.', '0')) for item in i]) if type(i) is list else i for i in df['GERP'].str.split('&')]
+    else:
+        for col in tqdm(config_dict['col_conv']):
+            df[col] = [np.mean([float(item.replace('.', '0')) for item in i]) if type(i) is list else i for i in df[col].str.split('&')]
     print('One-hot encoding...')
     df = pd.get_dummies(df, prefix_sep='_')
     print(df.columns.values.tolist(),file=open(column_info, "w"))
@@ -71,17 +79,25 @@ def fill_na(df,config_dict, column_info): #(config_dict,df):
     #imp= IterativeImputer(estimator=lr, verbose=2, max_iter=10, tol=1e-10, imputation_order='roman')
     print('Filling NAs ....')
     #df = imp.fit_transform(df)
-    #filehandler = open('./data/processed/imputer.pkl', 'wb') 
-    #pickle.dump(imp, filehandler)
     #df = pd.DataFrame(df, columns = columns)
-    df=df.fillna(df.median())
+    #df=df.fillna(df.median())
+    df1 = pd.DataFrame()
+    if 'non_snv' in stats:
+        for key in tqdm(config_dict['non_snv_columns']):
+            if key in df.columns:
+                df1[key] = df[key].fillna(config_dict['non_snv_columns'][key]).astype('float64')
+            else:
+                df1[key] = config_dict['non_snv_columns'][key]
+    else:
+        for key in tqdm(config_dict['snv_columns']):
+            if key in df.columns:
+                df1[key] = df[key].fillna(config_dict['snv_columns'][key]).astype('float64')
+            else:
+                df1[key] = config_dict['snv_columns'][key]
+    df = df1
+    del df1
     df = df.reset_index(drop=True)
     df['ID'] = [f'var_{num}' for num in range(len(df))]
-    #for key in tqdm(config_dict['Fill_NAs']):
-    #    if key in df.columns:
-    #        df1[key] = df[key].fillna(config_dict['Fill_NAs'][key]).astype('float64')
-    #    else:
-    #        df1[key] = config_dict['Fill_NAs'][key]
     print('NAs filled!')
     df = pd.concat([var.reset_index(drop=True), df], axis=1)
     return df
@@ -94,7 +110,7 @@ def main(df, config_f, stats,column_info, null_info):
     
     print('\nData shape (Before filtering) =', df.shape, file=open(stats, "a"))
     df = extract_col(config_dict,df, stats)
-    print('Columns extracted !....')
+    print('Columns extracted! Extracting class info....')
     df.isnull().sum(axis = 0).to_csv(null_info)
     #print('\n Unique Impact (Class):\n', df.hgmd_class.unique(), file=open("./data/processed/stats1.csv", "a"))
     y = df.hgmd_class.str.replace(r'DFP','high_impact').str.replace(r'DM\?','high_impact').str.replace(r'DM','high_impact')
@@ -104,30 +120,31 @@ def main(df, config_f, stats,column_info, null_info):
     print('\nImpact (Class):\n', y.value_counts(), file=open(stats, "a"))
     #y = df.hgmd_class
     df = df.drop('hgmd_class', axis=1)
-    df = fill_na(df,config_dict,column_info) #(config_dict,df)
-    #print dataframe shape
-    #df.dtypes.to_csv('../../data/interim/head.csv')
+    df = fill_na(df,config_dict,column_info, stats) #(config_dict,df)
     print('\nData shape (After filtering) =', df.shape, file=open(stats, "a"))
     print('Class shape=', y.shape,file=open(stats, "a"))
     return df,y
 
 if __name__ == "__main__":
-    os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/')
+    os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     print('Loading data...')
-    var_f = pd.read_csv("./data/processed/merged_sig_norm_class_vep-annotated.tsv", sep='\t')
+    var_f = pd.read_csv("merged_sig_norm_class_vep-annotated.tsv", sep='\t')
     print('Data Loaded !....')
-    config_f = "./configs/columns_config.yaml"
+    config_f = "../../configs/columns_config.yaml"
 
-    variants = ['snv','non-snv','snv-protein-coding']
+    variants = ['train_non_snv','train_snv','train_snv_protein_coding','test_snv','test_non_snv','test_snv_protein_coding']
+    
     for var in variants:
-        #For non-snv variants
-        stats = "./data/processed/stats"+var+".csv"
-        print("Filtering "+var+" variants with at-least 50 percent data for each variant...", file=open(stats, "a"))
-        print("Filtering "+var+" variants with at-least 50 percent data for each variant...")
-        column_info = './data/processed/'+var+'_columns.csv'
-        null_info = './data/processed/NA-counts-'+var+'.csv'
+        if not os.path.exists(var):
+            os.mkdir(var)
+        stats = var+"/stats_"+var+".csv"
+        print("Filtering "+var+" variants with at-least 30 percent data for each variant...", file=open(stats, "w"))
+        print("Filtering "+var+" variants with at-least 30 percent data for each variant...")
+        column_info = var+"/"+var+'_columns.csv'
+        null_info = var+"/Nulls_"+var+'.csv'
         df,y = main(var_f, config_f, stats, column_info, null_info)
-        df.to_csv('./data/processed/merged_data-'+var+'.csv', index=False)
-        y.to_csv('./data/processed/merged_data-y-'+var+'.csv', index=False)
+        print('writing to csv...')
+        df.to_csv(var+'/'+'merged_data-'+var+'.csv', index=False)
+        y.to_csv(var+'/'+'merged_data-y-'+var+'.csv', index=False)
         del df,y
 
