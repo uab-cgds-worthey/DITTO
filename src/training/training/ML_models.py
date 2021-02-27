@@ -119,7 +119,7 @@ if __name__ == "__main__":
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    variants = ['non_snv','snv_protein_coding'] #'snv',
+    variants = ['snv','non_snv','snv_protein_coding'] #'snv',
     for var in variants:
         if not os.path.exists('models/'+var):
             os.makedirs('./models/'+var)
