@@ -119,7 +119,7 @@ if __name__ == "__main__":
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    variants = ['snv','non_snv','snv_protein_coding']
+    variants = ['non_snv','snv_protein_coding'] #'snv',
     for var in variants:
         if not os.path.exists('models/'+var):
             os.makedirs('./models/'+var)
@@ -127,7 +127,7 @@ if __name__ == "__main__":
         print('Working with '+var+' dataset...', file=open(output, "w"))
         print('Working with '+var+' dataset...')
         X_train, X_test, Y_train, Y_test, background, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
-        print('Model\tCross_validate(train_roc_auc)\tCross_validate(test_roc_auc)\tCross_validate(test_neg_log_loss)\tCross_validate(test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
+        print('Model\tCross_validate(train_roc_auc)\tCross_validate(test_roc_auc)\tCross_validate(train_neg_log_loss)\tCross_validate(test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
         for i in classifiers:
            list1 = ray.get(classifier.remote(i,var, X_train, X_test, Y_train, Y_test,background,feature_names))
            print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\t{list1[8]}\t{list1[9]}\n{list1[10]}', file=open(output, "a"))
