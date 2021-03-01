@@ -51,7 +51,7 @@ def data_parsing(var,config_dict,output):
     print('Data Loaded!')
     #Y = pd.get_dummies(y)
     Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']) 
-    
+    print(f'Shape: {Y_test.shape}')
     #scaler = StandardScaler().fit(X_train)
     #X_train = scaler.transform(X_train)
     #X_test = scaler.transform(X_test)
@@ -64,8 +64,8 @@ def data_parsing(var,config_dict,output):
 def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_names):
    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
    start = time.perf_counter()
-   score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0, scoring='roc_auc')
-   clf = score['estimator'][np.argmax(score['test_roc_auc'])]
+   score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
+   clf = score['estimator'][np.argmax(score['test_score'])]
    #y_score = cross_val_predict(clf, X_train, Y_train, cv=5, n_jobs=-1, verbose=0)
    #class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
    #clf.fit(X_train, Y_train) #, class_weight=class_weights)
@@ -94,7 +94,7 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_name
    plt.savefig(f"./Ditto/{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
    finish = (time.perf_counter()-start)/60
    #list1 = [clf_name ,prc, roc_auc, accuracy, score, matrix, finish]
-   list1 = [clf_name, np.mean(score['train_roc_auc']), np.mean(score['test_roc_auc']), prc, recall, roc_auc, accuracy, finish, matrix]
+   list1 = [clf_name, np.mean(score['train_score']), np.mean(score['test_score']), prc, recall, roc_auc, accuracy, finish, matrix]
    #pickle.dump(clf, open("./models/"+var+"/"+clf_name+"_"+var+".pkl", 'wb'))
    return list1
 
@@ -123,10 +123,10 @@ if __name__ == "__main__":
         if not os.path.exists('Ditto/'+var):
             os.makedirs('./Ditto/'+var)
         output = f"Ditto/"+var+"/ML_results_"+var+"_.csv"
-        print('Working with '+var+' dataset...', file=open(output, "w"))
+        print('Working with '+var+' dataset...', file=open(output, "a"))
         print('Working with '+var+' dataset...')
         X_train, X_test, Y_train, Y_test, background, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
-        print('Model\tCross_validate(train_roc_auc)\tCross_validate(test_roc_auc)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
+        print('Model\tCross_validate(avg_train_score)\tCross_validate(avg_test_score)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
         list1 = ray.get(classifier.remote(classifiers,var, X_train, X_test, Y_train, Y_test,background,feature_names))
         print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\n{list1[8]}', file=open(output, "a"))
         print(f'training and testing done!')

@@ -104,7 +104,7 @@ if __name__ == "__main__":
     #Classifiers I wish to use
     classifiers = [
         	DecisionTreeClassifier(class_weight='balanced'),
-            SGDClassifier(class_weight='balanced', n_jobs=-1),
+            #SGDClassifier(class_weight='balanced', n_jobs=-1),
             RandomForestClassifier(class_weight='balanced', n_jobs=-1),
             AdaBoostClassifier(),
             ExtraTreesClassifier(class_weight='balanced', n_jobs=-1),
@@ -127,7 +127,7 @@ if __name__ == "__main__":
         print('Working with '+var+' dataset...', file=open(output, "w"))
         print('Working with '+var+' dataset...')
         X_train, X_test, Y_train, Y_test, background, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
-        print('Model\tCross_validate(train_roc_auc)\tCross_validate(test_roc_auc)\tCross_validate(train_neg_log_loss)\tCross_validate(test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
+        print('Model\tCross_validate(avg_train_roc_auc)\tCross_validate(avg_test_roc_auc)\tCross_validate(avg_train_neg_log_loss)\tCross_validate(avg_test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
         for i in classifiers:
            list1 = ray.get(classifier.remote(i,var, X_train, X_test, Y_train, Y_test,background,feature_names))
            print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\t{list1[8]}\t{list1[9]}\n{list1[10]}', file=open(output, "a"))
