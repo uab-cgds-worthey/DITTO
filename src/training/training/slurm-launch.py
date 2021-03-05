@@ -1,6 +1,6 @@
 # slurm-launch.py
 # Usage:
-# python slurm-launch.py --exp-name filter --command "python Tune_RF_PB2.py" --num-nodes 2 --load-env training --num-cpus 5 --num-gpus 4
+# python slurm-launch.py --exp-name RF_PB2 --command "python Tune_RF_PB2.py --var_type non_snv" --num-nodes 1 --load-env training --num-cpus 5 --num-gpus 4
 
 import argparse
 import subprocess
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mem-cpus",
         type=str,
-        default="50G",
+        default="100G",
         help="Memory per CPU to use. (Default: 50G)")
     parser.add_argument(
         "--partition",

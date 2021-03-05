@@ -5,41 +5,55 @@ import ray
 import time
 import argparse
 import pickle
+import yaml
 from ray import tune
-from ray.tune import Trainable
+from ray.tune import Trainable, run
 from ray.tune.schedulers.pb2 import PB2
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.preprocessing import label_binarize
-from sklearn.metrics import average_precision_score
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 from sklearn.ensemble import RandomForestClassifier
 import os
+import gc
+import shap
+from joblib import dump, load
+import matplotlib.pyplot as plt
+#import shutil
+import warnings
+warnings.simplefilter("ignore")
 
 TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
-class Ditto(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_cifar10_with_keras.html
-    def _read_data(self):
+class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_cifar10_with_keras.html
+    def _read_data(self, config):
         os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-        X = pd.read_csv('clinvar-md.csv')
-        var = X[['AAChange.refGene','ID']]
-        X = X.drop(['AAChange.refGene', 'ID'], axis=1)
-        X = X.values
-        # X[1]
-        # var
-        y = pd.read_csv('clinvar-y-md.csv')
-        #Y = pd.get_dummies(y)
-        Y = label_binarize(y.values, classes=['Benign', 'Pathogenic']) #'Benign', 'Likely_benign', 'Uncertain_significance', 'Likely_pathogenic', 'Pathogenic'
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=.30, random_state=42)
-        scaler = StandardScaler().fit(X_train)
-        X_train = scaler.transform(X_train)
-        X_test = scaler.transform(X_test)
+        with open("../../configs/columns_config.yaml") as fh:
+            config_dict = yaml.safe_load(fh)
+        var = config.get("var")
+        x_train = pd.read_csv(f'train_{var}/merged_data-train_{var}.csv')
+        #var = X_train[config_dict['ML_VAR']]
+        x_train = x_train.drop(config_dict['ML_VAR'], axis=1)
+        feature_names = x_train.columns.tolist()
+        x_train = x_train.values
+        y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
+        #Y_train = pd.get_dummies(Y_train)
+        y_train = label_binarize(y_train.values, classes=['low_impact', 'high_impact']) 
 
-        return (X_train, Y_train), (X_test, Y_test)
+        x_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
+        #var = X_test[config_dict['ML_VAR']]
+        x_test = x_test.drop(config_dict['ML_VAR'], axis=1)
+        #feature_names = X_test.columns.tolist()
+        x_test = x_test.values
+        y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
+        print('Data Loaded!')
+        #Y_test = pd.get_dummies(Y_test)
+        y_test = label_binarize(y_test.values, classes=['low_impact', 'high_impact']) 
+        #print(f'Shape: {Y_test.shape}')
+        return x_train, x_test, y_train, y_test, feature_names
 
     def setup(self, config):
-        self.train_data, self.test_data = self._read_data()
-        x_train = self.train_data[0]
+        self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
         model = RandomForestClassifier(random_state=42, n_estimators=self.config.get("n_estimators", 100), min_samples_split=self.config.get("min_samples_split",2), min_samples_leaf=self.config.get("min_samples_leaf",1), max_features=self.config.get("max_features","sqrt"), n_jobs = -1)
         #model = RandomForestClassifier(config)
         self.model = model
@@ -53,13 +67,9 @@ class Ditto(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_c
         return True
 
     def step(self):
-        x_train, y_train = self.train_data
-        #x_train, y_train = x_train[:NUM_SAMPLES], y_train[:NUM_SAMPLES]
-        x_test, y_test = self.test_data
-        #x_test, y_test = x_test[:NUM_SAMPLES], y_test[:NUM_SAMPLES]
-        self.model.fit(x_train, y_train.ravel())
-        y_score = self.model.predict_proba(x_test)
-        accuracy = average_precision_score(y_test, np.argmax(y_score, axis=1), average=None)
+        self.model.fit(self.x_train, self.y_train)
+        y_score = self.model.predict(self.x_test)
+        accuracy = accuracy_score(self.y_test, y_score)
         #print(accuracy)
         return {"mean_accuracy": accuracy}
 
@@ -79,41 +89,59 @@ class Ditto(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_c
         # print("save model at: ", saved_path)
         pass
 
-    def results(self,config):
-        X_train, Y_train = self.train_data
-        #x_train, y_train = x_train[:NUM_SAMPLES], y_train[:NUM_SAMPLES]
-        X_test, Y_test = self.test_data
-        #x_test, y_test = x_test[:NUM_SAMPLES], y_test[:NUM_SAMPLES]
-        start = time.perf_counter()
+    def results(self,config,var, output):
+        start1 = time.perf_counter()
+        self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
         clf = RandomForestClassifier(random_state=42, n_estimators=config["n_estimators"], min_samples_split=config["min_samples_split"], min_samples_leaf=config["min_samples_leaf"], max_features=config["max_features"], n_jobs = -1)
-        clf.fit(X_train, Y_train)
-        y_score = clf.predict_proba(X_test)
-        prc = average_precision_score(Y_test, np.argmax(y_score, axis=1), average=None)
-        score = clf.score(X_train, Y_train)
-        #matrix = confusion_matrix(np.argmax(Y_test, axis=1), np.argmax(y_score, axis=1))
-        matrix = confusion_matrix(Y_test, np.argmax(y_score, axis=1))
-        finish = (time.perf_counter()-start)/60
-        list1 = [clf ,prc, score, matrix, finish]
-        print('Model\tprecision_score\tTrain_score\tTime(min)\tConfusion_matrix[Benign, Pathogenic]')
-        print(f'{clf}\n{prc}\t{score}\t{finish}\n{matrix}')
-        return clf
+        score = cross_validate(clf, self.x_train, self.y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
+        clf = score['estimator'][np.argmax(score['test_score'])]
+        training_score = np.mean(score['train_score'])
+        testing_score = np.mean(score['test_score'])
+        y_score = clf.predict(self.x_test)
+        prc = precision_score(self.y_test,y_score, average="weighted")
+        recall  = recall_score(self.y_test,y_score, average="weighted")
+        roc_auc = roc_auc_score(self.y_test, y_score)
+        accuracy = accuracy_score(self.y_test, y_score)
+        matrix = confusion_matrix(self.y_test, y_score)
+        finish = (time.perf_counter()-start1)/60
+        print(f'RandomForestClassifier: \nCross_validate(avg_train_score): {training_score}\nCross_validate(avg_test_score): {testing_score}\nPrecision: {prc}\nRecall: {recall}\nROC_AUC: {roc_auc}\nAccuracy: {accuracy}\nTime(in min): {finish}\nConfusion Matrix:\n{matrix}', file=open(output, "a"))
+        # explain all the predictions in the test set
+        background = shap.kmeans(self.x_train, 10)
+        explainer = shap.KernelExplainer(clf.predict, background)
+        with open(f"./tuning/{var}/RandomForestClassifier_{var}.joblib", 'wb') as f:
+         dump(clf, f, compress='lz4')
+        del clf, self.x_train, self.y_train, background
+        background = self.x_test[np.random.choice(self.x_test.shape[0], 1000, replace=False)]
+        shap_values = explainer.shap_values(background)
+        plt.figure()
+        shap.summary_plot(shap_values, background, self.feature_names, show=False)
+        plt.savefig(f"./tuning/{var}/RandomForestClassifier_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+        del shap_values,background
+        return None
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--smoke-test", action="store_true", help="Finish quickly for testing")
-    args, _ = parser.parse_known_args()
+    parser.add_argument(
+        "--var_type",
+        type=str,
+        required=True,
+        default="non_snv",
+        help="The variation type to tune classifier (Default: non_snv).")
+    args = parser.parse_args()
     if args.smoke_test:
         ray.init(num_cpus=2)  # force pausing to happen for test
     else:
-        ray.init()
-   
-     
+        ray.init(ignore_reinit_error=True)
+    
+    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+    
 
     pbt = PB2(
         time_attr="training_iteration",
-        #metric="mean_accuracy",
-        #mode="max",
+        metric="mean_accuracy",
+        mode="max",
         perturbation_interval=20,
         #resample_probability=0.25,
         quantile_fraction=0.25,  # copy bottom % with top %
@@ -124,10 +152,19 @@ if __name__ == "__main__":
             "min_samples_split" : [2, 6],
             "min_samples_leaf" : [1, 4]})
         
-
-    analysis = tune.run(
-        Ditto,
-        name="Ditto_RF",
+    
+    var = args.var_type
+    start = time.perf_counter()
+    if not os.path.exists('tuning/'+var):
+        os.makedirs('./tuning/'+var)
+    output = f"tuning/{var}/RandomForestClassifier_{var}_.csv"
+     
+    print('Working with '+var+' dataset...', file=open(output, "w"))
+    print('Working with '+var+' dataset...')
+    
+    analysis = run(
+        RF_PB2,
+        name=f"RandomForestClassifier_PB2_{var}",
         verbose=0,
         scheduler=pbt,
         reuse_actors=True,
@@ -140,25 +177,29 @@ if __name__ == "__main__":
         checkpoint_at_end = True,   
         keep_checkpoints_num = 2,   # Keep only the best checkpoint
         checkpoint_score_attr = 'mean_accuracy', # Metric used to compare checkpoints
-        metric="mean_accuracy",
-        mode="max",
+        #metric="mean_accuracy",
+        #mode="max",
         stop={
-            "training_iteration": 50,
+            "training_iteration": 100,
         },
-        num_samples=10,
+        num_samples=5,
         fail_fast=True,
         queue_trials=True,
         config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
+            "var": var,
             "n_estimators" : tune.randint(50, 200),
             "min_samples_split" : tune.randint(2, 6),
             "min_samples_leaf" : tune.randint(1, 4),
-            "max_features" : tune.choice(["sqrt", "log2"])
-        })
-
-    print("Model: RandomForest(sklearn)")
-    #config = analysis.best_config
-    print("Best hyperparameters found were: ", analysis.best_config)
-    
-    clf = Ditto().results(analysis.best_config)
-    pickle.dump(clf, open("./models/Randomforest.pkl", 'wb'))
+            "criterion" : tune.choice(["gini", "entropy"]),
+            "max_features" : tune.choice(["sqrt", "log2"]),
+            "class_weight" : tune.choice(["None", "balanced", "balanced_subsample"])
+    })
+    finish = (time.perf_counter()- start)/120
+    #ttime = (finish- start)/120
+    print(f'Total time in min: {finish}')
+    best_config = analysis.get_best_config(metric = "mean_accuracy",mode = "max")
+    print(f"RandomForestClassifier best hyperparameters found for {var} were:  {best_config}", file=open(f"tuning/{var}/tuned_parameters_{var}_.csv", "a"))
+    RF_PB2(best_config).results(best_config, var, output)
+    gc.collect()
+    #shutil.rmtree('/home/tmamidi/ray_results')
     
