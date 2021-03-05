@@ -1,6 +1,6 @@
 # slurm-launch.py
 # Usage:
-# python slurm-launch.py --exp-name filter --command "python clinvar/training/Tune_RF_PB2.py" --num-nodes 2 --load-env training --num-cpus 5 --num-gpus 4
+# python slurm-launch.py --exp-name filter --command "python Tune_RF_PB2.py" --num-nodes 2 --load-env training --num-cpus 5 --num-gpus 4
 
 import argparse
 import subprocess

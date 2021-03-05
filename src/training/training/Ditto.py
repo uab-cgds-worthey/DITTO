@@ -77,7 +77,7 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_name
    accuracy = accuracy_score(Y_test, y_score)
    #score = clf.score(X_train, Y_train)
    #matrix = confusion_matrix(np.argmax(Y_test, axis=1), np.argmax(y_score, axis=1))
-   matrix = confusion_matrix(Y_test, y_score,)
+   matrix = confusion_matrix(Y_test, y_score)
 
    # explain all the predictions in the test set
    #background = shap.kmeans(X_train, 6)

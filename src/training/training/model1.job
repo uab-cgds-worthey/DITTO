@@ -1,14 +1,15 @@
 #!/bin/bash
 #
 #SBATCH --job-name=Ditto
-#SBATCH --output=NN.out
+#SBATCH --output=NN1.out
 #
 ### Modify this according to your Ray workload.
 #SBATCH --nodes=1
-##SBATCH --exclusive
+#SBATCH --exclusive
+#SBATCH --requeue # Requeue job in the case of node failure
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
-#SBATCH --ntasks=1
+#SBATCH --ntasks=5
 #SBATCH --partition=pascalnodes
 #
 # Time format = HH:MM:SS, DD-HH:MM:SS
@@ -23,7 +24,7 @@
 ### Similarly, you can also specify the number of GPUs per node.
 ### Modify this according to your Ray workload. Sometimes this
 ### should be 'gres' instead.
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:4  
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL

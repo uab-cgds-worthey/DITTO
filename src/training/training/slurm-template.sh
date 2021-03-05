@@ -9,7 +9,7 @@ ${GIVEN_NODE}
 ### This script works for any number of nodes, Ray will find and manage all resources
 #SBATCH --nodes=${NUM_NODES}
 #SBATCH --exclusive
-#SBATCH --partition=pascalnodes
+#SBATCH --partition=express
 ### Give all resources to a single Ray task, ray can manage the resources internally
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=${NUM_CPUS_PER_NODE}
