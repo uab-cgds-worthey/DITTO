@@ -51,9 +51,9 @@ if __name__ == "__main__":
         help="Number of CPUs to use in each node. (Default: 1)")
     parser.add_argument(
         "--mem-cpus",
-        type=int,
-        default=1024,
-        help="Memory per CPU to use. (Default: 1024)")
+        type=str,
+        default="50G",
+        help="Memory per CPU to use. (Default: 50G)")
     parser.add_argument(
         "--partition",
         "-p",

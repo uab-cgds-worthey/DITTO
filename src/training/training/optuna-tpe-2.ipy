@@ -191,7 +191,7 @@ if __name__ == "__main__":
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    variants = ['snv_protein_coding'] #'non_snv','snv',
+    variants = ['snv']#,'snv_protein_coding'] #'non_snv',
     for var in variants:
         start = time.perf_counter()
         if not os.path.exists('tuning/'+var):

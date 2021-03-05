@@ -13,20 +13,43 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 import os
 import gc
+import warnings
+warnings.simplefilter("ignore")
 
 TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
 class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_cifar10_with_keras.html
-    def __init__(self, x_train,x_test, y_train, y_test):
-        self.x_train = x_train
-        self.x_test = x_test
-        self.y_train = y_train
-        self.y_test = y_test
+    def _read_data(self, config):
+        os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+        with open("../../configs/columns_config.yaml") as fh:
+            config_dict = yaml.safe_load(fh)
+        var = config.get("var")
+        x_train = pd.read_csv(f'train_{var}/merged_data-train_{var}.csv')
+        #var = X_train[config_dict['ML_VAR']]
+        x_train = x_train.drop(config_dict['ML_VAR'], axis=1)
+        feature_names = x_train.columns.tolist()
+        x_train = x_train.values
+        y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
+        #Y_train = pd.get_dummies(Y_train)
+        y_train = label_binarize(y_train.values, classes=['low_impact', 'high_impact']) 
+
+        x_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
+        #var = X_test[config_dict['ML_VAR']]
+        x_test = x_test.drop(config_dict['ML_VAR'], axis=1)
+        #feature_names = X_test.columns.tolist()
+        x_test = x_test.values
+        y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
+        print('Data Loaded!')
+        #Y_test = pd.get_dummies(Y_test)
+        y_test = label_binarize(y_test.values, classes=['low_impact', 'high_impact']) 
+        #print(f'Shape: {Y_test.shape}')
+        return x_train, x_test, y_train, y_test, feature_names
 
     def setup(self, config):
+        self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
         model = RandomForestClassifier(random_state=42, n_estimators=self.config.get("n_estimators", 100), min_samples_split=self.config.get("min_samples_split",2), min_samples_leaf=self.config.get("min_samples_leaf",1), max_features=self.config.get("max_features","sqrt"), n_jobs = -1)
         #model = RandomForestClassifier(config)
         self.model = model
@@ -40,7 +63,7 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         return True
 
     def step(self):
-        self.model.fit(self.x_train, self.y_train.ravel())
+        self.model.fit(self.x_train, self.y_train)
         y_score = self.model.predict(self.x_test)
         accuracy = accuracy_score(self.y_test, y_score)
         #print(accuracy)
@@ -62,8 +85,9 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         # print("save model at: ", saved_path)
         pass
 
-    def results(self,config,var, output, feature_names):
+    def results(self,config,var, output):
         start1 = time.perf_counter()
+        #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
         clf = RandomForestClassifier(random_state=42, n_estimators=config["n_estimators"], min_samples_split=config["min_samples_split"], min_samples_leaf=config["min_samples_leaf"], max_features=config["max_features"], n_jobs = -1)
         score = cross_validate(clf, self.x_train, self.y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
         clf = score['estimator'][np.argmax(score['test_score'])]
@@ -128,8 +152,7 @@ if __name__ == "__main__":
         ray.init(ignore_reinit_error=True)
     
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    with open("../../configs/columns_config.yaml") as fh:
-        config_dict = yaml.safe_load(fh)
+    
 
     pbt = PB2(
         time_attr="training_iteration",
@@ -154,10 +177,10 @@ if __name__ == "__main__":
         print('Working with '+var+' dataset...', file=open(output, "w"))
         print('Working with '+var+' dataset...')
         #X_train, X_test, Y_train, Y_test, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
-        X_train, X_test, Y_train, Y_test, feature_names = data_parsing(var,config_dict,output)
+        #X_train, X_test, Y_train, Y_test, feature_names = data_parsing(var,config_dict,output)
         #objective = RF_PB2(X_train, X_test, Y_train, Y_test)
         analysis = run(
-            RF_PB2(X_train, X_test, Y_train, Y_test),
+            RF_PB2,
             name="RandomForestClassifier_PB2",
             verbose=0,
             scheduler=pbt,
@@ -180,6 +203,7 @@ if __name__ == "__main__":
             fail_fast=True,
             queue_trials=True,
             config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
+                "var": var,
                 "n_estimators" : tune.randint(50, 200),
                 "min_samples_split" : tune.randint(2, 6),
                 "min_samples_leaf" : tune.randint(1, 4),
@@ -189,7 +213,7 @@ if __name__ == "__main__":
         #ttime = (finish- start)/120
         print(f'Total time in hrs: {finish}')
         print("RandomForestClassifier best hyperparameters found were: ", analysis.best_config, file=open(f"tuning/{var}/tuned_parameters_{var}_.csv", "a"))
-        RF_PB2(X_train, X_test, Y_train, Y_test).results(analysis.best_config, var, output, feature_names)
+        RF_PB2().results(analysis.best_config, var, output)
         gc.collect()
     
 

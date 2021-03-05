@@ -13,15 +13,15 @@ ${GIVEN_NODE}
 ### Give all resources to a single Ray task, ray can manage the resources internally
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=${NUM_CPUS_PER_NODE}
-#SBATCH --mem-per-cpu=${NUM_MEM_PER_CPU}
+#SBATCH --mem=${NUM_MEM_PER_CPU}
 #SBATCH --gpus-per-task=${NUM_GPUS_PER_NODE}
 
 # Load modules or your own conda environment here
 module load Anaconda3/2020.02
 # conda activate ${CONDA_ENV}
 conda activate ${LOAD_ENV}
-module load CUDA/10.1.243
-module load cuDNN/7.6.2.24-CUDA-10.1.243
+#module load CUDA/10.1.243
+#module load cuDNN/7.6.2.24-CUDA-10.1.243
 
 # ===== DO NOT CHANGE THINGS HERE UNLESS YOU KNOW WHAT YOU ARE DOING =====
 # This script is a modification to the implementation suggest by gregSchwartz18 here:
