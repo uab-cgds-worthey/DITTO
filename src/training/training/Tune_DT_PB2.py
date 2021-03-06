@@ -119,7 +119,7 @@ class DT_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         return None
 
 if __name__ == "__main__":
-    variants = ['non_snv']   #'non_snv','snv',
+    variants = ['non_snv','snv','snv_protein_coding']
     for var in variants:    
         parser = argparse.ArgumentParser()
         parser.add_argument(
