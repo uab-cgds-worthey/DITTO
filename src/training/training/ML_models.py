@@ -39,14 +39,14 @@ def data_parsing(var,config_dict,output):
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
     Y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
-    Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']) 
+    Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']).ravel() 
 
     X_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
     #var = X_test[config_dict['ML_VAR']]
     X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
     #feature_names = X_test.columns.tolist()
     X_test = X_test.values
-    Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
+    Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv').ravel() 
     print('Data Loaded!')
     #Y = pd.get_dummies(y)
     Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']) 

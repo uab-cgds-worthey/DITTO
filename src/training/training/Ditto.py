@@ -40,7 +40,7 @@ def data_parsing(var,config_dict,output):
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
     Y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
-    Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']) 
+    Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']).ravel() 
 
     X_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
     #var = X_test[config_dict['ML_VAR']]
@@ -50,7 +50,7 @@ def data_parsing(var,config_dict,output):
     Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
     print('Data Loaded!')
     #Y = pd.get_dummies(y)
-    Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']) 
+    Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']).ravel() 
     print(f'Shape: {Y_test.shape}')
     #scaler = StandardScaler().fit(X_train)
     #X_train = scaler.transform(X_train)

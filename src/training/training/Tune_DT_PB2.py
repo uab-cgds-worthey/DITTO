@@ -16,8 +16,13 @@ from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, conf
 from sklearn.ensemble import RandomForestClassifier
 import os
 import gc
+import shap
+from joblib import dump, load
+import matplotlib.pyplot as plt
 import warnings
 warnings.simplefilter("ignore")
+import functools
+print = functools.partial(print, flush=True)
 
 TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
@@ -34,8 +39,7 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         x_train = x_train.values
         y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
         #Y_train = pd.get_dummies(Y_train)
-        y_train = label_binarize(y_train.values, classes=['low_impact', 'high_impact']) 
-
+        y_train = label_binarize(y_train.values, classes=['low_impact', 'high_impact']).ravel()  
         x_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
         #var = X_test[config_dict['ML_VAR']]
         x_test = x_test.drop(config_dict['ML_VAR'], axis=1)
@@ -44,7 +48,7 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
         print('Data Loaded!')
         #Y_test = pd.get_dummies(Y_test)
-        y_test = label_binarize(y_test.values, classes=['low_impact', 'high_impact']) 
+        y_test = label_binarize(y_test.values, classes=['low_impact', 'high_impact']).ravel()  
         #print(f'Shape: {Y_test.shape}')
         return x_train, x_test, y_train, y_test, feature_names
 
@@ -87,7 +91,7 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
 
     def results(self,config,var, output):
         start1 = time.perf_counter()
-        #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
+        self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
         clf = RandomForestClassifier(random_state=42, n_estimators=config["n_estimators"], min_samples_split=config["min_samples_split"], min_samples_leaf=config["min_samples_leaf"], max_features=config["max_features"], n_jobs = -1)
         score = cross_validate(clf, self.x_train, self.y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
         clf = score['estimator'][np.argmax(score['test_score'])]
@@ -100,7 +104,7 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         accuracy = accuracy_score(self.y_test, y_score)
         matrix = confusion_matrix(self.y_test, y_score)
         finish = (time.perf_counter()-start1)/60
-        print(f'RandomForestClassifier: \nCross_validate(avg_train_score): {training_score}\nCross_validate(avg_test_score): {testing_score}\nPrecision: {prc}\nRecall: {recall}\nROC_AUC: {roc_auc}\nAccuracy: {accuracy}\nTime(in min): {finish}\nConfusion Matrix: {matrix}', file=open(output, "a"))
+        print(f'RandomForestClassifier: \nCross_validate(avg_train_score): {training_score}\nCross_validate(avg_test_score): {testing_score}\nPrecision: {prc}\nRecall: {recall}\nROC_AUC: {roc_auc}\nAccuracy: {accuracy}\nTime(in min): {finish}\nConfusion Matrix:\n{matrix}', file=open(output, "a"))
         # explain all the predictions in the test set
         background = shap.kmeans(self.x_train, 10)
         explainer = shap.KernelExplainer(clf.predict, background)
@@ -110,78 +114,49 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         background = self.x_test[np.random.choice(self.x_test.shape[0], 1000, replace=False)]
         shap_values = explainer.shap_values(background)
         plt.figure()
-        shap.summary_plot(shap_values, background, feature_names, show=False)
-        #shap.plots.waterfall(shap_values[0], max_display=15)
+        shap.summary_plot(shap_values, background, self.feature_names, show=False)
         plt.savefig(f"./tuning/{var}/RandomForestClassifier_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
         return None
 
-def data_parsing(var,config_dict,output):
-    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    #Load data
-    print(f'\nUsing merged_data-train_{var}..', file=open(output, "a"))
-    X_train = pd.read_csv(f'train_{var}/merged_data-train_{var}.csv')
-    #var = X_train[config_dict['ML_VAR']]
-    X_train = X_train.drop(config_dict['ML_VAR'], axis=1)
-    feature_names = X_train.columns.tolist()
-    X_train = X_train.values
-    Y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
-    Y_train = pd.get_dummies(Y_train)
-    #Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']) 
-
-    X_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
-    #var = X_test[config_dict['ML_VAR']]
-    X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
-    #feature_names = X_test.columns.tolist()
-    X_test = X_test.values
-    Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
-    print('Data Loaded!')
-    Y_test = pd.get_dummies(Y_test)
-    #Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']) 
-    print(f'Shape: {Y_test.shape}')
-    return X_train, X_test, Y_train, Y_test, feature_names
-
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--smoke-test", action="store_true", help="Finish quickly for testing")
-    args, _ = parser.parse_known_args()
-    if args.smoke_test:
-        ray.init(num_cpus=2)  # force pausing to happen for test
-    else:
-        ray.init(ignore_reinit_error=True)
-    
-    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    
+    variants = ['non_snv','snv','snv_protein_coding']
+    for var in variants:    
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "--smoke-test", action="store_true", help="Finish quickly for testing")
+        args, _ = parser.parse_known_args()
+        if args.smoke_test:
+            ray.init(num_cpus=2)  # force pausing to happen for test
+        else:
+            ray.init(ignore_reinit_error=True)
 
-    pbt = PB2(
-        time_attr="training_iteration",
-        #metric="mean_accuracy",
-        #mode="max",
-        perturbation_interval=20,
-        #resample_probability=0.25,
-        quantile_fraction=0.25,  # copy bottom % with top %
-        log_config=True,
-        # Specifies the search space for these hyperparams
-        hyperparam_bounds={
-            "n_estimators" : [50, 200],
-            "min_samples_split" : [2, 6],
-            "min_samples_leaf" : [1, 4]})
+        os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+
+
+        pbt = PB2(
+            time_attr="training_iteration",
+            #metric="mean_accuracy",
+            #mode="max",
+            perturbation_interval=20,
+            #resample_probability=0.25,
+            quantile_fraction=0.25,  # copy bottom % with top %
+            log_config=True,
+            # Specifies the search space for these hyperparams
+            hyperparam_bounds={
+                "n_estimators" : [50, 200],
+                "min_samples_split" : [2, 6],
+                "min_samples_leaf" : [1, 4]})
         
-    variants = ['non_snv']#,'snv_protein_coding'] #'non_snv','snv',
-    for var in variants:
+    
         start = time.perf_counter()
         if not os.path.exists('tuning/'+var):
             os.makedirs('./tuning/'+var)
         output = f"tuning/{var}/RandomForestClassifier_{var}_.csv"
         print('Working with '+var+' dataset...', file=open(output, "w"))
         print('Working with '+var+' dataset...')
-        #X_train, X_test, Y_train, Y_test, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
-        #X_train, X_test, Y_train, Y_test, feature_names = data_parsing(var,config_dict,output)
-        #objective = RF_PB2(X_train, X_test, Y_train, Y_test)
         analysis = run(
             RF_PB2,
-            name="RandomForestClassifier_PB2",
+            name=f"RandomForestClassifier_PB2_{var}",
             verbose=0,
             scheduler=pbt,
             reuse_actors=True,
@@ -197,9 +172,9 @@ if __name__ == "__main__":
             metric="mean_accuracy",
             mode="max",
             stop={
-                "training_iteration": 50,
+                "training_iteration": 100,
             },
-            num_samples=10,
+            num_samples=5,
             fail_fast=True,
             queue_trials=True,
             config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
@@ -207,15 +182,14 @@ if __name__ == "__main__":
                 "n_estimators" : tune.randint(50, 200),
                 "min_samples_split" : tune.randint(2, 6),
                 "min_samples_leaf" : tune.randint(1, 4),
-                "max_features" : tune.choice(["sqrt", "log2"])
+                "criterion" : tune.choice(["gini", "entropy"]),
+                "max_features" : tune.choice(["sqrt", "log2"]),
+                "class_weight" : tune.choice(["None", "balanced", "balanced_subsample"])
         })
         finish = (time.perf_counter()- start)/120
         #ttime = (finish- start)/120
         print(f'Total time in hrs: {finish}')
-        print("RandomForestClassifier best hyperparameters found were: ", analysis.best_config, file=open(f"tuning/{var}/tuned_parameters_{var}_.csv", "a"))
-        RF_PB2().results(analysis.best_config, var, output)
+        print(f"RandomForestClassifier best hyperparameters found for {var} were:  {analysis.best_config}", file=open(f"tuning/tuned_parameters.csv", "a"))
+        RF_PB2(analysis.best_config).results(analysis.best_config, var, output)
         gc.collect()
-    
-
-    
     

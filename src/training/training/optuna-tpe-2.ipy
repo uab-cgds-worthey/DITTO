@@ -166,8 +166,8 @@ def data_parsing(var,config_dict,output):
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
     Y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
-    Y_train = pd.get_dummies(Y_train)
-    #Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']) 
+    #Y_train = pd.get_dummies(Y_train)
+    Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']).ravel() 
 
     X_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
     #var = X_test[config_dict['ML_VAR']]
@@ -176,8 +176,8 @@ def data_parsing(var,config_dict,output):
     X_test = X_test.values
     Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
     print('Data Loaded!')
-    Y_test = pd.get_dummies(Y_test)
-    #Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']) 
+    #Y_test = pd.get_dummies(Y_test)
+    Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']).ravel() 
     print(f'Shape: {Y_test.shape}')
     #scaler = StandardScaler().fit(X_train)
     #X_train = scaler.transform(X_train)
@@ -191,7 +191,7 @@ if __name__ == "__main__":
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    variants = ['snv']#,'snv_protein_coding'] #'non_snv',
+    variants = ['non_snv']#,'snv_protein_coding'] #'non_snv',
     for var in variants:
         start = time.perf_counter()
         if not os.path.exists('tuning/'+var):

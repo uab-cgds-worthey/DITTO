@@ -19,9 +19,10 @@ import gc
 import shap
 from joblib import dump, load
 import matplotlib.pyplot as plt
-#import shutil
 import warnings
 warnings.simplefilter("ignore")
+import functools
+print = functools.partial(print, flush=True)
 
 TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
@@ -38,8 +39,7 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         x_train = x_train.values
         y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
         #Y_train = pd.get_dummies(Y_train)
-        y_train = label_binarize(y_train.values, classes=['low_impact', 'high_impact']) 
-
+        y_train = label_binarize(y_train.values, classes=['low_impact', 'high_impact']).ravel()  
         x_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
         #var = X_test[config_dict['ML_VAR']]
         x_test = x_test.drop(config_dict['ML_VAR'], axis=1)
@@ -48,7 +48,7 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
         print('Data Loaded!')
         #Y_test = pd.get_dummies(Y_test)
-        y_test = label_binarize(y_test.values, classes=['low_impact', 'high_impact']) 
+        y_test = label_binarize(y_test.values, classes=['low_impact', 'high_impact']).ravel()  
         #print(f'Shape: {Y_test.shape}')
         return x_train, x_test, y_train, y_test, feature_names
 
@@ -116,90 +116,80 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         plt.figure()
         shap.summary_plot(shap_values, background, self.feature_names, show=False)
         plt.savefig(f"./tuning/{var}/RandomForestClassifier_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
-        del shap_values,background
         return None
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--smoke-test", action="store_true", help="Finish quickly for testing")
-    parser.add_argument(
-        "--var_type",
-        type=str,
-        required=True,
-        default="non_snv",
-        help="The variation type to tune classifier (Default: non_snv).")
-    args = parser.parse_args()
-    if args.smoke_test:
-        ray.init(num_cpus=2)  # force pausing to happen for test
-    else:
-        ray.init(ignore_reinit_error=True)
-    
-    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    
+    variants = ['non_snv','snv','snv_protein_coding']
+    for var in variants:    
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "--smoke-test", action="store_true", help="Finish quickly for testing")
+        args, _ = parser.parse_known_args()
+        if args.smoke_test:
+            ray.init(num_cpus=2)  # force pausing to happen for test
+        else:
+            ray.init(ignore_reinit_error=True)
 
-    pbt = PB2(
-        time_attr="training_iteration",
-        metric="mean_accuracy",
-        mode="max",
-        perturbation_interval=20,
-        #resample_probability=0.25,
-        quantile_fraction=0.25,  # copy bottom % with top %
-        log_config=True,
-        # Specifies the search space for these hyperparams
-        hyperparam_bounds={
-            "n_estimators" : [50, 200],
-            "min_samples_split" : [2, 6],
-            "min_samples_leaf" : [1, 4]})
+        os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+
+
+        pbt = PB2(
+            time_attr="training_iteration",
+            #metric="mean_accuracy",
+            #mode="max",
+            perturbation_interval=20,
+            #resample_probability=0.25,
+            quantile_fraction=0.25,  # copy bottom % with top %
+            log_config=True,
+            # Specifies the search space for these hyperparams
+            hyperparam_bounds={
+                "n_estimators" : [50, 200],
+                "min_samples_split" : [2, 6],
+                "min_samples_leaf" : [1, 4]})
         
     
-    var = args.var_type
-    start = time.perf_counter()
-    if not os.path.exists('tuning/'+var):
-        os.makedirs('./tuning/'+var)
-    output = f"tuning/{var}/RandomForestClassifier_{var}_.csv"
-     
-    print('Working with '+var+' dataset...', file=open(output, "w"))
-    print('Working with '+var+' dataset...')
-    
-    analysis = run(
-        RF_PB2,
-        name=f"RandomForestClassifier_PB2_{var}",
-        verbose=0,
-        scheduler=pbt,
-        reuse_actors=True,
-        #resources_per_trial={
-        ##    "cpu": 1,
-        #    "gpu": 1
-        #},
-        #global_checkpoint_period=np.inf,   # Do not save checkpoints based on time interval
-        checkpoint_freq = 20,        # Save checkpoint every time the checkpoint_score_attr improves
-        checkpoint_at_end = True,   
-        keep_checkpoints_num = 2,   # Keep only the best checkpoint
-        checkpoint_score_attr = 'mean_accuracy', # Metric used to compare checkpoints
-        #metric="mean_accuracy",
-        #mode="max",
-        stop={
-            "training_iteration": 100,
-        },
-        num_samples=5,
-        fail_fast=True,
-        queue_trials=True,
-        config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
-            "var": var,
-            "n_estimators" : tune.randint(50, 200),
-            "min_samples_split" : tune.randint(2, 6),
-            "min_samples_leaf" : tune.randint(1, 4),
-            "criterion" : tune.choice(["gini", "entropy"]),
-            "max_features" : tune.choice(["sqrt", "log2"]),
-            "class_weight" : tune.choice(["None", "balanced", "balanced_subsample"])
-    })
-    finish = (time.perf_counter()- start)/120
-    #ttime = (finish- start)/120
-    print(f'Total time in min: {finish}')
-    best_config = analysis.get_best_config(metric = "mean_accuracy",mode = "max")
-    print(f"RandomForestClassifier best hyperparameters found for {var} were:  {best_config}", file=open(f"tuning/{var}/tuned_parameters_{var}_.csv", "a"))
-    RF_PB2(best_config).results(best_config, var, output)
-    gc.collect()
-    #shutil.rmtree('/home/tmamidi/ray_results')
+        start = time.perf_counter()
+        if not os.path.exists('tuning/'+var):
+            os.makedirs('./tuning/'+var)
+        output = f"tuning/{var}/RandomForestClassifier_{var}_.csv"
+        print('Working with '+var+' dataset...', file=open(output, "w"))
+        print('Working with '+var+' dataset...')
+        analysis = run(
+            RF_PB2,
+            name=f"RandomForestClassifier_PB2_{var}",
+            verbose=0,
+            scheduler=pbt,
+            reuse_actors=True,
+            #resources_per_trial={
+            ##    "cpu": 1,
+            #    "gpu": 1
+            #},
+            #global_checkpoint_period=np.inf,   # Do not save checkpoints based on time interval
+            checkpoint_freq = 20,        # Save checkpoint every time the checkpoint_score_attr improves
+            checkpoint_at_end = True,   
+            keep_checkpoints_num = 2,   # Keep only the best checkpoint
+            checkpoint_score_attr = 'mean_accuracy', # Metric used to compare checkpoints
+            metric="mean_accuracy",
+            mode="max",
+            stop={
+                "training_iteration": 100,
+            },
+            num_samples=5,
+            fail_fast=True,
+            queue_trials=True,
+            config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
+                "var": var,
+                "n_estimators" : tune.randint(50, 200),
+                "min_samples_split" : tune.randint(2, 6),
+                "min_samples_leaf" : tune.randint(1, 4),
+                "criterion" : tune.choice(["gini", "entropy"]),
+                "max_features" : tune.choice(["sqrt", "log2"]),
+                "class_weight" : tune.choice(["None", "balanced", "balanced_subsample"])
+        })
+        finish = (time.perf_counter()- start)/120
+        #ttime = (finish- start)/120
+        print(f'Total time in hrs: {finish}')
+        print(f"RandomForestClassifier best hyperparameters found for {var} were:  {analysis.best_config}", file=open(f"tuning/tuned_parameters.csv", "a"))
+        RF_PB2(analysis.best_config).results(analysis.best_config, var, output)
+        gc.collect()
     
