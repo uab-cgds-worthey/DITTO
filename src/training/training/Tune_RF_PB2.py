@@ -54,7 +54,7 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
 
     def setup(self, config):
         self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
-        model = RandomForestClassifier(random_state=42, n_estimators=self.config.get("n_estimators", 100), min_samples_split=self.config.get("min_samples_split",2), min_samples_leaf=self.config.get("min_samples_leaf",1), max_features=self.config.get("max_features","sqrt"), n_jobs = -1)
+        model = RandomForestClassifier(random_state=42, n_estimators=self.config.get("n_estimators", 100), min_samples_split=self.config.get("min_samples_split",2), min_samples_leaf=self.config.get("min_samples_leaf",1), criterion=self.config.get("criterion","gini"), max_features=self.config.get("max_features","sqrt"), class_weight=self.config.get("class_weight","balanced"), n_jobs = -1)
         #model = RandomForestClassifier(config)
         self.model = model
 
@@ -62,7 +62,9 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         self.n_estimators = new_config["n_estimators"]
         self.min_samples_split = new_config["min_samples_split"]
         self.min_samples_leaf = new_config["min_samples_leaf"]
+        self.criterion = new_config["criterion"]
         self.max_features = new_config["max_features"]
+        self.class_weight = new_config["class_weight"]
         self.config = new_config
         return True
 
@@ -92,7 +94,7 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
     def results(self,config,var, output):
         start1 = time.perf_counter()
         self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
-        clf = RandomForestClassifier(random_state=42, n_estimators=config["n_estimators"], min_samples_split=config["min_samples_split"], min_samples_leaf=config["min_samples_leaf"], max_features=config["max_features"], n_jobs = -1)
+        clf = RandomForestClassifier(random_state=42, n_estimators=config["n_estimators"], min_samples_split=config["min_samples_split"], min_samples_leaf=config["min_samples_leaf"], criterion=config["criterion"], max_features=config["max_features"], class_weight=config["class_weight"], n_jobs = -1)
         score = cross_validate(clf, self.x_train, self.y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
         clf = score['estimator'][np.argmax(score['test_score'])]
         training_score = np.mean(score['train_score'])
@@ -160,6 +162,7 @@ if __name__ == "__main__":
             verbose=0,
             scheduler=pbt,
             reuse_actors=True,
+            local_dir="./tune_results",
             #resources_per_trial={
             ##    "cpu": 1,
             #    "gpu": 1
@@ -184,11 +187,11 @@ if __name__ == "__main__":
                 "min_samples_leaf" : tune.randint(1, 4),
                 "criterion" : tune.choice(["gini", "entropy"]),
                 "max_features" : tune.choice(["sqrt", "log2"]),
-                "class_weight" : tune.choice(["None", "balanced", "balanced_subsample"])
+                "class_weight" : tune.choice(["balanced", "balanced_subsample"])
         })
         finish = (time.perf_counter()- start)/120
         #ttime = (finish- start)/120
-        print(f'Total time in hrs: {finish}')
+        print(f'Total time in min: {finish}')
         print(f"RandomForestClassifier best hyperparameters found for {var} were:  {analysis.best_config}", file=open(f"tuning/tuned_parameters.csv", "a"))
         RF_PB2(analysis.best_config).results(analysis.best_config, var, output)
         gc.collect()

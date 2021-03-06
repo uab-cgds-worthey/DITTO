@@ -15,7 +15,9 @@ ${GIVEN_NODE}
 #SBATCH --cpus-per-task=${NUM_CPUS_PER_NODE}
 #SBATCH --mem=${NUM_MEM_PER_CPU}
 #SBATCH --gpus-per-task=${NUM_GPUS_PER_NODE}
-
+# Send mail to the email address when the job fails
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-user=tmamidi@uab.edu
 # Load modules or your own conda environment here
 module load Anaconda3/2020.02
 # conda activate ${CONDA_ENV}
