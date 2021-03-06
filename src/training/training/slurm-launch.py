@@ -1,6 +1,6 @@
 # slurm-launch.py
 # Usage:
-# python slurm-launch.py --exp-name RF_PB2 --command "python Tune_RF_PB2.py" --num-nodes 2 --load-env training --num-cpus 10 # --num-gpus 4
+# python slurm-launch.py --exp-name RF_PB2 --command "python Tune_RF_PB2.py --vtype snv_protein_coding"  --load-env training
 
 import argparse
 import subprocess
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         "--num-nodes",
         "-n",
         type=int,
-        default=1,
+        default=2,
         help="Number of nodes to use.")
     parser.add_argument(
         "--node",
@@ -47,13 +47,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num-cpus",
         type=int,
-        default=1,
-        help="Number of CPUs to use in each node. (Default: 1)")
+        default=10,
+        help="Number of CPUs to use in each node. (Default: 10)")
     parser.add_argument(
         "--mem-cpus",
         type=str,
-        default="100G",
-        help="Memory per CPU to use. (Default: 50G)")
+        default="150G",
+        help="Total Memory to use. (Default: 150G)")
     parser.add_argument(
         "--partition",
         "-p",
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--load-env",
         type=str,
-        help="The script to load your environment ('module load cuda/10.1')")
+        help="The script to load your environment ('training')")
     parser.add_argument(
         "--command",
         type=str,
@@ -79,7 +79,7 @@ if __name__ == "__main__":
         node_info = ""
 
     job_name = "{}_{}".format(args.exp_name,
-                              time.strftime("%m%d-%H%M", time.localtime()))
+                              time.strftime("%m%d-%H%M%S", time.localtime()))
 
     partition_option = "#SBATCH --partition={}".format(
         args.partition) if args.partition else ""

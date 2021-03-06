@@ -1,4 +1,4 @@
-name: Ditto
+name: training
 
 channels:
   - conda-forge
