@@ -46,10 +46,10 @@ def data_parsing(var,config_dict,output):
     X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
     #feature_names = X_test.columns.tolist()
     X_test = X_test.values
-    Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv').ravel() 
+    Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
     print('Data Loaded!')
     #Y = pd.get_dummies(y)
-    Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']) 
+    Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']).ravel()  
     
     #scaler = StandardScaler().fit(X_train)
     #X_train = scaler.transform(X_train)

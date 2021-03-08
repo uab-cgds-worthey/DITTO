@@ -14,7 +14,7 @@ JOB_NAME = "${JOB_NAME}"
 NUM_NODES = "${NUM_NODES}"
 NUM_GPUS_PER_NODE = "${NUM_GPUS_PER_NODE}"
 NUM_CPUS_PER_NODE = "${NUM_CPUS_PER_NODE}"
-NUM_MEM_PER_CPU = "${NUM_MEM_PER_CPU}"
+TOT_MEM = "${TOT_MEM}"
 PARTITION_OPTION = "${PARTITION_OPTION}"
 COMMAND_PLACEHOLDER = "${COMMAND_PLACEHOLDER}"
 GIVEN_NODE = "${GIVEN_NODE}"
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         "--num-nodes",
         "-n",
         type=int,
-        default=2,
+        default=5,
         help="Number of nodes to use.")
     parser.add_argument(
         "--node",
@@ -50,14 +50,15 @@ if __name__ == "__main__":
         default=10,
         help="Number of CPUs to use in each node. (Default: 10)")
     parser.add_argument(
-        "--mem-cpus",
+        "--mem",
         type=str,
-        default="150G",
-        help="Total Memory to use. (Default: 150G)")
+        default="50G",
+        help="Total Memory to use. (Default: 50G)")
     parser.add_argument(
         "--partition",
-        "-p",
         type=str,
+        default="long",
+        help="Default partition: long"
     )
     parser.add_argument(
         "--load-env",
@@ -91,8 +92,8 @@ if __name__ == "__main__":
     text = text.replace(NUM_NODES, str(args.num_nodes))
     text = text.replace(NUM_GPUS_PER_NODE, str(args.num_gpus))
     text = text.replace(NUM_CPUS_PER_NODE, str(args.num_cpus))
-    text = text.replace(NUM_MEM_PER_CPU, str(args.mem_cpus))
-    text = text.replace(PARTITION_OPTION, partition_option)
+    text = text.replace(TOT_MEM, str(args.mem))
+    text = text.replace(PARTITION_OPTION, str(args.partition))
     text = text.replace(COMMAND_PLACEHOLDER, str(args.command))
     text = text.replace(LOAD_ENV, str(args.load_env))
     text = text.replace(GIVEN_NODE, node_info)
