@@ -196,7 +196,7 @@ if __name__ == "__main__":
         analysis = run(
             wrap_trainable(RF_PB2, x_train, x_test, y_train, y_test),
             name=f"RandomForestClassifier_PB2_{var}",
-            verbose=0,
+            verbose=1,
             scheduler=pbt,
             reuse_actors=True,
             local_dir="./ray_results",
@@ -215,13 +215,13 @@ if __name__ == "__main__":
             stop={
                 "training_iteration": 100,
             },
-            num_samples=3,
+            num_samples=10,
             #fail_fast=True,
             queue_trials=True,
             config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
                 "n_estimators" : tune.randint(10, 200),
-                "min_samples_split" : tune.randint(1, 15),
-                "min_samples_leaf" : tune.randint(1, 15),
+                "min_samples_split" : tune.randint(1, 10),
+                "min_samples_leaf" : tune.randint(2, 10),
                 "criterion" : tune.choice(["gini", "entropy"]),
                 "max_features" : tune.choice([None, "sqrt", "log2"]),
                 "class_weight" : tune.choice([None, "balanced", "balanced_subsample"]),
