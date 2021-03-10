@@ -31,7 +31,7 @@ if __name__ == "__main__":
         "--num-nodes",
         "-n",
         type=int,
-        default=5,
+        default=1,
         help="Number of nodes to use.")
     parser.add_argument(
         "--node",
@@ -47,18 +47,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num-cpus",
         type=int,
-        default=10,
-        help="Number of CPUs to use in each node. (Default: 10)")
+        default=4,
+        help="Number of CPUs to use in each node. (Default: 4)")
     parser.add_argument(
         "--mem",
         type=str,
-        default="10G",
-        help="Total Memory to use. (Default: 10G)")
+        default="40G",
+        help="Total Memory to use. (Default: 40G)")
     parser.add_argument(
         "--partition",
         type=str,
-        default="long",
-        help="Default partition: long"
+        default="express",
+        help="Default partition: express"
     )
     parser.add_argument(
         "--load-env",

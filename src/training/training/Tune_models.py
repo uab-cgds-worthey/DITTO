@@ -9,6 +9,7 @@ from tune_sklearn import TuneSearchCV
 ray.init(ignore_reinit_error=True)
 import warnings
 warnings.simplefilter("ignore")
+import joblib
 from joblib import dump, load
 import shap
 #from sklearn.preprocessing import StandardScaler
@@ -20,10 +21,7 @@ from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, conf
 #from sklearn.multiclass import OneVsRestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import SGDClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import  AdaBoostClassifier
-from sklearn.ensemble import  GradientBoostingClassifier
-from sklearn.ensemble import  ExtraTreesClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, ExtraTreesClassifier
 from sklearn.naive_bayes import GaussianNB
 from imblearn.ensemble import BalancedRandomForestClassifier
 from sklearn.neural_network import MLPClassifier
@@ -33,8 +31,8 @@ import yaml
 import functools
 print = functools.partial(print, flush=True)
 import os
-os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-
+import asyncio
+    
 @ray.remote
 def data_parsing(var,config_dict,output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
@@ -66,7 +64,7 @@ def data_parsing(var,config_dict,output):
     return X_train, X_test, Y_train, Y_test, feature_names
 
 
-#@ray.remote
+@ray.remote
 def classifier(clf,model,var, X_train, X_test, Y_train, Y_test,feature_names):
    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
    start = time.perf_counter()
@@ -107,23 +105,49 @@ def classifier(clf,model,var, X_train, X_test, Y_train, Y_test,feature_names):
    #pickle.dump(clf, open("./models/"+var+"/"+clf_name+"_"+var+".pkl", 'wb'))
    return list1
 
+@ray.remote
+def tuning(model,config, X_train, Y_train):
+    hyperopt_tune_search = TuneSearchCV(model,
+                param_distributions=config,
+                n_trials=100,
+                early_stopping=False,
+                max_iters=1,    #max_iters specifies how many times tune-sklearn will be given the decision to start/stop training a model. Thus, if you have early_stopping=False, you should set max_iters=1 (let sklearn fit the entire estimator).
+                search_optimization="bayesian",
+                n_jobs=-1,
+                refit=True,
+                cv=5,
+                verbose=0,
+                loggers = "tensorboard",
+                random_state=42,
+                local_dir="./ray_results",
+                )
+    hyperopt_tune_search.fit(X_train, Y_train)
+    best_config = hyperopt_tune_search.best_params_
+    best_model = hyperopt_tune_search.best_estimator_
+    return best_config, best_model
+
+
 
 if __name__ == "__main__":
+    
+    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+
     #Classifiers I wish to use
     classifiers = {
-        	#ExtraTreesClassifier():{ #bootstrap = True,
-            #    #  warm_start=True, 
-            #    #  oob_score=True): {
-            #    "n_estimators" : tune.randint(50, 200),
-            #    "min_samples_split" : tune.randint(2, 10),
-            #    "min_samples_leaf" : tune.randint(1, 10),
-            #    "criterion" : tune.choice(["gini", "entropy"]),
-            #    "max_features" : tune.choice(["sqrt", "log2"]),
-            #    "class_weight" : tune.choice([None, "balanced", "balanced_subsample"])
-            #},
+        	ExtraTreesClassifier():{ #bootstrap = True,
+                #  warm_start=True, 
+                #  oob_score=True): {
+                "n_estimators" : tune.randint(50, 200),
+                "min_samples_split" : tune.randint(2, 100),
+                "min_samples_leaf" : tune.randint(1, 100),
+                "criterion" : tune.choice(["gini", "entropy"]),
+                "max_features" : tune.choice(["sqrt", "log2"]),
+                #"oob_score" : tune.choice([True, False]),
+                "class_weight" : tune.choice([None, "balanced", "balanced_subsample"])
+            },
             DecisionTreeClassifier(): {
-                "min_samples_split" : tune.randint(1, 100),
-                "min_samples_leaf" : tune.randint(2, 100),
+                "min_samples_split" : tune.randint(2, 100),
+                "min_samples_leaf" : tune.randint(1, 100),
                 "criterion" : tune.choice(["gini", "entropy"]),
                 "max_features" : tune.choice(["sqrt", "log2"]),
                 "class_weight" : tune.choice([None, "balanced"])
@@ -133,24 +157,30 @@ if __name__ == "__main__":
                 'alpha': tune.loguniform(1e-4, 1e-1),
                 'epsilon': tune.uniform(1e-2, 1e-1),
             },
-            #RandomForestClassifier(n_jobs=-1): {
-            #    "n_estimators" : tune.randint(10, 200),
-            #    "min_samples_split" : tune.randint(1, 10),
-            #    "min_samples_leaf" : tune.randint(2, 10),
-            #    "criterion" : tune.choice(["gini", "entropy"]),
-            #    "max_features" : tune.choice(["sqrt", "log2"]),
-            #    "class_weight" : tune.choice(["balanced", "balanced_subsample"]),
-            #    "oob_score" : tune.choice([True, False])
-            #                },
+            RandomForestClassifier(n_jobs=-1): {
+                "n_estimators" : tune.randint(10, 200),
+                "min_samples_split" : tune.randint(2, 100),
+                "min_samples_leaf" : tune.randint(1, 100),
+                "criterion" : tune.choice(["gini", "entropy"]),
+                "max_features" : tune.choice(["sqrt", "log2"]),
+                "class_weight" : tune.choice([None, "balanced", "balanced_subsample"]),
+                #"oob_score" : tune.choice([True, False]),
+                "max_depth" : tune.randint(2, 200)
+                            },
             #AdaBoostClassifier(),
             
             #BalancedRandomForestClassifier(),
             #GaussianNB(),
             #LinearDiscriminantAnalysis(),
             GradientBoostingClassifier(): {
-                "min_samples_split" : tune.randint(1, 100),
-                "min_samples_leaf" : tune.randint(2, 100),
-                "max_features" : tune.choice(["sqrt", "log2"])
+                "n_estimators" : tune.randint(10, 200),
+                "min_samples_split" : tune.randint(2, 100),
+                "min_samples_leaf" : tune.randint(1, 100),
+                "max_features" : tune.choice(["sqrt", "log2"]),
+                "max_features" :  tune.randint(1, 10),
+                "subsample" : tune.uniform(0.0, 1.0),
+                'learning_rate': tune.loguniform(0.01, 1.0),
+                "max_depth" : tune.randint(2, 200)
             }
             #MLPClassifier()
     }
@@ -171,22 +201,9 @@ if __name__ == "__main__":
         #print('Model\tCross_validate(avg_train_roc_auc)\tCross_validate(avg_test_roc_auc)\tCross_validate(avg_train_neg_log_loss)\tCross_validate(avg_test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
         print('Model\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tScore\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
         for model, config in zip(classifiers.keys(), classifiers.values()):
-            hyperopt_tune_search = TuneSearchCV(model,
-                param_distributions=config,
-                #n_trials=5,
-                #early_stopping=True, # uses Async HyperBand if set to True
-                max_iters=100,
-                search_optimization="hyperopt",
-                n_jobs=-1,
-                #refit=True,
-                #cv=5,
-                verbose=1,
-                random_state=42,
-                local_dir="./ray_results",
-                )
-            hyperopt_tune_search.fit(X_train, Y_train)
-            print(f'{model}_{var}:{hyperopt_tune_search.best_params_}', file=open("tuning/tuned_parameters.csv", "a"))
-            list1 = classifier(hyperopt_tune_search,model, var, X_train, X_test, Y_train, Y_test,feature_names)
+            best_config, hyperopt_tune_search = ray.get(tuning.remote(model,config, X_train, Y_train))
+            print(f'{model}_{var}:{best_config}', file=open("tuning/tuned_parameters.csv", "a"))
+            list1 = ray.get(classifier.remote(hyperopt_tune_search,model, var, X_train, X_test, Y_train, Y_test,feature_names))
             #print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\t{list1[8]}\t{list1[9]}\n{list1[10]}', file=open(output, "a"))
             print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\n{list1[7]}', file=open(output, "a"))
             print(f'{model} training and testing done!')
