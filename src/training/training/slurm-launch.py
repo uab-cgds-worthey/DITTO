@@ -47,18 +47,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num-cpus",
         type=int,
-        default=4,
-        help="Number of CPUs to use in each node. (Default: 4)")
+        default=10,
+        help="Number of CPUs to use in each node. (Default: 10)")
     parser.add_argument(
         "--mem",
         type=str,
-        default="40G",
-        help="Total Memory to use. (Default: 40G)")
+        default="150G",
+        help="Total Memory to use. (Default: 150G)")
     parser.add_argument(
         "--partition",
         type=str,
-        default="express",
-        help="Default partition: express"
+        default="long",
+        help="Default partition: long"
     )
     parser.add_argument(
         "--load-env",

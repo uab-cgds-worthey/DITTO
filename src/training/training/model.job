@@ -30,6 +30,5 @@ module load Anaconda3/2020.02
 source activate training
 
 #Run your commands here
-#python Ditto_snv.py
+python Ditto_snv.py
 #python Ditto_non_snv.py
-python Tune_models.py

@@ -2,7 +2,7 @@ Getting started
 ===============
 
 ############# 6/5/20 ###################################
-srun --ntasks=1 --cpus-per-task=1 --mem-per-cpu=50G --time=01:59:00 --partition=express --job-name=classify --pty /bin/bash
+srun --ntasks=1 --cpus-per-task=4 --mem-per-cpu=40G --time=01:59:00 --partition=express --job-name=classify --pty /bin/bash
 Using conda envi to install and work on tools
     module load Anaconda3/2020.02
     source activate testing         #for GPU Neural Networks
