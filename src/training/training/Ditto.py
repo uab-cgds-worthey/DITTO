@@ -26,6 +26,8 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import matplotlib.pyplot as plt
 import yaml
 from sklearn.ensemble import VotingClassifier
+import functools  
+print = functools.partial(print, flush=True)
 import os
 os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
 
@@ -37,16 +39,15 @@ def data_parsing(var,config_dict,output):
     X_train = pd.read_csv(f'train_{var}/merged_data-train_{var}.csv')
     #var = X_train[config_dict['ML_VAR']]
     X_train = X_train.drop(config_dict['ML_VAR'], axis=1)
-    feature_names = X_train.columns.tolist()
+    #feature_names = X_train.columns.tolist()
     X_train = X_train.values
     Y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
     Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']).ravel() 
-
     X_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
     #var = X_test[config_dict['ML_VAR']]
     X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
     #feature_names = X_test.columns.tolist()
-    X_test = X_test.values
+    #X_test = X_test.values
     Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
     print('Data Loaded!')
     #Y = pd.get_dummies(y)
@@ -57,18 +58,20 @@ def data_parsing(var,config_dict,output):
     #X_test = scaler.transform(X_test)
     # explain all the predictions in the test set
     background = shap.kmeans(X_train, 10)
-    return X_train, X_test, Y_train, Y_test, background, feature_names
+    return X_train, X_test, Y_train, Y_test, background
 
 
 @ray.remote(num_cpus=9)
-def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_names):
+def classifier(clf,var, X_train, X_test, Y_train, Y_test,background):
    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
    start = time.perf_counter()
-   score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
+   score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=1)
    clf = score['estimator'][np.argmax(score['test_score'])]
    #y_score = cross_val_predict(clf, X_train, Y_train, cv=5, n_jobs=-1, verbose=0)
    #class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
    #clf.fit(X_train, Y_train) #, class_weight=class_weights)
+   feature_names = X_test.columns.tolist()
+   X_test = X_test.values
    y_score = clf.predict(X_test)
    prc = precision_score(Y_test,y_score, average="weighted")
    recall  = recall_score(Y_test,y_score, average="weighted")
@@ -112,22 +115,22 @@ if __name__ == "__main__":
         ('LinearDiscriminantAnalysis',LinearDiscriminantAnalysis()),
         ('MLPClassifier',MLPClassifier())
         #,('EasyEnsembleClassifier',EasyEnsembleClassifier()) 
-        ], voting='hard', n_jobs=-1, verbose=1)
+        ], voting='soft', n_jobs=-1, verbose=1)
     
     
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    variants = ['snv','non_snv','snv_protein_coding'] #'snv',
+    variants = ['snv_protein_coding'] #'snv','snv','non_snv',
     for var in variants:
         if not os.path.exists('Ditto/'+var):
             os.makedirs('./Ditto/'+var)
         output = f"Ditto/"+var+"/ML_results_"+var+"_.csv"
         print('Working with '+var+' dataset...', file=open(output, "a"))
         print('Working with '+var+' dataset...')
-        X_train, X_test, Y_train, Y_test, background, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
+        X_train, X_test, Y_train, Y_test, background = ray.get(data_parsing.remote(var,config_dict,output))
         print('Model\tCross_validate(avg_train_score)\tCross_validate(avg_test_score)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
-        list1 = ray.get(classifier.remote(classifiers,var, X_train, X_test, Y_train, Y_test,background,feature_names))
+        list1 = ray.get(classifier.remote(classifiers,var, X_train, X_test, Y_train, Y_test,background))
         print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\n{list1[8]}', file=open(output, "a"))
         print(f'training and testing done!')
 

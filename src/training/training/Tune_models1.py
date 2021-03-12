@@ -98,7 +98,7 @@ def classifier(clf,model,var, X_train, X_test, Y_train, Y_test,feature_names):
    del  X_train, Y_train
    explainer = shap.KernelExplainer(clf.predict, background)
    del clf, background
-   background = X_test[np.random.choice(X_test.shape[0], 10, replace=False)]
+   background = X_test[np.random.choice(X_test.shape[0], 1000, replace=False)]
    del X_test
    shap_values = explainer.shap_values(background)
    plt.figure()
@@ -209,7 +209,7 @@ if __name__ == "__main__":
                 "min_samples_leaf" : tune.randint(1, 100),
                 "max_features" : tune.choice(["sqrt", "log2"]),
                 "max_features" :  tune.randint(1, 10),
-                "subsample" : tune.uniform(0.0, 1.0),
+                "subsample" : tune.uniform(0.1, 1.0),
                 'learning_rate': tune.loguniform(0.01, 1.0),
                 "max_depth" : tune.randint(2, 200)
             }},
