@@ -499,3 +499,7 @@ Confusion_matrix[low_impact, high_impact]:
 ################### 3/05/21 ######################################################################
 Working the past week to tune the classifiers.
 Finally, I can make classifiers to tune with Ray Tune PB2. Only downside is that the default parameters perform better than tuned models, lol
+
+################### 3/17/21 ######################################################################
+Tuning all the models with TuneSearchCV. They're all under the folder Tuning. Code to tune them - 
+    `for FILE in Tuning/*.py; do python slurm-launch.py --exp-name $FILE  --command "python $FILE" ; done`

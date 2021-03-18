@@ -4,9 +4,8 @@ import pandas as pd
 import time
 import ray
 from ray import tune
+import argparse
 from tune_sklearn import TuneSearchCV
-# Start Ray.
-ray.init(ignore_reinit_error=True)
 import warnings
 warnings.simplefilter("ignore")
 import joblib
@@ -15,7 +14,7 @@ import shap
 #from sklearn.preprocessing import StandardScaler
 #from sklearn.feature_selection import RFE
 #from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import cross_validate
+from sklearn.model_selection import cross_validate, StratifiedKFold
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 #from sklearn.multiclass import OneVsRestClassifier
@@ -70,14 +69,15 @@ def data_parsing(var,config_dict,output):
 
 
 @ray.remote
-def classifier(clf,model,var, X_train, X_test, Y_train, Y_test,feature_names):
+def classifier(clf,model,var, X_train, X_test, Y_train, Y_test,feature_names,output):
    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
    start = time.perf_counter()
-   score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0, scoring=('roc_auc','neg_log_loss'))
-   clf = score['estimator'][np.argmin(score['test_neg_log_loss'])]
+   #score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0, scoring=('roc_auc','neg_log_loss'))
+   #clf = score['estimator'][np.argmin(score['test_neg_log_loss'])]
    #y_score = cross_val_predict(clf, X_train, Y_train, cv=5, n_jobs=-1, verbose=0)
    #class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
    clf.fit(X_train, Y_train) #, class_weight=class_weights)
+   score = clf.score(X_train, Y_train)
    clf_name = str(type(model)).split("'")[1]  #.split(".")[3]
    with open(f"./tuning/{var}/{model}_{var}.joblib", 'wb') as f:
     dump(clf, f, compress='lz4')
@@ -89,9 +89,11 @@ def classifier(clf,model,var, X_train, X_test, Y_train, Y_test,feature_names):
    roc_auc = roc_auc_score(Y_test, y_score)
    #roc_auc = roc_auc_score(Y_test, np.argmax(y_score, axis=1))
    accuracy = accuracy_score(Y_test, y_score)
-   #score = clf.score(X_train, Y_train)
    #matrix = confusion_matrix(np.argmax(Y_test, axis=1), np.argmax(y_score, axis=1))
    matrix = confusion_matrix(Y_test, y_score)
+   finish = (time.perf_counter()-start)/60
+   #list1 = [clf_name, score, prc, recall, roc_auc, accuracy, finish, matrix]
+   print(f'{clf_name}\t{score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
    del Y_test
    # explain all the predictions in the test set
    background = shap.kmeans(X_train, 10)
@@ -106,9 +108,7 @@ def classifier(clf,model,var, X_train, X_test, Y_train, Y_test,feature_names):
    #shap.plots.waterfall(shap_values[0], max_display=15)
    plt.savefig(f"./tuning/{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
    del background, explainer, model, feature_names
-   finish = (time.perf_counter()-start)/60
-   #list1 = [model ,prc, recall, roc_auc, accuracy, score, finish, matrix]
-   list1 = [clf_name, np.mean(score['train_roc_auc']), np.mean(score['test_roc_auc']),np.mean(score['train_neg_log_loss']), np.mean(score['test_neg_log_loss']), prc, recall, roc_auc, accuracy, finish, matrix]
+   #list1 = [clf_name, np.mean(score['train_roc_auc']), np.mean(score['test_roc_auc']),np.mean(score['train_neg_log_loss']), np.mean(score['test_neg_log_loss']), prc, recall, roc_auc, accuracy, finish, matrix]
    #pickle.dump(clf, open("./models/"+var+"/"+clf_name+"_"+var+".pkl", 'wb'))
    return list1
 
@@ -123,9 +123,9 @@ def tuning(models, var, X_train, X_test, Y_train, Y_test,feature_names, output):
                     early_stopping=False,
                     max_iters=1,    #max_iters specifies how many times tune-sklearn will be given the decision to start/stop training a model. Thus, if you have early_stopping=False, you should set max_iters=1 (let sklearn fit the entire estimator).
                     search_optimization="bayesian",
-                    n_jobs=-1,
+                    n_jobs=50,
                     refit=True,
-                    cv=5,
+                    cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
                     verbose=0,
                     #loggers = "tensorboard",
                     random_state=42,
@@ -134,9 +134,8 @@ def tuning(models, var, X_train, X_test, Y_train, Y_test,feature_names, output):
         skopt_tune_search.fit(X_train, Y_train)
         best_model = skopt_tune_search.best_estimator_
         print(f'{model}_{var}:{skopt_tune_search.best_params_}', file=open("tuning/tuned_parameters.csv", "a"))
-        list1 = ray.get(classifier.remote(best_model,model, var, X_train, X_test, Y_train, Y_test,feature_names))
-        print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\t{list1[8]}\t{list1[9]}\n{list1[10]}', file=open(output, "a"))
-        #print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\n{list1[7]}', file=open(output, "a"))
+        ray.get(classifier.remote(best_model,model, var, X_train, X_test, Y_train, Y_test,feature_names,output))
+        #print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\t{list1[8]}\t{list1[9]}\n{list1[10]}', file=open(output, "a"))
         print(f'{model} training and testing done!')
         del best_model, config, skopt_tune_search, model, list1
         return None
@@ -144,7 +143,24 @@ def tuning(models, var, X_train, X_test, Y_train, Y_test,feature_names, output):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--smoke-test", action="store_true", help="Finish quickly for testing")
+    parser.add_argument(
+        "--vtype",
+        type=str,
+        default="non_snv",
+        help="Type of variation/s (without spaces between) to tune the classifier (like: snv,non_snv,snv_protein_coding). (Default: non_snv)")
+
+    args = parser.parse_args()
+
+    variants = args.vtype.split(',')
     
+    if args.smoke_test:
+        ray.init(num_cpus=2)  # force pausing to happen for test
+    else:
+        ray.init(ignore_reinit_error=True)
+
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
 
     #Classifiers I wish to use
@@ -235,7 +251,7 @@ if __name__ == "__main__":
         config_dict = yaml.safe_load(fh)
 
     ##variants = ['snv','non_snv','snv_protein_coding'] #'snv',
-    variants = ['non_snv','snv','snv_protein_coding']
+    #variants = ['snv']
     for var in variants:
         if not os.path.exists('tuning/'+var):
             os.makedirs('./tuning/'+var)
@@ -244,7 +260,7 @@ if __name__ == "__main__":
         print('Working with '+var+' dataset...')
         X_train, X_test, Y_train, Y_test, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
     #    #print('Model\tCross_validate(avg_train_roc_auc)\tCross_validate(avg_test_roc_auc)\tCross_validate(avg_train_neg_log_loss)\tCross_validate(avg_test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
-        print('Model\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tScore\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
+        print('Model\tScore\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
         for model in classifiers:
             ray.get(tuning.remote(model, var, X_train, X_test, Y_train, Y_test,feature_names, output))
             

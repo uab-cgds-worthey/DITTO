@@ -63,6 +63,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--load-env",
         type=str,
+        default="training",
         help="The script to load your environment ('training')")
     parser.add_argument(
         "--command",
