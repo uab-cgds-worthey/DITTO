@@ -119,12 +119,12 @@ if __name__ == "__main__":
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    variants = ['snv','non_snv','snv_protein_coding'] #'snv',
+    variants = ['snv_protein_coding'] #'snv','snv','non_snv',
     for var in variants:
         if not os.path.exists('models/'+var):
             os.makedirs('./models/'+var)
         output = "models/"+var+"/ML_results_"+var+"_.csv"
-        print('Working with '+var+' dataset...', file=open(output, "w"))
+        print('Working with '+var+' dataset...', file=open(output, "a"))
         print('Working with '+var+' dataset...')
         X_train, X_test, Y_train, Y_test, background, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
         print('Model\tCross_validate(avg_train_roc_auc)\tCross_validate(avg_test_roc_auc)\tCross_validate(avg_train_neg_log_loss)\tCross_validate(avg_test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]

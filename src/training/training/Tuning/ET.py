@@ -69,7 +69,8 @@ def tuning(models, var, X_train, X_test, Y_train, Y_test,feature_names, output):
                     search_optimization="bayesian",
                     n_jobs=50,
                     refit=True,
-                    cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
+                    cv=5,
+                    #cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
                     verbose=0,
                     #loggers = "tensorboard",
                     random_state=42,
@@ -95,7 +96,6 @@ def tuning(models, var, X_train, X_test, Y_train, Y_test,feature_names, output):
         print('Model\tScore\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
         print(f'{clf_name}\t{score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
         del Y_test
-
         # explain all the predictions in the test set
         background = shap.kmeans(X_train, 10)
         del  X_train, Y_train
