@@ -63,14 +63,13 @@ def tuning(models, var, X_train, X_test, Y_train, Y_test,feature_names, output):
         start = time.perf_counter()
         clf = TuneSearchCV(model,
                     param_distributions=config,
-                    n_trials=300,
+                    n_trials=500,
                     early_stopping=False,
                     max_iters=1,    #max_iters specifies how many times tune-sklearn will be given the decision to start/stop training a model. Thus, if you have early_stopping=False, you should set max_iters=1 (let sklearn fit the entire estimator).
                     search_optimization="bayesian",
                     n_jobs=50,
                     refit=True,
-                    cv=5,
-                    #cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
+                    cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
                     verbose=0,
                     #loggers = "tensorboard",
                     random_state=42,
@@ -96,6 +95,7 @@ def tuning(models, var, X_train, X_test, Y_train, Y_test,feature_names, output):
         print('Model\tScore\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
         print(f'{clf_name}\t{score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
         del Y_test
+        
         # explain all the predictions in the test set
         background = shap.kmeans(X_train, 10)
         del  X_train, Y_train

@@ -1,4 +1,3 @@
-#from numpy import mean
 import numpy as np
 import pandas as pd
 import time
@@ -64,7 +63,7 @@ def tuning(models, var, X_train, X_test, Y_train, Y_test,feature_names, output):
         start = time.perf_counter()
         clf = TuneSearchCV(model,
                     param_distributions=config,
-                    n_trials=300,
+                    n_trials=500,
                     early_stopping=False,
                     max_iters=1,    #max_iters specifies how many times tune-sklearn will be given the decision to start/stop training a model. Thus, if you have early_stopping=False, you should set max_iters=1 (let sklearn fit the entire estimator).
                     search_optimization="bayesian",
