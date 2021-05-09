@@ -3,11 +3,14 @@ import pandas as pd
 import ray
 import time
 import argparse
+import pickle
 from joblib import dump, load
 import yaml
 from ray import tune
 from ray.tune import Trainable, run
-from ray.tune.schedulers.pb2 import PB2
+from ray.tune.suggest.skopt import SkOptSearch
+from ray.tune.suggest import ConcurrencyLimiter
+from ray.tune.schedulers import AsyncHyperBandScheduler
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, cross_validate, StratifiedKFold
 from sklearn.preprocessing import label_binarize
@@ -31,7 +34,7 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         self.x_test = x_test
         self.y_train = y_train
         self.y_test = y_test
-        self.model = RandomForestClassifier(random_state=42, n_estimators=self.config.get("n_estimators", 100), max_depth=self.config.get("max_depth", 2), oob_score=self.config.get("oob_score", False), min_samples_split=self.config.get("min_samples_split",2), min_samples_leaf=self.config.get("min_samples_leaf",1), criterion=self.config.get("criterion","gini"), max_features=self.config.get("max_features","sqrt"), class_weight=self.config.get("class_weight","balanced"), n_jobs = -1)
+        self.model = RandomForestClassifier(random_state=42, n_estimators=self.config.get("n_estimators", 100), max_depth=self.config.get("max_depth", 2), min_samples_split=self.config.get("min_samples_split",2), min_samples_leaf=self.config.get("min_samples_leaf",1), criterion=self.config.get("criterion","gini"), max_features=self.config.get("max_features","sqrt"), class_weight=self.config.get("class_weight","balanced"), n_jobs = -1)
         
 
     def reset_config(self, new_config):
@@ -41,14 +44,14 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
         self.criterion = new_config["criterion"]
         self.max_features = new_config["max_features"]
         self.class_weight = new_config["class_weight"]
-        self.oob_score = new_config["oob_score"]
+        #self.oob_score = new_config["oob_score"]
         self.max_depth = new_config["max_depth"]
         self.config = new_config
         return True
 
     def step(self):
         score = cross_validate(self.model, self.x_train, self.y_train, cv=3, n_jobs=-1, verbose=0)
-        testing_score = np.mean(score['test_score'])
+        testing_score = np.max(score['test_score'])
         #print(accuracy)
         return {"mean_accuracy": testing_score}
 
@@ -71,8 +74,8 @@ class RF_PB2(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_
 def results(config,x_train, x_test, y_train, y_test, var, output, feature_names):
     start1 = time.perf_counter()
     #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
-    clf = self.model = RandomForestClassifier(random_state=42, n_estimators=self.config.get("n_estimators", 100), max_depth=self.config.get("max_depth", 2), oob_score=self.config.get("oob_score", False), min_samples_split=self.config.get("min_samples_split",2), min_samples_leaf=self.config.get("min_samples_leaf",1), criterion=self.config.get("criterion","gini"), max_features=self.config.get("max_features","sqrt"), class_weight=self.config.get("class_weight","balanced"), n_jobs = -1)
-    score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
+    clf = RandomForestClassifier(random_state=42, n_estimators=config.get("n_estimators", 100), max_depth=config.get("max_depth", 2), min_samples_split=config.get("min_samples_split",2), min_samples_leaf=config.get("min_samples_leaf",1), criterion=config.get("criterion","gini"), max_features=config.get("max_features","sqrt"), class_weight=config.get("class_weight","balanced"), n_jobs = -1)
+    score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=1)
     clf = score['estimator'][np.argmax(score['test_score'])]
     training_score = np.mean(score['train_score'])
     testing_score = np.mean(score['test_score'])
@@ -194,12 +197,18 @@ if __name__ == "__main__":
 
         x_train, x_test, y_train, y_test, feature_names = data_parsing(var,config_dict,output)
 
+        skopt_search = SkOptSearch(
+            metric="mean_accuracy",
+            mode="max")
+        skopt_search = ConcurrencyLimiter(skopt_search, max_concurrent=5)
+        scheduler = AsyncHyperBandScheduler()
+
         analysis = run(
             wrap_trainable(RF_PB2, x_train, x_test, y_train, y_test),
             name=f"RandomForestClassifier_PB2_{var}",
             verbose=1,
-            #scheduler=pbt,
-            search_optimization="bayesian",
+            scheduler=scheduler,
+            search_alg=skopt_search,
             reuse_actors=True,
             local_dir="./ray_results",
             max_failures=2,
@@ -210,23 +219,23 @@ if __name__ == "__main__":
             #global_checkpoint_period=np.inf,   # Do not save checkpoints based on time interval
             checkpoint_freq = 20,        # Save checkpoint every time the checkpoint_score_attr improves
             checkpoint_at_end = True,   
-            keep_checkpoints_num = 2,   # Keep only the best checkpoint
+            keep_checkpoints_num = 1,   # Keep only the best checkpoint
             checkpoint_score_attr = 'mean_accuracy', # Metric used to compare checkpoints
             metric="mean_accuracy",
             mode="max",
             stop={
                 "training_iteration": 100,
             },
-            num_samples=10,
+            num_samples=5,
             #fail_fast=True,
             queue_trials=True,
             config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
-                "n_estimators" : tune.randint(10, 200),
-                "min_samples_split" : tune.randint(1, 10),
-                "min_samples_leaf" : tune.randint(2, 10),
+                "n_estimators" : tune.randint(1, 200),
+                "min_samples_split" : tune.randint(2, 10),
+                "min_samples_leaf" : tune.randint(1, 10),
                 "criterion" : tune.choice(["gini", "entropy"]),
-                "max_features" : tune.choice([None, "sqrt", "log2"]),
-                "class_weight" : tune.choice([None, "balanced", "balanced_subsample"]),
+                "max_features" : tune.choice(["sqrt", "log2"]),
+                "class_weight" : tune.choice(["balanced", "balanced_subsample"]),
                 #"oob_score" : tune.choice([True, False]),
                 "max_depth" : tune.randint(2, 200)
 

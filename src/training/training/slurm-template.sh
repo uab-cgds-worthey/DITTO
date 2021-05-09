@@ -55,7 +55,7 @@ echo "IP Head: $ip_head"
 
 echo "STARTING HEAD at $node_1"
 srun --nodes=1 --ntasks=1 -w "$node_1" \
-  ray start --head --node-ip-address="$ip" --port=$port --redis-password="$redis_password"  --temp-dir="$USER_SCRATCH" --block &
+  ray start --head --node-ip-address="$ip" --port=$port --redis-password="$redis_password"  --temp-dir=$USER_SCRATCH --block &
 sleep 30
 
 worker_num=$((SLURM_JOB_NUM_NODES - 1)) #number of nodes other than the head node
