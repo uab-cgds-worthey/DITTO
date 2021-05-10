@@ -25,8 +25,6 @@ print = functools.partial(print, flush=True)
 import os
 import gc
 
-
-@ray.remote
 def data_parsing(var,config_dict,output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     #Load data
@@ -57,60 +55,68 @@ def data_parsing(var,config_dict,output):
     return X_train, X_test, Y_train, Y_test, feature_names
 
 
-@ray.remote
-def tuning(models, var, X_train, X_test, Y_train, Y_test,feature_names, output):
+def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    for model, config in models.items():
-        start = time.perf_counter()
-        clf = TuneSearchCV(model,
-                    param_distributions=config,
-                    n_trials=500,
-                    early_stopping=False,
-                    max_iters=1,    #max_iters specifies how many times tune-sklearn will be given the decision to start/stop training a model. Thus, if you have early_stopping=False, you should set max_iters=1 (let sklearn fit the entire estimator).
-                    search_optimization="bayesian",
-                    n_jobs=50,
-                    refit=True,
-                    cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
-                    verbose=0,
-                    #loggers = "tensorboard",
-                    random_state=42,
-                    local_dir="./ray_results",
-                    )
-        clf.fit(X_train, Y_train)
-        print(f'{model}_{var}:{clf.best_params_}', file=open("tuning/tuned_parameters.csv", "a"))
-        clf = clf.best_estimator_
-        
-        score = clf.score(X_train, Y_train)
-        clf_name = str(type(model)).split("'")[1]  #.split(".")[3]
-        with open(f"./tuning/{var}/{model}_{var}.joblib", 'wb') as f:
-         dump(clf, f, compress='lz4')
-        #with open(f"./models/{var}/{clf_name}_{var}.joblib", 'rb') as f:
-        # clf = load(f)
-        y_score = clf.predict(X_test)
-        prc = precision_score(Y_test,y_score, average="weighted")
-        recall  = recall_score(Y_test,y_score, average="weighted")
-        roc_auc = roc_auc_score(Y_test, y_score)
-        accuracy = accuracy_score(Y_test, y_score)
-        matrix = confusion_matrix(Y_test, y_score)
-        finish = (time.perf_counter()-start)/60
-        print('Model\tScore\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
-        print(f'{clf_name}\t{score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
-        del Y_test
-
-        # explain all the predictions in the test set
-        background = shap.kmeans(X_train, 10)
-        del  X_train, Y_train
-        explainer = shap.KernelExplainer(clf.predict, background)
-        del clf, background
-        background = X_test[np.random.choice(X_test.shape[0], 1000, replace=False)]
-        del X_test
-        shap_values = explainer.shap_values(background)
-        plt.figure()
-        shap.summary_plot(shap_values, background, feature_names, show=False)
-        plt.savefig(f"./tuning/{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
-        del background, explainer, feature_names
-        print(f'{model} training and testing done!')
-        return None
+    model = BalancedRandomForestClassifier(n_jobs=-1)
+    config = {
+                "n_estimators" : tune.randint(1, 200),
+                "min_samples_split" : tune.randint(2, 100),
+                "min_samples_leaf" : tune.randint(1, 100),
+                "criterion" : tune.choice(["gini", "entropy"]),
+                "max_features" : tune.choice(["sqrt", "log2"]),
+                "class_weight" : tune.choice([None, "balanced", "balanced_subsample"]),
+                #"oob_score" : tune.choice([True, False]),
+                "max_depth" : tune.randint(2, 200)
+            }
+    start = time.perf_counter()
+    clf = TuneSearchCV(model,
+                param_distributions=config,
+                n_trials=500,
+                early_stopping=False,
+                max_iters=1,    #max_iters specifies how many times tune-sklearn will be given the decision to start/stop training a model. Thus, if you have early_stopping=False, you should set max_iters=1 (let sklearn fit the entire estimator).
+                search_optimization="bayesian",
+                n_jobs=50,
+                refit=True,
+                cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
+                verbose=0,
+                #loggers = "tensorboard",
+                random_state=42,
+                local_dir="./ray_results",
+                )
+    clf.fit(X_train, Y_train)
+    print(f'{model}_{var}:{clf.best_params_}', file=open("tuning/tuned_parameters.csv", "a"))
+    clf = clf.best_estimator_
+    
+    score = clf.score(X_train, Y_train)
+    clf_name = str(type(model)).split("'")[1]  #.split(".")[3]
+    with open(f"./tuning/{var}/{model}_{var}.joblib", 'wb') as f:
+     dump(clf, f, compress='lz4')
+    #with open(f"./models/{var}/{clf_name}_{var}.joblib", 'rb') as f:
+    # clf = load(f)
+    y_score = clf.predict(X_test)
+    prc = precision_score(Y_test,y_score, average="weighted")
+    recall  = recall_score(Y_test,y_score, average="weighted")
+    roc_auc = roc_auc_score(Y_test, y_score)
+    accuracy = accuracy_score(Y_test, y_score)
+    matrix = confusion_matrix(Y_test, y_score)
+    finish = (time.perf_counter()-start)/60
+    print('Model\tScore\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
+    print(f'{clf_name}\t{score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
+    del Y_test
+    # explain all the predictions in the test set
+    background = shap.kmeans(X_train, 10)
+    del X_train, Y_train
+    explainer = shap.KernelExplainer(clf.predict, background)
+    del clf, background
+    background = X_test[np.random.choice(X_test.shape[0], 1000, replace=False)]
+    del X_test
+    shap_values = explainer.shap_values(background)
+    plt.figure()
+    shap.summary_plot(shap_values, background, feature_names, show=False)
+    plt.savefig(f"./tuning/{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+    del background, explainer, feature_names
+    print(f'{model} training and testing done!')
+    return None
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -124,7 +130,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    variants = args.vtype.split(',')
+    var = args.vtype
     
     if args.smoke_test:
         ray.init(num_cpus=2)  # force pausing to happen for test
@@ -133,30 +139,18 @@ if __name__ == "__main__":
 
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
 
-    #Classifiers I wish to use
-    model = {BalancedRandomForestClassifier(n_jobs=-1): {
-                "n_estimators" : tune.randint(1, 200),
-                "min_samples_split" : tune.randint(2, 100),
-                "min_samples_leaf" : tune.randint(1, 100),
-                "criterion" : tune.choice(["gini", "entropy"]),
-                "max_features" : tune.choice(["sqrt", "log2"]),
-                "class_weight" : tune.choice([None, "balanced", "balanced_subsample"]),
-                #"oob_score" : tune.choice([True, False]),
-                "max_depth" : tune.randint(2, 200)
-            }}
-    
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
     ##variants = ['snv','non_snv','snv_protein_coding'] 
-    for var in variants:
-        if not os.path.exists('tuning/'+var):
-            os.makedirs('./tuning/'+var)
-        output = "tuning/"+var+"/ML_results_"+var+".csv"
-        #print('Working with '+var+' dataset...', file=open(output, "w"))
-        print('Working with '+var+' dataset...')
-        X_train, X_test, Y_train, Y_test, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
-        ray.get(tuning.remote(model, var, X_train, X_test, Y_train, Y_test,feature_names, output))
-        gc.collect()
+    
+    if not os.path.exists('tuning/'+var):
+        os.makedirs('./tuning/'+var)
+    output = "tuning/"+var+"/ML_results_"+var+".csv"
+    #print('Working with '+var+' dataset...', file=open(output, "w"))
+    print('Working with '+var+' dataset...')
+    X_train, X_test, Y_train, Y_test, feature_names = data_parsing(var,config_dict,output)
+    tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output)
+    gc.collect()
             
 

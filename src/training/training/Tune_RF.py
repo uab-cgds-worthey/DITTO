@@ -104,7 +104,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     shap.summary_plot(shap_values, background, feature_names, show=False)
     plt.savefig(f"./tuning/{var}/RandomForestClassifier_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
     del background, explainer, feature_names
-    print(f'{clf} training and testing done!')
+    print(f'training and testing done!')
     return None
 
 def wrap_trainable(trainable, x_train, x_test, y_train, y_test):

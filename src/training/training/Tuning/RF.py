@@ -71,13 +71,13 @@ def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
     start = time.perf_counter()
     clf = TuneSearchCV(model,
                 param_distributions=config,
-                n_trials=100,
+                n_trials=500,
                 early_stopping=False,
                 max_iters=1,    #max_iters specifies how many times tune-sklearn will be given the decision to start/stop training a model. Thus, if you have early_stopping=False, you should set max_iters=1 (let sklearn fit the entire estimator).
                 search_optimization="bayesian",
-                n_jobs=5,
+                n_jobs=50,
                 refit=True,
-                cv= StratifiedKFold(n_splits=3,shuffle=True,random_state=42),
+                cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
                 verbose=0,
                 #loggers = "tensorboard",
                 random_state=42,

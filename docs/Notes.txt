@@ -502,4 +502,4 @@ Finally, I can make classifiers to tune with Ray Tune PB2. Only downside is that
 
 ################### 3/17/21 ######################################################################
 Tuning all the models with TuneSearchCV. They're all under the folder Tuning. Code to tune them - 
-    `for FILE in Tuning/*.py; do python slurm-launch.py --exp-name $FILE  --command "python $FILE" ; done`
+    `for FILE in Tuning/*.py; do python slurm-launch.py --exp-name $FILE  --command "python $FILE --vtype snv_protein_coding" ; done`
