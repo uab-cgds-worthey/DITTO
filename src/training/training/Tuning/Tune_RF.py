@@ -75,8 +75,10 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     start1 = time.perf_counter()
     #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
     clf = RandomForestClassifier(random_state=42, n_estimators=config.get("n_estimators", 100), max_depth=config.get("max_depth", 2), min_samples_split=config.get("min_samples_split",2), min_samples_leaf=config.get("min_samples_leaf",1), criterion=config.get("criterion","gini"), max_features=config.get("max_features","sqrt"), class_weight=config.get("class_weight","balanced"), n_jobs = -1)
-    score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=1)
+    score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
     clf = score['estimator'][np.argmax(score['test_score'])]
+    with open(f"./tuning/{var}/RandomForestClassifier_{var}.joblib", 'wb') as f:
+     dump(clf, f, compress='lz4')
     training_score = np.mean(score['train_score'])
     testing_score = np.mean(score['test_score'])
     y_score = clf.predict(x_test)
@@ -86,18 +88,23 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     accuracy = accuracy_score(y_test, y_score)
     matrix = confusion_matrix(y_test, y_score)
     finish = (time.perf_counter()-start1)/60
-    print(f'RandomForestClassifier: \nCross_validate(avg_train_score): {training_score}\nCross_validate(avg_test_score): {testing_score}\nPrecision: {prc}\nRecall: {recall}\nROC_AUC: {roc_auc}\nAccuracy: {accuracy}\nTime(in min): {finish}\nConfusion Matrix:\n{matrix}', file=open(output, "a"))
+    #print(f'RandomForestClassifier: \nCross_validate(avg_train_score): {training_score}\nCross_validate(avg_test_score): {testing_score}\nPrecision: {prc}\nRecall: {recall}\nROC_AUC: {roc_auc}\nAccuracy: {accuracy}\nTime(in min): {finish}\nConfusion Matrix:\n{matrix}', file=open(output, "a"))
+    clf_name = str(type(clf)).split("'")[1]  #.split(".")[3]
+    print('Model\tCross_validate(avg_train_score)\tCross_validate(avg_test_score)\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
+    print(f'{clf_name}\t{training_score}\t{testing_score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
+    del y_test
     # explain all the predictions in the test set
     background = shap.kmeans(x_train, 10)
     explainer = shap.KernelExplainer(clf.predict, background)
-    with open(f"./tuning/{var}/RandomForestClassifier_{var}.joblib", 'wb') as f:
-     dump(clf, f, compress='lz4')
     del clf, x_train, y_train, background
     background = x_test[np.random.choice(x_test.shape[0], 1000, replace=False)]
+    del x_test
     shap_values = explainer.shap_values(background)
     plt.figure()
     shap.summary_plot(shap_values, background, feature_names, show=False)
     plt.savefig(f"./tuning/{var}/RandomForestClassifier_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+    del background, explainer, feature_names
+    print(f'{clf} training and testing done!')
     return None
 
 def wrap_trainable(trainable, x_train, x_test, y_train, y_test):
@@ -174,25 +181,11 @@ if __name__ == "__main__":
     #variants = ['non_snv','snv','snv_protein_coding']
     for var in variants:
         
-        #pbt = PB2(
-        #    time_attr="training_iteration",
-        #    #metric="mean_accuracy",
-        #    #mode="max",
-        #    perturbation_interval=20,
-        #    #resample_probability=0.25,
-        #    quantile_fraction=0.25,  # copy bottom % with top %
-        #    log_config=True,
-        #    # Specifies the search space for these hyperparams
-        #    hyperparam_bounds={
-        #        "n_estimators" : [50, 200],
-        #        "min_samples_split" : [2, 6],
-        #        "min_samples_leaf" : [1, 4]})
-#
         start = time.perf_counter()
         if not os.path.exists('tuning/'+var):
             os.makedirs('./tuning/'+var)
-        output = f"tuning/{var}/RandomForestClassifier_{var}_.csv"
-        print('Working with '+var+' dataset...', file=open(output, "w"))
+        output = "tuning/"+var+"/ML_results_"+var+".csv"
+        #print('Working with '+var+' dataset...', file=open(output, "w"))
         print('Working with '+var+' dataset...')
 
         x_train, x_test, y_train, y_test, feature_names = data_parsing(var,config_dict,output)
@@ -200,7 +193,7 @@ if __name__ == "__main__":
         skopt_search = SkOptSearch(
             metric="mean_accuracy",
             mode="max")
-        skopt_search = ConcurrencyLimiter(skopt_search, max_concurrent=5)
+        skopt_search = ConcurrencyLimiter(skopt_search, max_concurrent=10)
         scheduler = AsyncHyperBandScheduler()
 
         analysis = run(
