@@ -65,17 +65,17 @@ def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
                 'epsilon': tune.uniform(1e-9, 1e-1),
                 'fit_intercept': tune.choice([True, False]),
                 'learning_rate': tune.choice(['constant', 'optimal', 'invscaling', 'adaptive']),   #'optimal', 
-                "class_weight" : tune.choice([None, "balanced"]),
+                "class_weight" : tune.choice(["balanced"]),
                 'eta0':tune.uniform(0.01, 0.9)
             }
     start = time.perf_counter()
     clf = TuneSearchCV(model,
                 param_distributions=config,
-                n_trials=500,
+                n_trials=300,
                 early_stopping=False,
                 max_iters=1,    #max_iters specifies how many times tune-sklearn will be given the decision to start/stop training a model. Thus, if you have early_stopping=False, you should set max_iters=1 (let sklearn fit the entire estimator).
                 search_optimization="bayesian",
-                n_jobs=50,
+                n_jobs=30,
                 refit=True,
                 cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
                 verbose=0,
@@ -139,18 +139,6 @@ if __name__ == "__main__":
 
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
 
-    #Classifiers I wish to use
-    #model = {SGDClassifier(n_jobs=-1): {
-    #            'loss': tune.choice(['squared_hinge', 'hinge', 'log', 'modified_huber', 'perceptron', 'squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive']),
-    #            'penalty' : tune.choice(['l2', 'l1', 'elasticnet']),
-    #            'alpha': tune.loguniform(1e-9, 1e-1),
-    #            'epsilon': tune.uniform(1e-9, 1e-1),
-    #            'fit_intercept': tune.choice([True, False]),
-    #            'learning_rate': tune.choice(['constant', 'optimal', 'invscaling', 'adaptive']),   #'optimal', 
-    #            "class_weight" : tune.choice([None, "balanced"]),
-    #            'eta0':tune.uniform(0.01, 0.9)
-    #        }}
-    
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
