@@ -75,7 +75,7 @@ def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
                 early_stopping=False,
                 max_iters=1,    #max_iters specifies how many times tune-sklearn will be given the decision to start/stop training a model. Thus, if you have early_stopping=False, you should set max_iters=1 (let sklearn fit the entire estimator).
                 search_optimization="bayesian",
-                n_jobs=30,
+                n_jobs=10,
                 refit=True,
                 cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
                 verbose=0,
@@ -84,7 +84,7 @@ def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
                 local_dir="./ray_results",
                 )
     clf.fit(X_train, Y_train)
-    print(f'{model}_{var}_tsv:{clf.best_params_}', file=open("tuning/tuned_parameters.csv", "a"))
+    print(f'{model}_{var}:{clf.best_params_}', file=open("tuning/tuned_parameters.csv", "a"))
     clf = clf.best_estimator_
     
     score = clf.score(X_train, Y_train)
@@ -101,7 +101,7 @@ def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
     matrix = confusion_matrix(Y_test, y_score)
     finish = (time.perf_counter()-start)/60
     print('Model\tScore\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
-    print(f'{clf_name}_tsv\t{score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
+    print(f'{clf_name}\t{score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
     del Y_test
     # explain all the predictions in the test set
     background = shap.kmeans(X_train, 10)

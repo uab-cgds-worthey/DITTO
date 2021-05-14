@@ -84,7 +84,7 @@ def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
                 local_dir="./ray_results",
                 )
     clf.fit(X_train, Y_train)
-    print(f'{model}_{var}_tsv:{clf.best_params_}', file=open("tuning/tuned_parameters.csv", "a"))
+    print(f'{model}_{var}:{clf.best_params_}', file=open("tuning/tuned_parameters.csv", "a"))
     clf = clf.best_estimator_
     
     score = clf.score(X_train, Y_train)
@@ -101,7 +101,7 @@ def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
     matrix = confusion_matrix(Y_test, y_score)
     finish = (time.perf_counter()-start)/60
     print('Model\tScore\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
-    print(f'{clf_name}_tsv\t{score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
+    print(f'{clf_name}\t{score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
     del Y_test
     # explain all the predictions in the test set
     background = shap.kmeans(X_train, 10)
@@ -126,7 +126,7 @@ if __name__ == "__main__":
         "--vtype",
         type=str,
         default="non_snv",
-        help="Type of variation/s (without spaces between) to tune the classifier (like: snv,non_snv,snv_protein_coding). (Default: non_snv)")
+        help="Type of variation to tune the classifier (like: snv,non_snv,snv_protein_coding). (Default: non_snv)")
 
     args = parser.parse_args()
 
