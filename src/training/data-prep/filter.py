@@ -63,10 +63,10 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     df = df.drop(config_dict['var'], axis=1)
     print('parsing difficult columns......')
     if 'non_snv' in stats:
-        df['GERP'] = [np.mean([float(item.replace('.', '0')) for item in i]) if type(i) is list else i for i in df['GERP'].str.split('&')]
+        df['GERP'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['GERP'].str.split('&')]
     else:
         for col in tqdm(config_dict['col_conv']):
-            df[col] = [np.mean([float(item.replace('.', '0')) for item in i]) if type(i) is list else i for i in df[col].str.split('&')]
+            df[col] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df[col].str.split('&')]
     print('One-hot encoding...')
     df = pd.get_dummies(df, prefix_sep='_')
     print(df.columns.values.tolist(),file=open(column_info, "w"))

@@ -59,7 +59,7 @@ def data_parsing(var,config_dict,output):
     return X_train, X_test, Y_train, Y_test, background, feature_names
 
 
-@ray.remote(num_cpus=9)
+@ray.remote #(num_cpus=9)
 def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_names):
    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
    start = time.perf_counter()
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    variants = ['snv_protein_coding'] #'snv','snv','non_snv',
+    variants = ['snv_protein_coding', 'snv','non_snv']
     for var in variants:
         if not os.path.exists('models/'+var):
             os.makedirs('./models/'+var)
