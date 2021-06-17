@@ -16,7 +16,7 @@ from sklearn.model_selection import cross_validate, StratifiedKFold
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import SGDClassifier, LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, StackingClassifier
 from sklearn.naive_bayes import GaussianNB
 from imblearn.ensemble import BalancedRandomForestClassifier
@@ -41,20 +41,20 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tun
         self.y_train = y_train
         self.y_test = y_test
         self.model = StackingClassifier(estimators = [
-            ('rf', RandomForestClassifier(random_state=42, n_estimators=self.config.get("rf_n_estimators", 10), n_jobs = -1)),
-            ('knn', KNeighborsClassifier(n_neighbors=self.config.get("n_neighbors", 1))),
-            ('gbc', GradientBoostingClassifier()),
-            ('dt', DecisionTreeClassifier()),
-            ('sgd', SGDClassifier()),
-            ('gnb', GaussianNB()),
-            ('brf', BalancedRandomForestClassifier()),
-            ('lda', LinearDiscriminantAnalysis())
+            ('rf', RandomForestClassifier(random_state=42, n_estimators=self.config.get("rf_n_estimators", 100), criterion=self.config.get("rf_criterion","gini"), max_depth=self.config.get("rf_max_depth", 2), min_samples_split=self.config.get("rf_min_samples_split",2), min_samples_leaf=self.config.get("rf_min_samples_leaf",1), max_features=self.config.get("rf_max_features","sqrt"), oob_score=self.config.get("rf_oob_score",False), class_weight=self.config.get("rf_class_weight","balanced"), n_jobs = -1)),
+            ('knn', KNeighborsClassifier(n_neighbors=self.config.get("knn_n_neighbors", 1), weights=self.config.get("knn_weights", 'uniform'), algorithm=self.config.get("knn_algorithm", 'auto'), metric=self.config.get("knn_metric", 'minkowski'), n_jobs = -1)),    #leaf_size=self.config.get("leaf_size", 30), 
+            ('gbc', GradientBoostingClassifier(random_state=42, loss=self.config.get("gbc_loss", 100), learning_rate = self.config.get("gbc_learning_rate", 0.1), n_estimators=self.config.get("gbc_n_estimators", 100), subsample=self.config.get("gbc_subsample",1), criterion=self.config.get("gbc_criterion","friedman_mse"), min_samples_split=self.config.get("gbc_min_samples_split",2), min_samples_leaf=self.config.get("gbc_min_samples_leaf",1), max_depth=self.config.get("gbc_max_depth", 2), max_features=self.config.get("gbc_max_features","sqrt"), n_jobs = -1)),
+            ('dt', DecisionTreeClassifier(random_state=42, criterion=self.config.get("dt_criterion","gini"), splitter=self.config.get("dt_splitter","best"), max_depth=self.config.get("dt_max_depth", 2), min_samples_split=self.config.get("dt_min_samples_split",2), min_samples_leaf=self.config.get("dt_min_samples_leaf",1), max_features=self.config.get("dt_max_features","sqrt"), class_weight=self.config.get("dt_class_weight","balanced"))),
+            ('sgd', SGDClassifier(random_state=42, loss=self.config.get("sgd_loss", "hinge"), penalty=self.config.get("sgd_penalty", "l2"), alpha=self.config.get("sgd_alpha", 0.0001), max_iter=self.config.get("sgd_max_iter", 1000), epsilon=self.config.get("sgd_epsilon", 0.1), learning_rate = self.config.get("sgd_learning_rate", "optimal"), eta0 = self.config.get("sgd_eta0", 0.0), power_t = self.config.get("sgd_power_t", 0.5), class_weight=self.config.get("sgd_class_weight","balanced"), n_jobs = -1)),
+            ('gnb', GaussianNB(var_smoothing=self.config.get("var_smoothing", 1e-09))),
+            ('brf', BalancedRandomForestClassifier(random_state=42, n_estimators=self.config.get("brf_n_estimators", 100), criterion=self.config.get("brf_criterion","gini"), max_depth=self.config.get("brf_max_depth", 2), min_samples_split=self.config.get("brf_min_samples_split",2), min_samples_leaf=self.config.get("brf_min_samples_leaf",1), max_features=self.config.get("brf_max_features","sqrt"), oob_score=self.config.get("brf_oob_score",False), class_weight=self.config.get("brf_class_weight","balanced"), n_jobs = -1)),
+            ('lda', LinearDiscriminantAnalysis(solver=self.config.get("lda_solver", "svd"), shrinkage=self.config.get("lda_shrinkage", None)))
             ],
                     cv = 3,
                     stack_method = "predict_proba",
                     n_jobs=-1,
                     passthrough=False,
-                    final_estimator=LogisticRegression(C=self.config.get("C", 1)),
+                    final_estimator=LogisticRegression(C=self.config.get("lr_C", 1), penalty=self.config.get("lr_penalty", "l2"), solver=self.config.get("lr_solver", "lbfgs"), max_iter=self.config.get("lr_max_iter", 100), n_jobs = -1),
                     verbose=0)
         
 
@@ -91,14 +91,20 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     start1 = time.perf_counter()
     #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
     clf = StackingClassifier(estimators = [
-            ('rf', RandomForestClassifier(random_state=42, n_estimators=config.get("rf_n_estimators", 10), n_jobs = -1)),
-            ('knn', KNeighborsClassifier(n_neighbors=config.get("n_neighbors", 1)))
+            ('rf', RandomForestClassifier(random_state=42, n_estimators=config.get("rf_n_estimators", 100), criterion=config.get("rf_criterion","gini"), max_depth=config.get("rf_max_depth", 2), min_samples_split=config.get("rf_min_samples_split",2), min_samples_leaf=config.get("rf_min_samples_leaf",1), max_features=config.get("rf_max_features","sqrt"), oob_score=config.get("rf_oob_score",False), class_weight=config.get("rf_class_weight","balanced"), n_jobs = -1)),
+            ('knn', KNeighborsClassifier(n_neighbors=config.get("knn_n_neighbors", 1), weights=config.get("knn_weights", 'uniform'), algorithm=config.get("knn_algorithm", 'auto'), metric=config.get("knn_metric", 'minkowski'), n_jobs = -1)),    #leaf_size=config.get("leaf_size", 30), 
+            ('gbc', GradientBoostingClassifier(random_state=42, loss=config.get("gbc_loss", 100), learning_rate = config.get("gbc_learning_rate", 0.1), n_estimators=config.get("gbc_n_estimators", 100), subsample=config.get("gbc_subsample",1), criterion=config.get("gbc_criterion","friedman_mse"), min_samples_split=config.get("gbc_min_samples_split",2), min_samples_leaf=config.get("gbc_min_samples_leaf",1), max_depth=config.get("gbc_max_depth", 2), max_features=config.get("gbc_max_features","sqrt"), n_jobs = -1)),
+            ('dt', DecisionTreeClassifier(random_state=42, criterion=config.get("dt_criterion","gini"), splitter=config.get("dt_splitter","best"), max_depth=config.get("dt_max_depth", 2), min_samples_split=config.get("dt_min_samples_split",2), min_samples_leaf=config.get("dt_min_samples_leaf",1), max_features=config.get("dt_max_features","sqrt"), class_weight=config.get("dt_class_weight","balanced"))),
+            ('sgd', SGDClassifier(random_state=42, loss=config.get("sgd_loss", "hinge"), penalty=config.get("sgd_penalty", "l2"), alpha=config.get("sgd_alpha", 0.0001), max_iter=config.get("sgd_max_iter", 1000), epsilon=config.get("sgd_epsilon", 0.1), learning_rate = config.get("sgd_learning_rate", "optimal"), eta0 = config.get("sgd_eta0", 0.0), power_t = config.get("sgd_power_t", 0.5), class_weight=config.get("sgd_class_weight","balanced"), n_jobs = -1)),
+            ('gnb', GaussianNB(var_smoothing=config.get("var_smoothing", 1e-09))),
+            ('brf', BalancedRandomForestClassifier(random_state=42, n_estimators=config.get("brf_n_estimators", 100), criterion=config.get("brf_criterion","gini"), max_depth=config.get("brf_max_depth", 2), min_samples_split=config.get("brf_min_samples_split",2), min_samples_leaf=config.get("brf_min_samples_leaf",1), max_features=config.get("brf_max_features","sqrt"), oob_score=config.get("brf_oob_score",False), class_weight=config.get("brf_class_weight","balanced"), n_jobs = -1)),
+            ('lda', LinearDiscriminantAnalysis(solver=config.get("lda_solver", "svd"), shrinkage=config.get("lda_shrinkage", None)))
             ],
                     cv = 3,
                     stack_method = "predict_proba",
                     n_jobs=-1,
                     passthrough=False,
-                    final_estimator=LogisticRegression(C=config.get("C", 1)),
+                    final_estimator= LogisticRegression(C=config.get("lr_C", 1), penalty=config.get("lr_penalty", "l2"), solver=config.get("lr_solver", "lbfgs"), max_iter=config.get("lr_max_iter", 100), n_jobs = -1),
                     verbose=0).fit(x_train, y_train)
     #score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
     
