@@ -15,10 +15,9 @@ from ray.tune.schedulers import AsyncHyperBandScheduler
 from sklearn.model_selection import cross_validate, StratifiedKFold
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, StackingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
-from mlxtend.classifier import StackingCVClassifier
 import os
 import gc
 import shap
@@ -37,15 +36,20 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tun
         self.x_test = x_test
         self.y_train = y_train
         self.y_test = y_test
-        self.model = StackingCVClassifier(classifiers = [RandomForestClassifier(random_state=42, n_estimators=self.config.get("n_estimators", 100), n_jobs = -1),
-                                                        KNeighborsClassifier(n_neighbors=self.config.get("n_neighbors", 1))],
-                    use_probas=True,
-                    meta_classifier=LogisticRegression(C=self.config.get("C", 1)),
-                    random_state=42)
+        self.model = StackingClassifier(estimators = [
+            ('rf', RandomForestClassifier(random_state=42, n_estimators=self.config.get("rf_n_estimators", 10), n_jobs = -1)),
+            ('knn', KNeighborsClassifier(n_neighbors=self.config.get("n_neighbors", 1)))
+            ],
+                    cv = 3,
+                    stack_method = "predict_proba",
+                    n_jobs=-1,
+                    passthrough=False,
+                    final_estimator=LogisticRegression(C=self.config.get("C", 1)),
+                    verbose=0)
         
 
     def reset_config(self, new_config):
-        self.n_estimators = new_config["n_estimators"]
+        self.n_estimators = new_config["rf_n_estimators"]
         self.n_neighbors = new_config["n_neighbors"]
         self.C = new_config["C"]
         self.config = new_config
@@ -76,17 +80,23 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tun
 def results(config,x_train, x_test, y_train, y_test, var, output, feature_names):
     start1 = time.perf_counter()
     #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
-    clf = StackingCVClassifier(classifiers = [RandomForestClassifier(random_state=42, n_estimators=config.get("n_estimators", 100), n_jobs = -1),
-                                                        KNeighborsClassifier(n_neighbors=config.get("n_neighbors", 1))],
-                    use_probas=True,
-                    meta_classifier=LogisticRegression(C=config.get("C", 1)),
-                    random_state=42)
-    score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
-    clf = score['estimator'][np.argmax(score['test_score'])]
+    clf = StackingClassifier(estimators = [
+            ('rf', RandomForestClassifier(random_state=42, n_estimators=config.get("rf_n_estimators", 10), n_jobs = -1)),
+            ('knn', KNeighborsClassifier(n_neighbors=config.get("n_neighbors", 1)))
+            ],
+                    cv = 3,
+                    stack_method = "predict_proba",
+                    n_jobs=-1,
+                    passthrough=False,
+                    final_estimator=LogisticRegression(C=config.get("C", 1)),
+                    verbose=0).fit(x_train, y_train)
+    #score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
+    
+    train_score = clf.score(x_train, y_train)
     with open(f"./tuning/{var}/StackingClassifier_{var}.joblib", 'wb') as f:
      dump(clf, f, compress='lz4')
-    training_score = np.mean(score['train_score'])
-    testing_score = np.mean(score['test_score'])
+    #training_score = np.mean(score['train_score'])
+    #testing_score = np.mean(score['test_score'])
     y_score = clf.predict(x_test)
     prc = precision_score(y_test,y_score, average="weighted")
     recall  = recall_score(y_test,y_score, average="weighted")
@@ -96,14 +106,14 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     finish = (time.perf_counter()-start1)/60
     #print(f'RandomForestClassifier: \nCross_validate(avg_train_score): {training_score}\nCross_validate(avg_test_score): {testing_score}\nPrecision: {prc}\nRecall: {recall}\nROC_AUC: {roc_auc}\nAccuracy: {accuracy}\nTime(in min): {finish}\nConfusion Matrix:\n{matrix}', file=open(output, "a"))
     clf_name = str(type(clf)).split("'")[1]  #.split(".")[3]
-    print('Model\tCross_validate(avg_train_score)\tCross_validate(avg_test_score)\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
-    print(f'{clf_name}\t{training_score}\t{testing_score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
+    print('Model\ttrain_score\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
+    print(f'{clf_name}\t{train_score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}', file=open(output, "a"))
     del y_test
     # explain all the predictions in the test set
     background = shap.kmeans(x_train, 10)
     explainer = shap.KernelExplainer(clf.predict, background)
     del clf, x_train, y_train, background
-    background = x_test[np.random.choice(x_test.shape[0], 1000, replace=False)]
+    background = x_test[np.random.choice(x_test.shape[0], 10, replace=False)]
     del x_test
     shap_values = explainer.shap_values(background)
     plt.figure()
@@ -229,9 +239,9 @@ if __name__ == "__main__":
             #fail_fast=True,
             queue_trials=True,
             config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
-                "randomforestclassifier__n_estimators" : tune.randint(1, 200),
-                "kneighborsclassifier__n_neighbors" : tune.randint(1, 5),
-                "meta_classifier__C" : tune.uniform(0.1, 10.0)
+                "rf_n_estimators" : tune.randint(1, 20),
+                "n_neighbors" : tune.randint(1, 5),
+                "C" : tune.uniform(0.1, 10.0)
 
         })
         finish = (time.perf_counter()- start)/120
