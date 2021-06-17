@@ -43,7 +43,7 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tun
         self.model = StackingClassifier(estimators = [
             ('rf', RandomForestClassifier(random_state=42, n_estimators=self.config.get("rf_n_estimators", 100), criterion=self.config.get("rf_criterion","gini"), max_depth=self.config.get("rf_max_depth", 2), min_samples_split=self.config.get("rf_min_samples_split",2), min_samples_leaf=self.config.get("rf_min_samples_leaf",1), max_features=self.config.get("rf_max_features","sqrt"), oob_score=self.config.get("rf_oob_score",False), class_weight=self.config.get("rf_class_weight","balanced"), n_jobs = -1)),
             ('knn', KNeighborsClassifier(n_neighbors=self.config.get("knn_n_neighbors", 1), weights=self.config.get("knn_weights", 'uniform'), algorithm=self.config.get("knn_algorithm", 'auto'), metric=self.config.get("knn_metric", 'minkowski'), n_jobs = -1)),    #leaf_size=self.config.get("leaf_size", 30), 
-            ('gbc', GradientBoostingClassifier(random_state=42, loss=self.config.get("gbc_loss", 100), learning_rate = self.config.get("gbc_learning_rate", 0.1), n_estimators=self.config.get("gbc_n_estimators", 100), subsample=self.config.get("gbc_subsample",1), criterion=self.config.get("gbc_criterion","friedman_mse"), min_samples_split=self.config.get("gbc_min_samples_split",2), min_samples_leaf=self.config.get("gbc_min_samples_leaf",1), max_depth=self.config.get("gbc_max_depth", 2), max_features=self.config.get("gbc_max_features","sqrt"), n_jobs = -1)),
+            ('gbc', GradientBoostingClassifier(random_state=42, loss=self.config.get("gbc_loss", 100), learning_rate = self.config.get("gbc_learning_rate", 0.1), n_estimators=self.config.get("gbc_n_estimators", 100), subsample=self.config.get("gbc_subsample",1), criterion=self.config.get("gbc_criterion","friedman_mse"), min_samples_split=self.config.get("gbc_min_samples_split",2), min_samples_leaf=self.config.get("gbc_min_samples_leaf",1), max_depth=self.config.get("gbc_max_depth", 2), max_features=self.config.get("gbc_max_features","sqrt"))),
             ('dt', DecisionTreeClassifier(random_state=42, criterion=self.config.get("dt_criterion","gini"), splitter=self.config.get("dt_splitter","best"), max_depth=self.config.get("dt_max_depth", 2), min_samples_split=self.config.get("dt_min_samples_split",2), min_samples_leaf=self.config.get("dt_min_samples_leaf",1), max_features=self.config.get("dt_max_features","sqrt"), class_weight=self.config.get("dt_class_weight","balanced"))),
             ('sgd', SGDClassifier(random_state=42, loss=self.config.get("sgd_loss", "hinge"), penalty=self.config.get("sgd_penalty", "l2"), alpha=self.config.get("sgd_alpha", 0.0001), max_iter=self.config.get("sgd_max_iter", 1000), epsilon=self.config.get("sgd_epsilon", 0.1), learning_rate = self.config.get("sgd_learning_rate", "optimal"), eta0 = self.config.get("sgd_eta0", 0.0), power_t = self.config.get("sgd_power_t", 0.5), class_weight=self.config.get("sgd_class_weight","balanced"), n_jobs = -1)),
             ('gnb', GaussianNB(var_smoothing=self.config.get("var_smoothing", 1e-09))),
@@ -93,7 +93,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     clf = StackingClassifier(estimators = [
             ('rf', RandomForestClassifier(random_state=42, n_estimators=config.get("rf_n_estimators", 100), criterion=config.get("rf_criterion","gini"), max_depth=config.get("rf_max_depth", 2), min_samples_split=config.get("rf_min_samples_split",2), min_samples_leaf=config.get("rf_min_samples_leaf",1), max_features=config.get("rf_max_features","sqrt"), oob_score=config.get("rf_oob_score",False), class_weight=config.get("rf_class_weight","balanced"), n_jobs = -1)),
             ('knn', KNeighborsClassifier(n_neighbors=config.get("knn_n_neighbors", 1), weights=config.get("knn_weights", 'uniform'), algorithm=config.get("knn_algorithm", 'auto'), metric=config.get("knn_metric", 'minkowski'), n_jobs = -1)),    #leaf_size=config.get("leaf_size", 30), 
-            ('gbc', GradientBoostingClassifier(random_state=42, loss=config.get("gbc_loss", 100), learning_rate = config.get("gbc_learning_rate", 0.1), n_estimators=config.get("gbc_n_estimators", 100), subsample=config.get("gbc_subsample",1), criterion=config.get("gbc_criterion","friedman_mse"), min_samples_split=config.get("gbc_min_samples_split",2), min_samples_leaf=config.get("gbc_min_samples_leaf",1), max_depth=config.get("gbc_max_depth", 2), max_features=config.get("gbc_max_features","sqrt"), n_jobs = -1)),
+            ('gbc', GradientBoostingClassifier(random_state=42, loss=config.get("gbc_loss", 100), learning_rate = config.get("gbc_learning_rate", 0.1), n_estimators=config.get("gbc_n_estimators", 100), subsample=config.get("gbc_subsample",1), criterion=config.get("gbc_criterion","friedman_mse"), min_samples_split=config.get("gbc_min_samples_split",2), min_samples_leaf=config.get("gbc_min_samples_leaf",1), max_depth=config.get("gbc_max_depth", 2), max_features=config.get("gbc_max_features","sqrt"))),
             ('dt', DecisionTreeClassifier(random_state=42, criterion=config.get("dt_criterion","gini"), splitter=config.get("dt_splitter","best"), max_depth=config.get("dt_max_depth", 2), min_samples_split=config.get("dt_min_samples_split",2), min_samples_leaf=config.get("dt_min_samples_leaf",1), max_features=config.get("dt_max_features","sqrt"), class_weight=config.get("dt_class_weight","balanced"))),
             ('sgd', SGDClassifier(random_state=42, loss=config.get("sgd_loss", "hinge"), penalty=config.get("sgd_penalty", "l2"), alpha=config.get("sgd_alpha", 0.0001), max_iter=config.get("sgd_max_iter", 1000), epsilon=config.get("sgd_epsilon", 0.1), learning_rate = config.get("sgd_learning_rate", "optimal"), eta0 = config.get("sgd_eta0", 0.0), power_t = config.get("sgd_power_t", 0.5), class_weight=config.get("sgd_class_weight","balanced"), n_jobs = -1)),
             ('gnb', GaussianNB(var_smoothing=config.get("var_smoothing", 1e-09))),
@@ -254,12 +254,70 @@ if __name__ == "__main__":
             num_samples=5,
             #fail_fast=True,
             queue_trials=True,
-            config={ #https://www.geeksforgeeks.org/hyperparameters-of-random-forest-classifier/
+            config={
+            #RandomForest - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?highlight=randomforestclassifier#sklearn.ensemble.RandomForestClassifier
                 "rf_n_estimators" : tune.randint(1, 20),
-                "n_neighbors" : tune.randint(1, 5),
-                "C" : tune.uniform(0.1, 10.0)
-
+                "rf_criterion" : tune.choice(["gini", "entropy"]),
+                "rf_max_depth" : tune.randint(2, 200),
+                "rf_min_samples_split" : tune.randint(2, 10),
+                "rf_min_samples_leaf" : tune.randint(1, 10),
+                "rf_max_features" : tune.choice(["sqrt", "log2"]),
+                "rf_oob_score" : tune.choice([True, False]),
+                "rf_class_weight" : tune.choice(["balanced", "balanced_subsample"]),
+            #KNeighborsClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html?highlight=kn#sklearn.neighbors.KNeighborsClassifier
+                "knn_n_neighbors" : tune.randint(1, 5),
+                "knn_weights" : tune.choice(['uniform', 'distance']),
+                "knn_algorithm" : tune.choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
+                "knn_metric" : tune.choice(['minkowski', 'chebyshev']),
+            #GradientBoostingClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier
+                "gbc_loss" : tune.choice(["deviance", "exponential"]),
+                "gbc_learning_rate": tune.loguniform(0.01, 1.0),
+                "gbc_n_estimators" : tune.randint(1, 200),
+                "gbc_subsample" : tune.uniform(0.1, 1.0),
+                "gbc_criterion" : tune.choice(["friedman_mse", "mse"]),
+                "gbc_min_samples_split" : tune.randint(2, 100),
+                "gbc_min_samples_leaf" : tune.randint(1, 100),
+                "gbc_max_depth" : tune.randint(2, 200),
+                "gbc_max_features" : tune.choice(["sqrt", "log2"]),
+            #DecisionTree - https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html#sklearn.tree.DecisionTreeClassifier
+                "dt_criterion" : tune.choice(["gini", "entropy"]),
+                "dt_splitter" : tune.choice(["best", "random"]),
+                "dt_max_depth" : tune.randint(2, 200),
+                "dt_min_samples_split" : tune.randint(2, 100),
+                "dt_min_samples_leaf" : tune.randint(1, 100),
+                "dt_max_features" : tune.choice(["sqrt", "log2"]),
+                "dt_class_weight" : tune.choice([None, "balanced"]),
+            #StochasticGradientDescent - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html#sklearn.linear_model.SGDClassifier
+                "sgd_loss": tune.choice(['squared_hinge', 'hinge', 'log', 'modified_huber', 'perceptron', 'squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive']),
+                "sgd_penalty" : tune.choice(['l2', 'l1', 'elasticnet']),
+                "sgd_alpha" : tune.loguniform(1e-9, 1e-1),
+                "sgd_max_iter" : tune.randint(2, 1000),
+                "sgd_epsilon" : tune.uniform(1e-9, 1e-1),
+                "sgd_learning_rate" : tune.choice(['constant', 'optimal', 'invscaling', 'adaptive']),   #'optimal', 
+                "sgd_eta0" : tune.uniform(0.01, 0.9),
+                "sgd_power_t" : tune.uniform(0.1, 0.9),
+                "sgd_class_weight" : tune.choice(["balanced"]),
+            #GaussianNB - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html#sklearn.naive_bayes.GaussianNB
+                "var_smoothing" : tune.loguniform(1e-11, 1e-1),
+            #BalancedRandomForest - https://imbalanced-learn.org/dev/references/generated/imblearn.ensemble.BalancedRandomForestClassifier.html
+                "brf_n_estimators" : tune.randint(1, 20),
+                "brf_criterion" : tune.choice(["gini", "entropy"]),
+                "brf_max_depth" : tune.randint(2, 200),
+                "brf_min_samples_split" : tune.randint(2, 10),
+                "brf_min_samples_leaf" : tune.randint(1, 10),
+                "brf_max_features" : tune.choice(["sqrt", "log2"]),
+                "brf_oob_score" : tune.choice([True, False]),
+                "brf_class_weight" : tune.choice(["balanced", "balanced_subsample"]),
+            #LinearDiscriminantAnalysis - https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis
+                "lda_solver" : tune.choice(["svd", "lsqr", "eigen"]),
+                "lda_shrinkage" : tune.choice(["auto", None]),
+            #LogisticRegression - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?highlight=logistic#sklearn.linear_model.LogisticRegression
+                "lr_C" : tune.uniform(0.1, 10.0),
+                "lr_penalty" : tune.choice(["l1", "l2", "elasticnet", None]),
+                "lr_solver" : tune.choice(["newton-cg", "lbfgs", "liblinear", "sag", "saga"]),
+                "lr_max_iter" : tune.randint(2, 100)
         })
+
         finish = (time.perf_counter()- start)/120
         #ttime = (finish- start)/120
         print(f'Total time in min: {finish}')
