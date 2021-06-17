@@ -129,7 +129,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     background = shap.kmeans(x_train, 10)
     explainer = shap.KernelExplainer(clf.predict, background)
     del clf, x_train, y_train, background
-    background = x_test[np.random.choice(x_test.shape[0], 10, replace=False)]
+    background = x_test[np.random.choice(x_test.shape[0], 1000, replace=False)]
     del x_test
     shap_values = explainer.shap_values(background)
     plt.figure()
@@ -249,14 +249,14 @@ if __name__ == "__main__":
             metric="mean_accuracy",
             mode="max",
             stop={
-                "training_iteration": 5,
+                "training_iteration": 100,
             },
             num_samples=5,
             #fail_fast=True,
             queue_trials=True,
             config={
             #RandomForest - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?highlight=randomforestclassifier#sklearn.ensemble.RandomForestClassifier
-                "rf_n_estimators" : tune.randint(1, 20),
+                "rf_n_estimators" : tune.randint(1, 200),
                 "rf_criterion" : tune.choice(["gini", "entropy"]),
                 "rf_max_depth" : tune.randint(2, 200),
                 "rf_min_samples_split" : tune.randint(2, 10),
@@ -265,7 +265,7 @@ if __name__ == "__main__":
                 "rf_oob_score" : tune.choice([True, False]),
                 "rf_class_weight" : tune.choice(["balanced", "balanced_subsample"]),
             #KNeighborsClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html?highlight=kn#sklearn.neighbors.KNeighborsClassifier
-                "knn_n_neighbors" : tune.randint(1, 5),
+                "knn_n_neighbors" : tune.randint(1, 10),
                 "knn_weights" : tune.choice(['uniform', 'distance']),
                 "knn_algorithm" : tune.choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
                 "knn_metric" : tune.choice(['minkowski', 'chebyshev']),
@@ -300,7 +300,7 @@ if __name__ == "__main__":
             #GaussianNB - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html#sklearn.naive_bayes.GaussianNB
                 "var_smoothing" : tune.loguniform(1e-11, 1e-1),
             #BalancedRandomForest - https://imbalanced-learn.org/dev/references/generated/imblearn.ensemble.BalancedRandomForestClassifier.html
-                "brf_n_estimators" : tune.randint(1, 20),
+                "brf_n_estimators" : tune.randint(1, 200),
                 "brf_criterion" : tune.choice(["gini", "entropy"]),
                 "brf_max_depth" : tune.randint(2, 200),
                 "brf_min_samples_split" : tune.randint(2, 10),
