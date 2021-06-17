@@ -57,7 +57,7 @@ def data_parsing(var,config_dict,output):
 
 def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    model = SGDClassifier(n_jobs=-1)
+    model = SGDClassifier(n_jobs=1)
     config = {
                 'loss': tune.choice(['squared_hinge', 'hinge', 'log', 'modified_huber', 'perceptron', 'squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive']),
                 'penalty' : tune.choice(['l2', 'l1', 'elasticnet']),

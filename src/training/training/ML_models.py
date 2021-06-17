@@ -18,11 +18,11 @@ from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, conf
 #from sklearn.multiclass import OneVsRestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import SGDClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, ExtraTreesClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
 from imblearn.ensemble import BalancedRandomForestClassifier
-from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.neighbors import KNeighborsClassifier
 import matplotlib.pyplot as plt
 import yaml
 import os
@@ -104,15 +104,13 @@ if __name__ == "__main__":
     #Classifiers I wish to use
     classifiers = [
         	DecisionTreeClassifier(class_weight='balanced'),
-            #SGDClassifier(class_weight='balanced', n_jobs=-1),
+            KNeighborsClassifier(),
+            SGDClassifier(class_weight='balanced', n_jobs=-1),
             RandomForestClassifier(class_weight='balanced', n_jobs=-1),
-            AdaBoostClassifier(),
-            ExtraTreesClassifier(class_weight='balanced', n_jobs=-1),
             BalancedRandomForestClassifier(),
             GaussianNB(),
             LinearDiscriminantAnalysis(),
-            GradientBoostingClassifier(),
-            MLPClassifier()
+            GradientBoostingClassifier()
         ]
     
     

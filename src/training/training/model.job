@@ -11,9 +11,6 @@
 #SBATCH --ntasks=1
 #SBATCH --partition=short
 #
-# Time format = HH:MM:SS, DD-HH:MM:SS
-#SBATCH --time=11:59:58
-#
 # Number of CPUs allocated to each task. 
 #SBATCH --cpus-per-task=10
 #
@@ -30,5 +27,5 @@ module load Anaconda3/2020.02
 source activate training
 
 #Run your commands here
-#python ML_models.py
-python Tune_mlxtend.py
+python ML_models.py
+#python Tune_mlxtend.py

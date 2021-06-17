@@ -57,7 +57,7 @@ def data_parsing(var,config_dict,output):
 
 def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    model = RandomForestClassifier(n_jobs=-1)
+    model = RandomForestClassifier(n_jobs=10)
     config = {
                 "n_estimators" : tune.randint(1, 200),
                 "min_samples_split" : tune.randint(2, 10),

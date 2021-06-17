@@ -15,8 +15,12 @@ from ray.tune.schedulers import AsyncHyperBandScheduler
 from sklearn.model_selection import cross_validate, StratifiedKFold
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
-from sklearn.ensemble import RandomForestClassifier, StackingClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, StackingClassifier
+from sklearn.naive_bayes import GaussianNB
+from imblearn.ensemble import BalancedRandomForestClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.neighbors import KNeighborsClassifier
 import os
 import gc
@@ -38,7 +42,13 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tun
         self.y_test = y_test
         self.model = StackingClassifier(estimators = [
             ('rf', RandomForestClassifier(random_state=42, n_estimators=self.config.get("rf_n_estimators", 10), n_jobs = -1)),
-            ('knn', KNeighborsClassifier(n_neighbors=self.config.get("n_neighbors", 1)))
+            ('knn', KNeighborsClassifier(n_neighbors=self.config.get("n_neighbors", 1))),
+            ('gbc', GradientBoostingClassifier()),
+            ('dt', DecisionTreeClassifier()),
+            ('sgd', SGDClassifier()),
+            ('gnb', GaussianNB()),
+            ('brf', BalancedRandomForestClassifier()),
+            ('lda', LinearDiscriminantAnalysis())
             ],
                     cv = 3,
                     stack_method = "predict_proba",

@@ -57,14 +57,14 @@ def data_parsing(var,config_dict,output):
 
 def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    model = BalancedRandomForestClassifier(n_jobs=-1)
+    model = BalancedRandomForestClassifier(n_jobs=10)
     config = {
                 "n_estimators" : tune.randint(1, 200),
                 "min_samples_split" : tune.randint(2, 100),
                 "min_samples_leaf" : tune.randint(1, 100),
                 "criterion" : tune.choice(["gini", "entropy"]),
                 "max_features" : tune.choice(["sqrt", "log2"]),
-                "class_weight" : tune.choice([None, "balanced", "balanced_subsample"]),
+                "class_weight" : tune.choice(["balanced", "balanced_subsample"]),
                 #"oob_score" : tune.choice([True, False]),
                 "max_depth" : tune.randint(2, 200)
             }
