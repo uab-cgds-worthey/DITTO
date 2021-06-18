@@ -104,8 +104,8 @@ if __name__ == "__main__":
     #Classifiers I wish to use
     classifiers = [
         	DecisionTreeClassifier(class_weight='balanced'),
-            KNeighborsClassifier(),
-            SGDClassifier(class_weight='balanced', n_jobs=-1),
+            #KNeighborsClassifier(),
+            #SGDClassifier(class_weight='balanced', n_jobs=-1),
             RandomForestClassifier(class_weight='balanced', n_jobs=-1),
             BalancedRandomForestClassifier(),
             GaussianNB(),

@@ -45,7 +45,7 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tun
             ('knn', KNeighborsClassifier(n_neighbors=self.config.get("knn_n_neighbors", 1), weights=self.config.get("knn_weights", 'uniform'), algorithm=self.config.get("knn_algorithm", 'auto'), metric=self.config.get("knn_metric", 'minkowski'), n_jobs = -1)),    #leaf_size=self.config.get("leaf_size", 30), 
             ('gbc', GradientBoostingClassifier(random_state=42, loss=self.config.get("gbc_loss", 100), learning_rate = self.config.get("gbc_learning_rate", 0.1), n_estimators=self.config.get("gbc_n_estimators", 100), subsample=self.config.get("gbc_subsample",1), criterion=self.config.get("gbc_criterion","friedman_mse"), min_samples_split=self.config.get("gbc_min_samples_split",2), min_samples_leaf=self.config.get("gbc_min_samples_leaf",1), max_depth=self.config.get("gbc_max_depth", 2), max_features=self.config.get("gbc_max_features","sqrt"))),
             ('dt', DecisionTreeClassifier(random_state=42, criterion=self.config.get("dt_criterion","gini"), splitter=self.config.get("dt_splitter","best"), max_depth=self.config.get("dt_max_depth", 2), min_samples_split=self.config.get("dt_min_samples_split",2), min_samples_leaf=self.config.get("dt_min_samples_leaf",1), max_features=self.config.get("dt_max_features","sqrt"), class_weight=self.config.get("dt_class_weight","balanced"))),
-            ('sgd', SGDClassifier(random_state=42, loss=self.config.get("sgd_loss", "hinge"), penalty=self.config.get("sgd_penalty", "l2"), alpha=self.config.get("sgd_alpha", 0.0001), max_iter=self.config.get("sgd_max_iter", 1000), epsilon=self.config.get("sgd_epsilon", 0.1), learning_rate = self.config.get("sgd_learning_rate", "optimal"), eta0 = self.config.get("sgd_eta0", 0.0), power_t = self.config.get("sgd_power_t", 0.5), class_weight=self.config.get("sgd_class_weight","balanced"), n_jobs = -1)),
+            #('sgd', SGDClassifier(random_state=42, loss=self.config.get("sgd_loss", "hinge"), penalty=self.config.get("sgd_penalty", "l2"), alpha=self.config.get("sgd_alpha", 0.0001), max_iter=self.config.get("sgd_max_iter", 1000), epsilon=self.config.get("sgd_epsilon", 0.1), learning_rate = self.config.get("sgd_learning_rate", "optimal"), eta0 = self.config.get("sgd_eta0", 0.0), power_t = self.config.get("sgd_power_t", 0.5), class_weight=self.config.get("sgd_class_weight","balanced"), n_jobs = -1)),
             ('gnb', GaussianNB(var_smoothing=self.config.get("var_smoothing", 1e-09))),
             ('brf', BalancedRandomForestClassifier(random_state=42, n_estimators=self.config.get("brf_n_estimators", 100), criterion=self.config.get("brf_criterion","gini"), max_depth=self.config.get("brf_max_depth", 2), min_samples_split=self.config.get("brf_min_samples_split",2), min_samples_leaf=self.config.get("brf_min_samples_leaf",1), max_features=self.config.get("brf_max_features","sqrt"), oob_score=self.config.get("brf_oob_score",False), class_weight=self.config.get("brf_class_weight","balanced"), n_jobs = -1)),
             ('lda', LinearDiscriminantAnalysis(solver=self.config.get("lda_solver", "svd"), shrinkage=self.config.get("lda_shrinkage", None)))
@@ -95,7 +95,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
             ('knn', KNeighborsClassifier(n_neighbors=config.get("knn_n_neighbors", 1), weights=config.get("knn_weights", 'uniform'), algorithm=config.get("knn_algorithm", 'auto'), metric=config.get("knn_metric", 'minkowski'), n_jobs = -1)),    #leaf_size=config.get("leaf_size", 30), 
             ('gbc', GradientBoostingClassifier(random_state=42, loss=config.get("gbc_loss", 100), learning_rate = config.get("gbc_learning_rate", 0.1), n_estimators=config.get("gbc_n_estimators", 100), subsample=config.get("gbc_subsample",1), criterion=config.get("gbc_criterion","friedman_mse"), min_samples_split=config.get("gbc_min_samples_split",2), min_samples_leaf=config.get("gbc_min_samples_leaf",1), max_depth=config.get("gbc_max_depth", 2), max_features=config.get("gbc_max_features","sqrt"))),
             ('dt', DecisionTreeClassifier(random_state=42, criterion=config.get("dt_criterion","gini"), splitter=config.get("dt_splitter","best"), max_depth=config.get("dt_max_depth", 2), min_samples_split=config.get("dt_min_samples_split",2), min_samples_leaf=config.get("dt_min_samples_leaf",1), max_features=config.get("dt_max_features","sqrt"), class_weight=config.get("dt_class_weight","balanced"))),
-            ('sgd', SGDClassifier(random_state=42, loss=config.get("sgd_loss", "hinge"), penalty=config.get("sgd_penalty", "l2"), alpha=config.get("sgd_alpha", 0.0001), max_iter=config.get("sgd_max_iter", 1000), epsilon=config.get("sgd_epsilon", 0.1), learning_rate = config.get("sgd_learning_rate", "optimal"), eta0 = config.get("sgd_eta0", 0.0), power_t = config.get("sgd_power_t", 0.5), class_weight=config.get("sgd_class_weight","balanced"), n_jobs = -1)),
+            #('sgd', SGDClassifier(random_state=42, loss=config.get("sgd_loss", "hinge"), penalty=config.get("sgd_penalty", "l2"), alpha=config.get("sgd_alpha", 0.0001), max_iter=config.get("sgd_max_iter", 1000), epsilon=config.get("sgd_epsilon", 0.1), learning_rate = config.get("sgd_learning_rate", "optimal"), eta0 = config.get("sgd_eta0", 0.0), power_t = config.get("sgd_power_t", 0.5), class_weight=config.get("sgd_class_weight","balanced"), n_jobs = -1)),
             ('gnb', GaussianNB(var_smoothing=config.get("var_smoothing", 1e-09))),
             ('brf', BalancedRandomForestClassifier(random_state=42, n_estimators=config.get("brf_n_estimators", 100), criterion=config.get("brf_criterion","gini"), max_depth=config.get("brf_max_depth", 2), min_samples_split=config.get("brf_min_samples_split",2), min_samples_leaf=config.get("brf_min_samples_leaf",1), max_features=config.get("brf_max_features","sqrt"), oob_score=config.get("brf_oob_score",False), class_weight=config.get("brf_class_weight","balanced"), n_jobs = -1)),
             ('lda', LinearDiscriminantAnalysis(solver=config.get("lda_solver", "svd"), shrinkage=config.get("lda_shrinkage", None)))
@@ -196,6 +196,21 @@ if __name__ == "__main__":
         type=str,
         default="non_snv",
         help="Type of variation/s (without spaces between) to tune the classifier (like: snv,non_snv,snv_protein_coding). (Default: non_snv)")
+    parser.add_argument(
+        "--cpus",
+        type=int,
+        default=10,
+        help="Number of CPUs needed. (Default: 10)")
+    parser.add_argument(
+        "--gpus",
+        type=int,
+        default=0,
+        help="Number of GPUs needed. (Default: 0)")
+    #parser.add_argument(
+    #    "--mem",
+    #    type=int,
+    #    default=100,
+    #    help="Memory needed. (Default: 0)")
 
     args = parser.parse_args()
 
@@ -204,7 +219,7 @@ if __name__ == "__main__":
     if args.smoke_test:
         ray.init(num_cpus=2)  # force pausing to happen for test
     else:
-        ray.init(ignore_reinit_error=True)
+        ray.init(ignore_reinit_error=True, num_cpus=args.cpus, num_gpus=args.gpus)  #, _memory=args.mem)
     
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     with open("../../configs/columns_config.yaml") as fh:
@@ -244,12 +259,12 @@ if __name__ == "__main__":
             #global_checkpoint_period=np.inf,   # Do not save checkpoints based on time interval
             checkpoint_freq = 20,        # Save checkpoint every time the checkpoint_score_attr improves
             checkpoint_at_end = True,   
-            keep_checkpoints_num = 1,   # Keep only the best checkpoint
+            keep_checkpoints_num = 2,   # Keep only the best checkpoint
             checkpoint_score_attr = 'mean_accuracy', # Metric used to compare checkpoints
             metric="mean_accuracy",
             mode="max",
             stop={
-                "training_iteration": 100,
+                "training_iteration": 1000,
             },
             num_samples=5,
             #fail_fast=True,
@@ -288,15 +303,15 @@ if __name__ == "__main__":
                 "dt_max_features" : tune.choice(["sqrt", "log2"]),
                 "dt_class_weight" : tune.choice([None, "balanced"]),
             #StochasticGradientDescent - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html#sklearn.linear_model.SGDClassifier
-                "sgd_loss": tune.choice(['squared_hinge', 'hinge', 'log', 'modified_huber', 'perceptron', 'squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive']),
-                "sgd_penalty" : tune.choice(['l2', 'l1', 'elasticnet']),
-                "sgd_alpha" : tune.loguniform(1e-9, 1e-1),
-                "sgd_max_iter" : tune.randint(2, 1000),
-                "sgd_epsilon" : tune.uniform(1e-9, 1e-1),
-                "sgd_learning_rate" : tune.choice(['constant', 'optimal', 'invscaling', 'adaptive']),   #'optimal', 
-                "sgd_eta0" : tune.uniform(0.01, 0.9),
-                "sgd_power_t" : tune.uniform(0.1, 0.9),
-                "sgd_class_weight" : tune.choice(["balanced"]),
+                #"sgd_loss": tune.choice(['squared_hinge', 'hinge', 'log', 'modified_huber', 'perceptron', 'squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive']),
+                #"sgd_penalty" : tune.choice(['l2', 'l1', 'elasticnet']),
+                #"sgd_alpha" : tune.loguniform(1e-9, 1e-1),
+                #"sgd_max_iter" : tune.randint(2, 1000),
+                #"sgd_epsilon" : tune.uniform(1e-9, 1e-1),
+                #"sgd_learning_rate" : tune.choice(['constant', 'optimal', 'invscaling', 'adaptive']),   #'optimal', 
+                #"sgd_eta0" : tune.uniform(0.01, 0.9),
+                #"sgd_power_t" : tune.uniform(0.1, 0.9),
+                #"sgd_class_weight" : tune.choice(["balanced"]),
             #GaussianNB - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html#sklearn.naive_bayes.GaussianNB
                 "var_smoothing" : tune.loguniform(1e-11, 1e-1),
             #BalancedRandomForest - https://imbalanced-learn.org/dev/references/generated/imblearn.ensemble.BalancedRandomForestClassifier.html
@@ -313,7 +328,7 @@ if __name__ == "__main__":
                 "lda_shrinkage" : tune.choice(["auto", None]),
             #LogisticRegression - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?highlight=logistic#sklearn.linear_model.LogisticRegression
                 "lr_C" : tune.uniform(0.1, 10.0),
-                "lr_penalty" : tune.choice(["l1", "l2", "elasticnet", None]),
+                "lr_penalty" : tune.choice(["l1", "l2"]),
                 "lr_solver" : tune.choice(["newton-cg", "lbfgs", "liblinear", "sag", "saga"]),
                 "lr_max_iter" : tune.randint(2, 100)
         })
