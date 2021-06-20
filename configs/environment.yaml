@@ -16,10 +16,10 @@ dependencies:
   - pip
   - gpy=1.9.9
   - scikit-optimize=0.8.1
+  - hyperopt=0.2.5
   #- tune-sklearn=0.2.1
   - pip:
     - ray==1.4.0
     - ray[tune]
-    #- hyperopt==0.2.5
     - tensorflow-gpu==2.3
     - lz4==3.1.3

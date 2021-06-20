@@ -6,10 +6,10 @@ import argparse
 import pickle
 from joblib import dump
 import yaml
-from ray import tune
+#from ray import hp
 from ray.tune import Trainable, run
-from ray.tune.suggest.skopt import SkOptSearch
-from ray.tune.suggest import ConcurrencyLimiter
+from hyperopt import hp
+from ray.tune.suggest.hyperopt import HyperOptSearch
 from ray.tune.schedulers import AsyncHyperBandScheduler
 #from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_validate  #, StratifiedKFold
@@ -32,9 +32,9 @@ warnings.simplefilter("ignore")
 import functools
 print = functools.partial(print, flush=True)
 
-TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
+hp_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
-class stacking(Trainable):  #https://docs.ray.io/en/master/tune/examples/pbt_tune_cifar10_with_keras.html
+class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_cifar10_with_keras.html
     def setup(self, config, x_train, x_test, y_train, y_test):
         self.x_train = x_train
         self.x_test = x_test
@@ -129,7 +129,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     background = shap.kmeans(x_train, 10)
     explainer = shap.KernelExplainer(clf.predict, background)
     del clf, x_train, y_train, background
-    background = x_test[np.random.choice(x_test.shape[0], 1000, replace=False)]
+    background = x_test[np.random.choice(x_test.shape[0], 10, replace=False)]
     del x_test
     shap_values = explainer.shap_values(background)
     plt.figure()
@@ -195,7 +195,7 @@ if __name__ == "__main__":
         "--vtype",
         type=str,
         default="non_snv",
-        help="Type of variation/s (without spaces between) to tune the classifier (like: snv,non_snv,snv_protein_coding). (Default: non_snv)")
+        help="Type of variation/s (without spaces between) to hp the classifier (like: snv,non_snv,snv_protein_coding). (Default: non_snv)")
     parser.add_argument(
         "--cpus",
         type=int,
@@ -237,10 +237,70 @@ if __name__ == "__main__":
 
         x_train, x_test, y_train, y_test, feature_names = data_parsing(var,config_dict,output)
 
-        skopt_search = SkOptSearch(
-            metric="mean_accuracy",
-            mode="max")
-        skopt_search = ConcurrencyLimiter(skopt_search, max_concurrent=10)
+        config={
+            #RandomForest - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?highlight=randomforestclassifier#sklearn.ensemble.RandomForestClassifier
+                "rf_n_estimators" : hp.randint('rf_n_estimators', 1, 200),
+                "rf_criterion" : hp.choice('rf_criterion', ["gini", "entropy"]),
+                "rf_max_depth" : hp.randint('rf_max_depth', 2, 200),
+                "rf_min_samples_split" : hp.randint('rf_min_samples_split', 2, 10),
+                "rf_min_samples_leaf" : hp.randint('rf_min_samples_leaf', 1, 10),
+                "rf_max_features" : hp.choice('rf_max_features', ["sqrt", "log2"]),
+                "rf_oob_score" : hp.choice('rf_oob_score', [True, False]),
+                "rf_class_weight" : hp.choice('rf_class_weight', ["balanced", "balanced_subsample"]),
+            #KNeighborsClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html?highlight=kn#sklearn.neighbors.KNeighborsClassifier
+                "knn_n_neighbors" : hp.randint('knn_n_neighbors', 1, 10),
+                "knn_weights" : hp.choice('knn_weights', ['uniform', 'distance']),
+                "knn_algorithm" : hp.choice('knn_algorithm', ['auto', 'ball_tree', 'kd_tree', 'brute']),
+                "knn_metric" : hp.choice('knn_metric', ['minkowski', 'chebyshev']),
+            #GradientBoostingClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier
+                "gbc_loss" : hp.choice('gbc_loss', ["deviance", "exponential"]),
+                "gbc_learning_rate": hp.loguniform('gbc_learning_rate', 0.01, 1.0),
+                "gbc_n_estimators" : hp.randint('gbc_n_estimators', 1, 200),
+                "gbc_subsample" : hp.uniform('gbc_subsample', 0.1, 1.0),
+                "gbc_criterion" : hp.choice('gbc_criterion', ["friedman_mse", "mse"]),
+                "gbc_min_samples_split" : hp.randint('gbc_min_samples_split', 2, 100),
+                "gbc_min_samples_leaf" : hp.randint('gbc_min_samples_leaf', 1, 100),
+                "gbc_max_depth" : hp.randint('gbc_max_depth', 2, 200),
+                "gbc_max_features" : hp.choice('gbc_max_features', ["sqrt", "log2"]),
+            #DecisionTree - https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html#sklearn.tree.DecisionTreeClassifier
+                "dt_criterion" : hp.choice('dt_criterion', ["gini", "entropy"]),
+                "dt_splitter" : hp.choice('dt_splitter', ["best", "random"]),
+                "dt_max_depth" : hp.randint('dt_max_depth', 2, 200),
+                "dt_min_samples_split" : hp.randint('dt_min_samples_split', 2, 100),
+                "dt_min_samples_leaf" : hp.randint('dt_min_samples_leaf', 1, 100),
+                "dt_max_features" : hp.choice('dt_max_features', ["sqrt", "log2"]),
+                "dt_class_weight" : hp.choice('dt_class_weight', [None, "balanced"]),
+            #StochasticGradientDescent - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html#sklearn.linear_model.SGDClassifier
+                #"sgd_loss": hp.choice(['squared_hinge', 'hinge', 'log', 'modified_huber', 'perceptron', 'squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive']),
+                #"sgd_penalty" : hp.choice(['l2', 'l1', 'elasticnet']),
+                #"sgd_alpha" : hp.loguniform(1e-9, 1e-1),
+                #"sgd_max_iter" : hp.randint(2, 1000),
+                #"sgd_epsilon" : hp.uniform(1e-9, 1e-1),
+                #"sgd_learning_rate" : hp.choice(['constant', 'optimal', 'invscaling', 'adaptive']),   #'optimal', 
+                #"sgd_eta0" : hp.uniform(0.01, 0.9),
+                #"sgd_power_t" : hp.uniform(0.1, 0.9),
+                #"sgd_class_weight" : hp.choice(["balanced"]),
+            #GaussianNB - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html#sklearn.naive_bayes.GaussianNB
+                "var_smoothing" : hp.loguniform('var_smoothing', 1e-11, 1e-1),
+            #BalancedRandomForest - https://imbalanced-learn.org/dev/references/generated/imblearn.ensemble.BalancedRandomForestClassifier.html
+                "brf_n_estimators" : hp.randint('brf_n_estimators', 1, 200),
+                "brf_criterion" : hp.choice('brf_criterion', ["gini", "entropy"]),
+                "brf_max_depth" : hp.randint('brf_max_depth', 2, 200),
+                "brf_min_samples_split" : hp.randint('brf_min_samples_split', 2, 10),
+                "brf_min_samples_leaf" : hp.randint('brf_min_samples_leaf', 1, 10),
+                "brf_max_features" : hp.choice('brf_max_features', ["sqrt", "log2"]),
+                "brf_oob_score" : hp.choice('brf_oob_score', [True, False]),
+                "brf_class_weight" : hp.choice('brf_class_weight', ["balanced", "balanced_subsample"]),
+            #LinearDiscriminantAnalysis - https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis
+                "lda_solver" : hp.choice('lda_solver', ["svd", "lsqr", "eigen"]),
+                #"lda_shrinkage" : hp.choice(["auto", None]),
+            #LogisticRegression - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?highlight=logistic#sklearn.linear_model.LogisticRegression
+                "lr_C" : hp.uniform('lr_C', 0.1, 10.0),
+                "lr_penalty" : hp.choice('lr_penalty', ["l2"]),
+                "lr_solver" : hp.choice('lr_solver', ["newton-cg", "lbfgs", "sag"]),   # "liblinear", "sag", "saga"]),
+                "lr_max_iter" : hp.randint('lr_max_iter', 2, 100)
+        }
+        hyperopt_search = HyperOptSearch(config, metric="mean_accuracy", mode="max")
         scheduler = AsyncHyperBandScheduler()
 
         analysis = run(
@@ -248,7 +308,7 @@ if __name__ == "__main__":
             name=f"StackingClassifier_{var}",
             verbose=1,
             scheduler=scheduler,
-            search_alg=skopt_search,
+            search_alg=hyperopt_search,
             reuse_actors=True,
             local_dir="./ray_results",
             max_failures=2,
@@ -264,74 +324,12 @@ if __name__ == "__main__":
             metric="mean_accuracy",
             mode="max",
             stop={
-                "training_iteration": 10000,
+                "training_iteration": 10,
             },
             num_samples=10,
             #fail_fast=True,
-            queue_trials=True,
-            config={
-            #RandomForest - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?highlight=randomforestclassifier#sklearn.ensemble.RandomForestClassifier
-                "rf_n_estimators" : tune.randint(1, 200),
-                "rf_criterion" : tune.choice(["gini", "entropy"]),
-                "rf_max_depth" : tune.randint(2, 200),
-                "rf_min_samples_split" : tune.randint(2, 10),
-                "rf_min_samples_leaf" : tune.randint(1, 10),
-                "rf_max_features" : tune.choice(["sqrt", "log2"]),
-                "rf_oob_score" : tune.choice([True, False]),
-                "rf_class_weight" : tune.choice(["balanced", "balanced_subsample"]),
-            #KNeighborsClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html?highlight=kn#sklearn.neighbors.KNeighborsClassifier
-                "knn_n_neighbors" : tune.randint(1, 10),
-                "knn_weights" : tune.choice(['uniform', 'distance']),
-                "knn_algorithm" : tune.choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
-                "knn_metric" : tune.choice(['minkowski', 'chebyshev']),
-            #GradientBoostingClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier
-                "gbc_loss" : tune.choice(["deviance", "exponential"]),
-                "gbc_learning_rate": tune.loguniform(0.01, 1.0),
-                "gbc_n_estimators" : tune.randint(1, 200),
-                "gbc_subsample" : tune.uniform(0.1, 1.0),
-                "gbc_criterion" : tune.choice(["friedman_mse", "mse"]),
-                "gbc_min_samples_split" : tune.randint(2, 100),
-                "gbc_min_samples_leaf" : tune.randint(1, 100),
-                "gbc_max_depth" : tune.randint(2, 200),
-                "gbc_max_features" : tune.choice(["sqrt", "log2"]),
-            #DecisionTree - https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html#sklearn.tree.DecisionTreeClassifier
-                "dt_criterion" : tune.choice(["gini", "entropy"]),
-                "dt_splitter" : tune.choice(["best", "random"]),
-                "dt_max_depth" : tune.randint(2, 200),
-                "dt_min_samples_split" : tune.randint(2, 100),
-                "dt_min_samples_leaf" : tune.randint(1, 100),
-                "dt_max_features" : tune.choice(["sqrt", "log2"]),
-                "dt_class_weight" : tune.choice([None, "balanced"]),
-            #StochasticGradientDescent - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html#sklearn.linear_model.SGDClassifier
-                #"sgd_loss": tune.choice(['squared_hinge', 'hinge', 'log', 'modified_huber', 'perceptron', 'squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive']),
-                #"sgd_penalty" : tune.choice(['l2', 'l1', 'elasticnet']),
-                #"sgd_alpha" : tune.loguniform(1e-9, 1e-1),
-                #"sgd_max_iter" : tune.randint(2, 1000),
-                #"sgd_epsilon" : tune.uniform(1e-9, 1e-1),
-                #"sgd_learning_rate" : tune.choice(['constant', 'optimal', 'invscaling', 'adaptive']),   #'optimal', 
-                #"sgd_eta0" : tune.uniform(0.01, 0.9),
-                #"sgd_power_t" : tune.uniform(0.1, 0.9),
-                #"sgd_class_weight" : tune.choice(["balanced"]),
-            #GaussianNB - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html#sklearn.naive_bayes.GaussianNB
-                "var_smoothing" : tune.loguniform(1e-11, 1e-1),
-            #BalancedRandomForest - https://imbalanced-learn.org/dev/references/generated/imblearn.ensemble.BalancedRandomForestClassifier.html
-                "brf_n_estimators" : tune.randint(1, 200),
-                "brf_criterion" : tune.choice(["gini", "entropy"]),
-                "brf_max_depth" : tune.randint(2, 200),
-                "brf_min_samples_split" : tune.randint(2, 10),
-                "brf_min_samples_leaf" : tune.randint(1, 10),
-                "brf_max_features" : tune.choice(["sqrt", "log2"]),
-                "brf_oob_score" : tune.choice([True, False]),
-                "brf_class_weight" : tune.choice(["balanced", "balanced_subsample"]),
-            #LinearDiscriminantAnalysis - https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis
-                "lda_solver" : tune.choice(["svd", "lsqr", "eigen"]),
-                #"lda_shrinkage" : tune.choice(["auto", None]),
-            #LogisticRegression - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?highlight=logistic#sklearn.linear_model.LogisticRegression
-                "lr_C" : tune.uniform(0.1, 10.0),
-                "lr_penalty" : tune.choice(["l2"]),
-                "lr_solver" : tune.choice(["newton-cg", "lbfgs", "sag"]),   # "liblinear", "sag", "saga"]),
-                "lr_max_iter" : tune.randint(2, 100)
-        })
+            queue_trials=True
+        )
 
         finish = (time.perf_counter()- start)/120
         #ttime = (finish- start)/120
