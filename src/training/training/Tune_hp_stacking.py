@@ -42,13 +42,13 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
         self.y_test = y_test
         self.model = StackingClassifier(estimators = [
             ('rf', RandomForestClassifier(random_state=42, n_estimators=self.config.get("rf_n_estimators", 100), criterion=self.config.get("rf_criterion","gini"), max_depth=self.config.get("rf_max_depth", 2), min_samples_split=self.config.get("rf_min_samples_split",2), min_samples_leaf=self.config.get("rf_min_samples_leaf",1), max_features=self.config.get("rf_max_features","sqrt"), oob_score=self.config.get("rf_oob_score",False), class_weight=self.config.get("rf_class_weight","balanced"), n_jobs = -1)),
-            ('knn', KNeighborsClassifier(n_neighbors=self.config.get("knn_n_neighbors", 1), weights=self.config.get("knn_weights", 'uniform'), algorithm=self.config.get("knn_algorithm", 'auto'), metric=self.config.get("knn_metric", 'minkowski'), n_jobs = -1)),    #leaf_size=self.config.get("leaf_size", 30), 
+            ('knn', KNeighborsClassifier(n_neighbors=self.config.get("knn_n_neighbors", 1), weights=self.config.get("knn_weights", 'uniform'), algorithm=self.config.get("knn_algorithm", 'auto'), p=config.get("knn_p", 1), metric=self.config.get("knn_metric", 'minkowski'), n_jobs = -1)),    #leaf_size=self.config.get("leaf_size", 30), 
             ('gbc', GradientBoostingClassifier(random_state=42, loss=self.config.get("gbc_loss", 100), learning_rate = self.config.get("gbc_learning_rate", 0.1), n_estimators=self.config.get("gbc_n_estimators", 100), subsample=self.config.get("gbc_subsample",1), criterion=self.config.get("gbc_criterion","friedman_mse"), min_samples_split=self.config.get("gbc_min_samples_split",2), min_samples_leaf=self.config.get("gbc_min_samples_leaf",1), max_depth=self.config.get("gbc_max_depth", 2), max_features=self.config.get("gbc_max_features","sqrt"))),
             ('dt', DecisionTreeClassifier(random_state=42, criterion=self.config.get("dt_criterion","gini"), splitter=self.config.get("dt_splitter","best"), max_depth=self.config.get("dt_max_depth", 2), min_samples_split=self.config.get("dt_min_samples_split",2), min_samples_leaf=self.config.get("dt_min_samples_leaf",1), max_features=self.config.get("dt_max_features","sqrt"), class_weight=self.config.get("dt_class_weight","balanced"))),
             #('sgd', SGDClassifier(random_state=42, loss=self.config.get("sgd_loss", "hinge"), penalty=self.config.get("sgd_penalty", "l2"), alpha=self.config.get("sgd_alpha", 0.0001), max_iter=self.config.get("sgd_max_iter", 1000), epsilon=self.config.get("sgd_epsilon", 0.1), learning_rate = self.config.get("sgd_learning_rate", "optimal"), eta0 = self.config.get("sgd_eta0", 0.0), power_t = self.config.get("sgd_power_t", 0.5), class_weight=self.config.get("sgd_class_weight","balanced"), n_jobs = -1)),
             ('gnb', GaussianNB(var_smoothing=self.config.get("var_smoothing", 1e-09))),
             ('brf', BalancedRandomForestClassifier(random_state=42, n_estimators=self.config.get("brf_n_estimators", 100), criterion=self.config.get("brf_criterion","gini"), max_depth=self.config.get("brf_max_depth", 2), min_samples_split=self.config.get("brf_min_samples_split",2), min_samples_leaf=self.config.get("brf_min_samples_leaf",1), max_features=self.config.get("brf_max_features","sqrt"), oob_score=self.config.get("brf_oob_score",False), class_weight=self.config.get("brf_class_weight","balanced"), n_jobs = -1)),
-            ('lda', LinearDiscriminantAnalysis(solver=self.config.get("lda_solver", "svd"), shrinkage=self.config.get("lda_shrinkage", None)))
+            #('lda', LinearDiscriminantAnalysis(solver=self.config.get("lda_solver", "svd"), shrinkage=self.config.get("lda_shrinkage", None)))
             ],
                     cv = 3,
                     stack_method = "predict_proba",
@@ -92,19 +92,19 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
     clf = StackingClassifier(estimators = [
             ('rf', RandomForestClassifier(random_state=42, n_estimators=config.get("rf_n_estimators", 100), criterion=config.get("rf_criterion","gini"), max_depth=config.get("rf_max_depth", 2), min_samples_split=config.get("rf_min_samples_split",2), min_samples_leaf=config.get("rf_min_samples_leaf",1), max_features=config.get("rf_max_features","sqrt"), oob_score=config.get("rf_oob_score",False), class_weight=config.get("rf_class_weight","balanced"), n_jobs = -1)),
-            ('knn', KNeighborsClassifier(n_neighbors=config.get("knn_n_neighbors", 1), weights=config.get("knn_weights", 'uniform'), algorithm=config.get("knn_algorithm", 'auto'), metric=config.get("knn_metric", 'minkowski'), n_jobs = -1)),    #leaf_size=config.get("leaf_size", 30), 
+            ('knn', KNeighborsClassifier(n_neighbors=config.get("knn_n_neighbors", 1), weights=config.get("knn_weights", 'uniform'), algorithm=config.get("knn_algorithm", 'auto'), p=config.get("knn_p", 1), metric=config.get("knn_metric", 'minkowski'), n_jobs = -1)),    #leaf_size=config.get("leaf_size", 30), 
             ('gbc', GradientBoostingClassifier(random_state=42, loss=config.get("gbc_loss", 100), learning_rate = config.get("gbc_learning_rate", 0.1), n_estimators=config.get("gbc_n_estimators", 100), subsample=config.get("gbc_subsample",1), criterion=config.get("gbc_criterion","friedman_mse"), min_samples_split=config.get("gbc_min_samples_split",2), min_samples_leaf=config.get("gbc_min_samples_leaf",1), max_depth=config.get("gbc_max_depth", 2), max_features=config.get("gbc_max_features","sqrt"))),
             ('dt', DecisionTreeClassifier(random_state=42, criterion=config.get("dt_criterion","gini"), splitter=config.get("dt_splitter","best"), max_depth=config.get("dt_max_depth", 2), min_samples_split=config.get("dt_min_samples_split",2), min_samples_leaf=config.get("dt_min_samples_leaf",1), max_features=config.get("dt_max_features","sqrt"), class_weight=config.get("dt_class_weight","balanced"))),
             #('sgd', SGDClassifier(random_state=42, loss=config.get("sgd_loss", "hinge"), penalty=config.get("sgd_penalty", "l2"), alpha=config.get("sgd_alpha", 0.0001), max_iter=config.get("sgd_max_iter", 1000), epsilon=config.get("sgd_epsilon", 0.1), learning_rate = config.get("sgd_learning_rate", "optimal"), eta0 = config.get("sgd_eta0", 0.0), power_t = config.get("sgd_power_t", 0.5), class_weight=config.get("sgd_class_weight","balanced"), n_jobs = -1)),
             ('gnb', GaussianNB(var_smoothing=config.get("var_smoothing", 1e-09))),
             ('brf', BalancedRandomForestClassifier(random_state=42, n_estimators=config.get("brf_n_estimators", 100), criterion=config.get("brf_criterion","gini"), max_depth=config.get("brf_max_depth", 2), min_samples_split=config.get("brf_min_samples_split",2), min_samples_leaf=config.get("brf_min_samples_leaf",1), max_features=config.get("brf_max_features","sqrt"), oob_score=config.get("brf_oob_score",False), class_weight=config.get("brf_class_weight","balanced"), n_jobs = -1)),
-            ('lda', LinearDiscriminantAnalysis(solver=config.get("lda_solver", "svd"), shrinkage=config.get("lda_shrinkage", None)))
+            #('lda', LinearDiscriminantAnalysis(solver=config.get("lda_solver", "svd"), shrinkage=config.get("lda_shrinkage", None)))
             ],
                     cv = 3,
                     stack_method = "predict_proba",
                     n_jobs=-1,
                     passthrough=False,
-                    final_estimator= LogisticRegression(C=config.get("lr_C", 1), penalty=config.get("lr_penalty", "l2"), solver=config.get("lr_solver", "lbfgs"), max_iter=config.get("lr_max_iter", 100), n_jobs = -1),
+                    final_estimator= LogisticRegression(C=config.get("lr_C", 1), penalty=config.get("lr_penalty", "l2"), solver=config.get("lr_solver", "lbfgs"), max_iter=config.get("lr_max_iter", 100), l1_ratio=config.get("lr_l1_ratio", None), tol=config.get("lr_tol", 1e-4), n_jobs = -1),
                     verbose=0).fit(x_train, y_train)
     #score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
     
@@ -245,12 +245,13 @@ if __name__ == "__main__":
                 "rf_min_samples_split" : hp.randint('rf_min_samples_split', 2, 10),
                 "rf_min_samples_leaf" : hp.randint('rf_min_samples_leaf', 1, 10),
                 "rf_max_features" : hp.choice('rf_max_features', ["sqrt", "log2"]),
-                "rf_oob_score" : hp.choice('rf_oob_score', [True, False]),
-                "rf_class_weight" : hp.choice('rf_class_weight', ["balanced", "balanced_subsample"]),
+                #"rf_oob_score" : hp.choice('rf_oob_score', [True, False]),
+                "rf_class_weight" : hp.choice('rf_class_weight', [None, "balanced", "balanced_subsample"]),
             #KNeighborsClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html?highlight=kn#sklearn.neighbors.KNeighborsClassifier
                 "knn_n_neighbors" : hp.randint('knn_n_neighbors', 1, 10),
                 "knn_weights" : hp.choice('knn_weights', ['uniform', 'distance']),
                 "knn_algorithm" : hp.choice('knn_algorithm', ['auto', 'ball_tree', 'kd_tree', 'brute']),
+                "knn_p" : hp.randint('knn_p', 1, 5),
                 "knn_metric" : hp.choice('knn_metric', ['minkowski', 'chebyshev']),
             #GradientBoostingClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier
                 "gbc_loss" : hp.choice('gbc_loss', ["deviance", "exponential"]),
@@ -289,15 +290,26 @@ if __name__ == "__main__":
                 "brf_min_samples_split" : hp.randint('brf_min_samples_split', 2, 10),
                 "brf_min_samples_leaf" : hp.randint('brf_min_samples_leaf', 1, 10),
                 "brf_max_features" : hp.choice('brf_max_features', ["sqrt", "log2"]),
-                "brf_oob_score" : hp.choice('brf_oob_score', [True, False]),
+                #"brf_oob_score" : hp.choice('brf_oob_score', [True, False]),
                 "brf_class_weight" : hp.choice('brf_class_weight', ["balanced", "balanced_subsample"]),
             #LinearDiscriminantAnalysis - https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis
-                "lda_solver" : hp.choice('lda_solver', ["svd", "lsqr", "eigen"]),
-                #"lda_shrinkage" : hp.choice(["auto", None]),
-            #LogisticRegression - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?highlight=logistic#sklearn.linear_model.LogisticRegression
-                "lr_C" : hp.uniform('lr_C', 0.1, 10.0),
-                "lr_penalty" : hp.choice('lr_penalty', ["l2"]),
-                "lr_solver" : hp.choice('lr_solver', ["newton-cg", "lbfgs", "sag"]),   # "liblinear", "sag", "saga"]),
+                #'lda_solver': hp.choice('lda_solver', [
+                #                     {'lda_solver':'svd'}
+                #                    ,{'lda_solver':'lsqr','lda_shrinkage':hp.choice('shrinkage_type_lsqr', ['auto', hp.uniform('shrinkage_value_lsqr', 0, 1)])}
+                #                    ,{'lda_solver':'eigen','lda_shrinkage':hp.choice('shrinkage_type_eigen', ['auto', hp.uniform('shrinkage_value_eigen', 0, 1)])}
+                #                    ]),
+            #LogisticRegression - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?highlight=logistic#sklearn.linear_model.LogisticRegression; https://github.com/hyperopt/hyperopt/issues/304
+                "lr_C" : hp.uniform('lr_C', -10.0, 10.0),
+                'lr_solver':  hp.choice('lr__solver',[
+                                        {'lr__solver':'newton-cg', 'lr_penalty': hp.choice('p_newton',['none','l2'])},
+                                        {'lr__solver':'lbfgs', 'lr_penalty': hp.choice('p_lbfgs',['none','l2'])},
+                                        {'lr__solver': 'liblinear', 'lr_penalty': hp.choice('p_lib',['l1','l2'])}, 
+                                        {'lr__solver': 'sag', 'lr_penalty': hp.choice('p_sag',['l2','none'])}, 
+                                        {'lr__solver':'saga', 'lr_penalty':'elasticnet'}]),
+                'lr_tol': hp.loguniform('lr_tol',-13,-1),
+                'lr_l1_ratio': hp.uniform('lr_l1_ratio',0,1),
+                #"lr_penalty" : hp.choice('lr_penalty', ["l2"]),
+                #"lr_solver" : hp.choice('lr_solver', ["newton-cg", "lbfgs", "sag"]),   # "liblinear", "sag", "saga"]),
                 "lr_max_iter" : hp.randint('lr_max_iter', 2, 100)
         }
         hyperopt_search = HyperOptSearch(config, metric="mean_accuracy", mode="max")
@@ -326,7 +338,7 @@ if __name__ == "__main__":
             stop={
                 "training_iteration": 10,
             },
-            num_samples=10,
+            num_samples=5,
             #fail_fast=True,
             queue_trials=True
         )
