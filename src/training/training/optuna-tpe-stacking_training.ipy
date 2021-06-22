@@ -230,11 +230,13 @@ if __name__ == "__main__":
         objective = Objective(X_train, X_test, Y_train, Y_test)
         # Add stream handler of stdout to show the messages
         optuna.logging.get_logger("optuna").addHandler(logging.StreamHandler(sys.stdout))
+        #options = {'pool_size': my_pool_size, 'max_overflow': my_max_overflow}
+        #storage = optuna.storages.RDBStorage(f'postgresql+pg8000://tmamidi@localhost/StackingClassifier_{var}')
         study = optuna.create_study(sampler=TPESampler(**TPESampler.hyperopt_parameters()), study_name= f"StackingClassifier_{var}", storage = f"sqlite:///tuning/{var}/StackingClassifier_{var}.db", #study_name= "Ditto3",
             direction="maximize", pruner=optuna.pruners.HyperbandPruner(), load_if_exists=True #, pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
         )
-        #study = optuna.load_study(study_name= "Ditto_all", sampler=TPESampler(**TPESampler.hyperopt_parameters()),storage ="sqlite:///Ditto_all.db") # study_name= "Ditto3", 
-        study.optimize(objective, n_trials=100, n_jobs = -1, gc_after_trial=True) #, n_jobs = -1 timeout=600,callbacks=[tensorboard_callback],
+        #study = optuna.load_study(study_name= f"StackingClassifier_{var}", storage =f"mysql:///tuning/{var}/Stacking_Classifier_{var}.db", pruner=optuna.pruners.HyperbandPruner(), sampler=TPESampler(**TPESampler.hyperopt_parameters())) 
+        study.optimize(objective, n_trials=500, n_jobs = -1, gc_after_trial=True) #, n_jobs = -1 timeout=600,callbacks=[tensorboard_callback],
         finish = (time.perf_counter()- start)/120
         #ttime = (finish- start)/120
         print(f'Total time in hrs: {finish}')
