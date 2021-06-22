@@ -1,13 +1,11 @@
 # slurm-launch.py
 # Usage:
-# python slurm-launch.py --exp-name RF_PB2 --command "python Tune_RF_PB2.py --vtype snv_protein_coding"  --load-env training
+# for i in {0..4}; do python slurm-launch.py --exp-name Ditto_tuning --command "python optuna-tpe-stacking_training.ipy --vtype snv_protein_coding" sleep 60 ; done
 
 import argparse
 import subprocess
 import sys
 import time
-
-from pathlib import Path
 
 template_file = "slurm-template.sh" #Path(__file__) / 
 JOB_NAME = "${JOB_NAME}"
@@ -47,18 +45,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num-cpus",
         type=int,
-        default=10,
-        help="Number of CPUs to use in each node. (Default: 10)")
+        default=2,
+        help="Number of CPUs to use in each node. (Default: 2)")
     parser.add_argument(
         "--mem",
         type=str,
-        default="100G",
-        help="Total Memory to use. (Default: 100G)")
+        default="15G",
+        help="Total Memory to use. (Default: 5G)")
     parser.add_argument(
         "--partition",
         type=str,
-        default="long",
-        help="Default partition: long"
+        default="short",
+        help="Default partition: short"
     )
     parser.add_argument(
         "--load-env",
@@ -70,7 +68,7 @@ if __name__ == "__main__":
         type=str,
         required=True,
         help="The command you wish to execute. For example: "
-        " --command 'python test.py'. "
+        " --command 'python optuna-tpe-stacking_results.ipy'. "
         "Note that the command must be a string.")
     args = parser.parse_args()
 
