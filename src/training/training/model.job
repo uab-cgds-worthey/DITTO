@@ -15,7 +15,7 @@
 #SBATCH --cpus-per-task=10
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes. 
-#SBATCH --mem-per-cpu=10G
+#SBATCH --mem-per-cpu=3G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
@@ -28,4 +28,4 @@ source activate training
 
 #Run your commands here
 #python ML_models.py
-python Tune_hp_stacking.py
+python optuna-tpe-stacking.ipy

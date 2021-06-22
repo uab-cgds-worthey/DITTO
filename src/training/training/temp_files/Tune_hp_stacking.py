@@ -300,12 +300,12 @@ if __name__ == "__main__":
                 #                    ]),
             #LogisticRegression - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?highlight=logistic#sklearn.linear_model.LogisticRegression; https://github.com/hyperopt/hyperopt/issues/304
                 "lr_C" : hp.uniform('lr_C', -10.0, 10.0),
-                'lr_solver':  hp.choice('lr__solver',[
-                                        {'lr__solver':'newton-cg', 'lr_penalty': hp.choice('p_newton',['none','l2'])},
-                                        {'lr__solver':'lbfgs', 'lr_penalty': hp.choice('p_lbfgs',['none','l2'])},
-                                        {'lr__solver': 'liblinear', 'lr_penalty': hp.choice('p_lib',['l1','l2'])}, 
-                                        {'lr__solver': 'sag', 'lr_penalty': hp.choice('p_sag',['l2','none'])}, 
-                                        {'lr__solver':'saga', 'lr_penalty':'elasticnet'}]),
+                'lr_solver':  hp.choice('lr_solver',[
+                                        {'lr_solver':'newton-cg', 'lr_penalty': hp.choice('p_newton',['none','l2'])},
+                                        {'lr_solver':'lbfgs', 'lr_penalty': hp.choice('p_lbfgs',['none','l2'])},
+                                        {'lr_solver': 'liblinear', 'lr_penalty': hp.choice('p_lib',['l1','l2'])}, 
+                                        {'lr_solver': 'sag', 'lr_penalty': hp.choice('p_sag',['l2','none'])}, 
+                                        {'lr_solver':'saga', 'lr_penalty':'elasticnet'}]),
                 'lr_tol': hp.loguniform('lr_tol',-13,-1),
                 'lr_l1_ratio': hp.uniform('lr_l1_ratio',0,1),
                 #"lr_penalty" : hp.choice('lr_penalty', ["l2"]),
