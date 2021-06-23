@@ -136,7 +136,7 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
     def step(self):
         #score = cross_validate(self.model, self.x_train, self.y_train, cv=3, n_jobs=-1, verbose=0)
         #testing_score = np.max(score['test_score'])
-        testing_score = self.model.fit(self.x_train, self.y_train).score(self.x_test, self.y_test)
+        testing_score = self.model.fit(self.x_train, self.y_train).accuracy_score(self.x_test, self.y_test)
         return {'mean_accuracy': testing_score}
 
     def save_checkpoint(self, checkpoint_dir):
@@ -197,7 +197,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     background = shap.kmeans(x_train, 10)
     explainer = shap.KernelExplainer(clf.predict, background)
     del clf, x_train, y_train, background
-    background = x_test[np.random.choice(x_test.shape[0], 10, replace=False)]
+    background = x_test[np.random.choice(x_test.shape[0], 1000, replace=False)]
     del x_test
     shap_values = explainer.shap_values(background)
     plt.figure()
@@ -363,9 +363,9 @@ if __name__ == '__main__':
                                         {'lr__solver':'lbfgs', 'lr__penalty': hp.choice('p_lbfgs',['none','l2'])},
                                         {'lr__solver': 'liblinear', 'lr__penalty': hp.choice('p_lib',['l1','l2'])}, 
                                         {'lr__solver': 'sag', 'lr__penalty': hp.choice('p_sag',['l2','none'])}, 
-                                        {'lr__solver':'saga', 'lr__penalty':'elasticnet'}]),
-                'lr__tol': hp.loguniform('lr__tol',-13,-1),
-                'lr__l1_ratio': hp.uniform('lr__l1_ratio',0,1),
+                                        {'lr__solver':'saga', 'lr__penalty':'elasticnet', 'lr__l1_ratio': hp.uniform('lr__l1_ratio',0,1)}]),
+                'lr__tol': hp.loguniform('lr__tol',1e-13,1e-1),
+                
                 'lr__max_iter' : hp.randint('lr__max_iter', 2, 100)
         }
         hyperopt_search = HyperOptSearch(config, metric='mean_accuracy', mode='max')
@@ -374,7 +374,7 @@ if __name__ == '__main__':
         analysis = run(
             wrap_trainable(stacking, x_train, x_test, y_train, y_test),
             name=f'StackingClassifier_{var}',
-            verbose=2,
+            verbose=1,
             scheduler=scheduler,
             search_alg=hyperopt_search,
             reuse_actors=True,
@@ -394,7 +394,7 @@ if __name__ == '__main__':
             stop={
                 'training_iteration': 100,
             },
-            num_samples=10,
+            num_samples=3,
             #fail_fast=True,
             queue_trials=True
         )
