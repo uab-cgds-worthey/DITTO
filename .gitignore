@@ -98,3 +98,4 @@ logs/
 # .java/fonts dir get created when creating fastqc conda env
 .java/
 
+/.vscode/settings.json
