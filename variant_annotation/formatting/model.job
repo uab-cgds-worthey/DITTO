@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-#SBATCH --job-name=stacking
-#SBATCH --output=stacking1.out
+#SBATCH --job-name=formatting
+#SBATCH --output=formatting.out
 #
 ### Modify this according to your Ray workload.
 #SBATCH --nodes=1
@@ -28,6 +28,6 @@ source activate training
 
 #Run your commands here
 #python ML_models.py
-python Tune_hp_stacking.py # --vtype snv_protein_coding
+python dbnsfp_vep_formatter.py -i /data/project/worthey_lab/temp_datasets_central/mana/dbnsfp/processed/v4.1a_20200616/dbNSFP4.1a_variant.complete.bgz -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/variant_annotation/formatting/dbNSFP4.1a_variant.complete.tsv
 #python optuna-tpe-stacking_training.ipy --vtype snv_protein_coding
 #python optuna-tpe-stacking_results.ipy

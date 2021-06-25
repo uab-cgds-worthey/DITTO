@@ -26,6 +26,7 @@ var/
 *.out
 *.db
 *.py*.sh
+*.tsv
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
