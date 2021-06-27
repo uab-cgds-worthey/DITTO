@@ -22,12 +22,15 @@
 #SBATCH --mail-user=tmamidi@uab.edu
 
 #Set your environment here
-module load Anaconda3/2020.02
+#module load Anaconda3/2020.02
+module load tabix
 #source activate testing
-source activate training
+#source activate training
 
 #Run your commands here
 #python ML_models.py
 python dbnsfp_vep_formatter.py -i /data/project/worthey_lab/temp_datasets_central/mana/dbnsfp/processed/v4.1a_20200616/dbNSFP4.1a_variant.complete.bgz -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/variant_annotation/formatting/dbNSFP4.1a_variant.complete.tsv
+bgzip -c dbNSFP4.1a_variant.complete.tsv > dbNSFP4.1a_variant.complete.gz
+tabix -f dbNSFP4.1a_variant.complete.gz
 #python optuna-tpe-stacking_training.ipy --vtype snv_protein_coding
 #python optuna-tpe-stacking_results.ipy

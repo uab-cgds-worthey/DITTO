@@ -445,7 +445,7 @@ bgzip and Tabix index the file -
     `bgzip -c ../interim/merged_sig_norm.vcf > ../interim/merged_sig_norm.vcf.gz
     tabix -fp vcf ../interim/merged_sig_norm.vcf.gz`
 Run variant annotation as shown in ReadMe file - 
-    `./src/run_pipeline.sh -s -v ../data/interim/merged_sig_norm.vcf.gz -o ../data/processed -d ~/.ditto_datasets.yaml`
+    `./src/run_pipeline.sh -s -v ../data/interim/merged_sig_norm.vcf.gz -o ../data/interim -d ~/.ditto_datasets.yaml`
 Parse the annotated vcf file - 
     `python parse_annotated_vars.py -i ../data/processed/merged_sig_norm_vep-annotated.vcf.gz -o ../data/processed/merged_sig_norm_vep-annotated.tsv`
 Extract Class information for all these variants - 
@@ -503,3 +503,14 @@ Finally, I can make classifiers to tune with Ray Tune PB2. Only downside is that
 ################### 3/17/21 ######################################################################
 Tuning all the models with TuneSearchCV. They're all under the folder Tuning. Code to tune them - 
     `for FILE in Tuning/*.py; do python slurm-launch.py --exp-name $FILE  --command "python $FILE --vtype snv_protein_coding" ; done`
+
+################### 6/27/21 ######################################################################
+Working on stabilizing the tuning process the last 2 weeks.
+Shifted from `voting classifier` to `stacking classifier` cause it can tune the weightsfor itself. We don't need to manually set them.
+Shifted from `tune` parameters to `hyperopt` parametes as they work with conditional search spaces.
+Final working script for tuning is at `src/training/training/Tune_hp_stacking.py`.
+
+There was a problem with dbNSFP database used by VEP. VEP doesn't parse out the transcript info from the database but just replaces `;` with `&` and combines all transcripts in to a single line. 
+We don't want this to happen as we can't work with prediction score from this database for ML. Remember the complex columns that we tried to take mean off? That approach is wrong.
+So, Brandon wrote a formatting script to run before running the annotation scripts.
+Running the annotation process after formatting the database. Hopefully, it works this time :) 
