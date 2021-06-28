@@ -10,10 +10,10 @@
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --tasks-per-node=1
-#SBATCH --partition=pascalnodes
+#SBATCH --partition=express
 #
 # Time format = HH:MM:SS, DD-HH:MM:SS
-#SBATCH --time=01:59:58
+##SBATCH --time=01:59:58
 #
 ### Modify this according to your Ray workload.
 #SBATCH --cpus-per-task=5

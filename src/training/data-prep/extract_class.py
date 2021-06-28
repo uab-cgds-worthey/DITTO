@@ -1,8 +1,8 @@
 import os
 import gzip
 
-os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-vcf = '../interim/merged_sig_norm.vcf.gz'
+os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/interim/')
+vcf = 'merged_sig_norm.vcf.gz'
 vcf1 = 'merged_sig_norm_vep-annotated.tsv'
 output = 'merged_sig_norm_class_vep-annotated.tsv'
 

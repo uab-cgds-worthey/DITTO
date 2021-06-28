@@ -62,11 +62,11 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     var = df[config_dict['var']]
     df = df.drop(config_dict['var'], axis=1)
     print('parsing difficult columns......')
-    if 'non_snv' in stats:
-        df['GERP'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['GERP'].str.split('&')]
-    else:
-        for col in tqdm(config_dict['col_conv']):
-            df[col] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df[col].str.split('&')]
+    #if 'non_snv' in stats:
+    df['GERP'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['GERP'].str.split('&')]
+    #else:
+    #    for col in tqdm(config_dict['col_conv']):
+    #        df[col] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df[col].str.split('&')]
     print('One-hot encoding...')
     df = pd.get_dummies(df, prefix_sep='_')
     print(df.columns.values.tolist(),file=open(column_info, "w"))
@@ -124,7 +124,7 @@ def main(df, config_f, stats,column_info, null_info):
 if __name__ == "__main__":
     os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     print('Loading data...')
-    var_f = pd.read_csv("merged_sig_norm_class_vep-annotated.tsv", sep='\t')
+    var_f = pd.read_csv("../interim/merged_sig_norm_class_vep-annotated.tsv", sep='\t')
     print('Data Loaded !....')
     config_f = "../../configs/columns_config.yaml"
 

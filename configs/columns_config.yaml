@@ -106,12 +106,7 @@ CLNREVSTAT:
   -  criteria_provided,_single_submitter 
 
 col_conv:
-  -  FATHMM_score
-  -  MutationAssessor_score
-  -  PROVEAN_score
-  -  VEST4_score
   -  GERP
-  -  MutationTaster_score
 
 ML_VAR:
   -  SYMBOL

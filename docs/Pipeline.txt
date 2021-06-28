@@ -1,9 +1,8 @@
-################### 2/21/21 ######################################################################
-Current workflow:
+** Current workflow: **
 `module load Anaconda3/2020.02
 module load tabix
 module load BCFtools`
-Download Clinvar - 
+Download Clinvar (2/21/21 ) - 
     `wget -P /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/ https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz
     tabix -fp vcf clinvar.vcf.gz `
 Check chromosomes and keep note for modifications - 
@@ -39,7 +38,7 @@ Parse dbNSFP database to work with VEP (needed to format transcripts to separate
     ```
         python dbnsfp_vep_formatter.py -i /data/project/worthey_lab/temp_datasets_central/mana/dbnsfp/processed/v4.1a_20200616/dbNSFP4.1a_variant.complete.bgz -o /data/project/worthey_lab/projects/       experimental_pipelines/tarun/ditto/variant_annotation/formatting/dbNSFP4.1a_variant.complete.tsv
         bgzip -c dbNSFP4.1a_variant.complete.tsv > dbNSFP4.1a_variant.complete.gz
-        tabix -f dbNSFP4.1a_variant.complete.gz
+        tabix -s 1 -b 2 -e 2 dbNSFP4.1a_variant.complete.gz
     ```
 Copy paths to dataset yaml file - 
     ```
@@ -53,7 +52,7 @@ Copy paths to dataset yaml file -
 Run variant annotation as shown in ReadMe file - 
     `./src/run_pipeline.sh -s -v ../data/interim/merged_sig_norm.vcf.gz -o ../data/interim -d ~/.ditto_datasets.yaml`
 Parse the annotated vcf file - 
-    `python parse_annotated_vars.py -i ../data/processed/merged_sig_norm_vep-annotated.vcf.gz -o ../data/processed/merged_sig_norm_vep-annotated.tsv`
+    `python parse_annotated_vars.py -i ../data/interim/merged_sig_norm_vep-annotated.vcf.gz -o ../data/interim/merged_sig_norm_vep-annotated.tsv`
 Extract Class information for all these variants - 
     `python extract_class.py`
 Filter, stats and prep the data - 
