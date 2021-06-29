@@ -36,7 +36,7 @@ bgzip and Tabix index the file -
 Parse dbNSFP database to work with VEP (needed to format transcripts to separate lines) - 
     `cd variant_annotation/formatting/`
     ```
-        python dbnsfp_vep_formatter.py -i /data/project/worthey_lab/temp_datasets_central/mana/dbnsfp/processed/v4.1a_20200616/dbNSFP4.1a_variant.complete.bgz -o /data/project/worthey_lab/projects/       experimental_pipelines/tarun/ditto/variant_annotation/formatting/dbNSFP4.1a_variant.complete.tsv
+        python dbnsfp_vep_formatter.py -i /data/project/worthey_lab/temp_datasets_central/mana/dbnsfp/processed/v4.1a_20200616/dbNSFP4.1a_variant.complete.bgz -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/variant_annotation/formatting/dbNSFP4.1a_variant.complete.tsv
         bgzip -c dbNSFP4.1a_variant.complete.tsv > dbNSFP4.1a_variant.complete.gz
         tabix -s 1 -b 2 -e 2 dbNSFP4.1a_variant.complete.gz
     ```
