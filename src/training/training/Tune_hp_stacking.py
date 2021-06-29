@@ -264,21 +264,6 @@ if __name__ == '__main__':
         type=str,
         default='non_snv',
         help='Type of variation/s (without spaces between) to hp the classifier (like: snv,non_snv,snv_protein_coding). (Default: non_snv)')
-    parser.add_argument(
-        '--cpus',
-        type=int,
-        default=10,
-        help='Number of CPUs needed. (Default: 10)')
-    parser.add_argument(
-        '--gpus',
-        type=int,
-        default=0,
-        help='Number of GPUs needed. (Default: 0)')
-    parser.add_argument(
-        '--mem',
-        type=int,
-        default=100*1024*1024*1024,
-        help='Memory needed in bytes. (Default: 100*1024*1024*1024 (100GB))')
 
     args = parser.parse_args()
 
@@ -287,7 +272,7 @@ if __name__ == '__main__':
     if args.smoke_test:
         ray.init(num_cpus=2)  # force pausing to happen for test
     else:
-        ray.init(ignore_reinit_error=True, num_cpus=args.cpus, num_gpus=args.gpus, _memory=args.mem)
+        ray.init(ignore_reinit_error=True)
     
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     with open('../../configs/columns_config.yaml') as fh:
@@ -357,7 +342,7 @@ if __name__ == '__main__':
                                     ,{'lda_solver':'eigen','lda_shrinkage':hp.choice('shrinkage_type_eigen', ['auto', hp.uniform('shrinkage_value_eigen', 0, 1)])}
                                     ]),
             #LogisticRegression - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?highlight=logistic#sklearn.linear_model.LogisticRegression; https://github.com/hyperopt/hyperopt/issues/304
-                'lr__C' : hp.uniform('lr__C', 0.0, 10.0),
+                'lr__C' : hp.uniform('lr__C', 0.0, 100.0),
                 'lr__solver':  hp.choice('lr__solver',[
                                         {'lr__solver':'newton-cg', 'lr__penalty': hp.choice('p_newton',['none','l2'])},
                                         {'lr__solver':'lbfgs', 'lr__penalty': hp.choice('p_lbfgs',['none','l2'])},
@@ -392,9 +377,9 @@ if __name__ == '__main__':
             metric='mean_accuracy',
             mode='max',
             stop={
-                'training_iteration': 100,
+                'training_iteration': 10,
             },
-            num_samples=3,
+            num_samples=300,
             #fail_fast=True,
             queue_trials=True
         )

@@ -43,9 +43,10 @@ def extract_col(config_dict,df, stats):
             pass
         print('\nData shape (snv) =', df.shape, file=open(stats, "a"))
     if 'train' in stats:
-        print('Dropping empty columns and rows...')
+        print('Dropping empty columns and rows along with duplicate rows...')
         #df.dropna(axis=1, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[0]/4)
         df.dropna(axis=0, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
+        df.drop_duplicates()
         df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
     print('\nhgmd_class:\n', df['hgmd_class'].value_counts(), file=open(stats, "a"))
     print('\nclinvar_CLNSIG:\n', df['clinvar_CLNSIG'].value_counts(), file=open(stats, "a"))
