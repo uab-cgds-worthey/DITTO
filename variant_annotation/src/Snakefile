@@ -23,12 +23,12 @@ INPUT_VCF = config["vcf"]
 PROCESSED_DIR = Path(config["outdir"])
 EXTERNAL_DIR = Path("data/external")
 
-if not (INPUT_VCF.endswith('vcf') or INPUT_VCF.endswith('vcf.gz')):
-    print (f"Error: Input file extension not in expected format: found {INPUT_VCF}, expecting *.vcf or *.vcf.gz")
+if not (INPUT_VCF.endswith('vcf') or INPUT_VCF.endswith('vcf.gz') or INPUT_VCF.endswith('vcf.bgz')):
+    print (f"Error: Input file extension not in expected format: found {INPUT_VCF}, expecting *.vcf, *.vcf.gz or *.vcf.bgz")
     raise SystemExit(1)
 
 INPUT_VCF = Path(INPUT_VCF)
-OUTPUT_VCF = PROCESSED_DIR / ((INPUT_VCF.name).rstrip(".gz").rstrip(".vcf") + "_vep-annotated.vcf.gz")
+OUTPUT_VCF = PROCESSED_DIR / ((INPUT_VCF.name).rstrip(".bgz").rstrip(".gz").rstrip(".vcf") + "_vep-annotated.vcf.gz")
 
 
 rule all:
