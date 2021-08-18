@@ -60,7 +60,7 @@ def data_parsing(var,config_dict,output):
 
 
 @ray.remote #(num_cpus=9)
-def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_names):
+def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_names, output):
    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
    start = time.perf_counter()
    score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0, scoring=('roc_auc','neg_log_loss'))
@@ -95,10 +95,9 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test,background,feature_name
    #shap.plots.waterfall(shap_values[0], max_display=15)
    plt.savefig(f"./models/{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
    finish = (time.perf_counter()-start)/60
-   #list1 = [clf_name ,prc, roc_auc, accuracy, score, matrix, finish]
-   list1 = [clf_name, np.mean(score['train_roc_auc']), np.mean(score['test_roc_auc']),np.mean(score['train_neg_log_loss']), np.mean(score['test_neg_log_loss']), prc, recall, roc_auc, accuracy, finish, matrix]
-   #pickle.dump(clf, open("./models/"+var+"/"+clf_name+"_"+var+".pkl", 'wb'))
-   return list1
+   with open(output, 'a') as f:
+        f.write(f"{clf_name}\t{np.mean(score['train_roc_auc'])}\t{np.mean(score['test_roc_auc'])}\t{np.mean(score['train_neg_log_loss'])}\t{np.mean(score['test_neg_log_loss'])}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}\n")
+   return None
 
 if __name__ == "__main__":
     #Classifiers I wish to use
@@ -124,10 +123,9 @@ if __name__ == "__main__":
         output = "models/"+var+"/ML_results_"+var+"_.csv"
         print('Working with '+var+' dataset...', file=open(output, "a"))
         print('Working with '+var+' dataset...')
-        X_train, X_test, Y_train, Y_test, background, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
-        print('Model\tCross_validate(avg_train_roc_auc)\tCross_validate(avg_test_roc_auc)\tCross_validate(avg_train_neg_log_loss)\tCross_validate(avg_test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
-        for i in classifiers:
-           list1 = ray.get(classifier.remote(i,var, X_train, X_test, Y_train, Y_test,background,feature_names))
-           print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\t{list1[8]}\t{list1[9]}\n{list1[10]}', file=open(output, "a"))
-           print(f'{i} training and testing done!')
+        X_train, X_test, Y_train, Y_test, background, feature_names = data_parsing.remote(var,config_dict,output)
+        with open(output, 'a') as f:
+            f.write('Model\tCross_validate(avg_train_roc_auc)\tCross_validate(avg_test_roc_auc)\tCross_validate(avg_train_neg_log_loss)\tCross_validate(avg_test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]\n')
+        remote_ml = [classifier.remote(i, var, X_train, X_test, Y_train, Y_test, background, feature_names, output) for i in classifiers]
+        ray.get(remote_ml)
 

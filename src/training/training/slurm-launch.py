@@ -45,13 +45,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num-cpus",
         type=int,
-        default=2,
-        help="Number of CPUs to use in each node. (Default: 2)")
+        default=10,
+        help="Number of CPUs to use in each node. (Default: 10)")
     parser.add_argument(
         "--mem",
         type=str,
-        default="15G",
-        help="Total Memory to use. (Default: 5G)")
+        default="20G",
+        help="Total Memory to use. (Default: 20G)")
     parser.add_argument(
         "--partition",
         type=str,

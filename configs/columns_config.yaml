@@ -101,9 +101,11 @@ Clinsig_test:
   -  Benign/Likely_benign
 
 
-CLNREVSTAT:
+CLNREVSTAT: #https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/
+  -  practice_guideline
+  -  reviewed_by_expert_panel
   -  criteria_provided,_multiple_submitters,_no_conflicts
-  -  criteria_provided,_single_submitter 
+  -  criteria_provided,_single_submitter
 
 col_conv:
   -  GERP
