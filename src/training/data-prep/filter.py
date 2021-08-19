@@ -23,13 +23,6 @@ def get_col_configs(config_f):
 def extract_col(config_dict,df, stats):
     print('Extracting columns and rows according to config file !....')
     df = df[config_dict['columns']]
-    #df = df[config_dict['Consequence']]
-    #df= df.loc[df['Consequence'].isin(config_dict['Consequence'])]
-    if 'train' in stats:
-        df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
-    else:
-        df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_test'])]
-    
     if 'non_snv' in stats:
         #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
         df=df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
@@ -42,6 +35,13 @@ def extract_col(config_dict,df, stats):
         else:
             pass
         print('\nData shape (snv) =', df.shape, file=open(stats, "a"))
+    #df = df[config_dict['Consequence']]
+    df= df.loc[df['Consequence'].isin(config_dict['Consequence'])]
+    if 'train' in stats:
+        df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
+    else:
+        df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_test'])]
+    
     if 'train' in stats:
         print('Dropping empty columns and rows along with duplicate rows...')
         #df.dropna(axis=1, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[0]/4)
@@ -65,6 +65,8 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     print('parsing difficult columns......')
     #if 'non_snv' in stats:
     df['GERP'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['GERP'].str.split('&')]
+    if 'nssnv' in stats:
+        df['MutationTaster_score'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['MutationTaster_score'].str.split('&')]
     #else:
     #    for col in tqdm(config_dict['col_conv']):
     #        df[col] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df[col].str.split('&')]
@@ -129,8 +131,8 @@ if __name__ == "__main__":
     print('Data Loaded !....')
     config_f = "../../configs/columns_config.yaml"
 
-    variants = ['train_non_snv','train_snv','train_snv_protein_coding','test_snv','test_non_snv','test_snv_protein_coding']
-    
+    #variants = ['train_non_snv','train_snv','train_snv_protein_coding','test_snv','test_non_snv','test_snv_protein_coding']
+    variants = ['train_nssnv', 'test_nssnv']
     for var in variants:
         if not os.path.exists(var):
             os.mkdir(var)

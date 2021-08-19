@@ -86,18 +86,19 @@ ClinicalSignificance:
   -  Likely_benign
 
 Clinsig_train:
-  -  DP
-  -  DFP
-  -  FP
+
   -  DM
   -  Benign
   -  Pathogenic
-  -  Likely_pathogenic
+  -  Likely_benign
 
 Clinsig_test:
   -  Pathogenic/Likely_pathogenic
   -  DM?
-  -  Likely_benign
+  -  DP
+  -  DFP
+  -  FP
+  -  Likely_pathogenic
   -  Benign/Likely_benign
 
 
@@ -131,9 +132,20 @@ var:
 
 Consequence:
   -  missense_variant
-  #-  synonymous_variant
-  #-  intron_variant
-  #-  stop_gained
+  -  missense_variant&splice_region_variant 
+  -  stop_gained
+  -  start_lost&NMD_transcript_variant
+  -  start_lost
+  -  stop_gained&splice_region_variant
+  -  stop_gained&NMD_transcript_variant
+  -  missense_variant&splice_region_variant&NMD_transcript_variant
+  -  stop_gained&splice_region_variant&NMD_transcript_variant
+  -  start_lost&splice_region_variant
+  -  stop_lost&splice_region_variant
+  -  stop_lost&splice_region_variant&NMD_transcript_variant
+  -  splice_donor_variant&missense_variant
+  -  start_lost&splice_region_variant&NMD_transcript_variant
+
 
 snv_columns: 
   SIFT: 0.5

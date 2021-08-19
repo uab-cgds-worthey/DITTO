@@ -50,8 +50,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mem",
         type=str,
-        default="20G",
-        help="Total Memory to use. (Default: 20G)")
+        default="100G",
+        help="Total Memory to use. (Default: 100G)")
     parser.add_argument(
         "--partition",
         type=str,
@@ -62,13 +62,13 @@ if __name__ == "__main__":
         "--load-env",
         type=str,
         default="training",
-        help="The script to load your environment ('training')")
+        help="Environment name to load before running script. (Default: 'training')")
     parser.add_argument(
         "--command",
         type=str,
         required=True,
         help="The command you wish to execute. For example: "
-        " --command 'python optuna-tpe-stacking_results.ipy'. "
+        " --command 'python ML_models.py'. "
         "Note that the command must be a string.")
     args = parser.parse_args()
 
