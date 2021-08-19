@@ -25,8 +25,11 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.neighbors import KNeighborsClassifier
 import matplotlib.pyplot as plt
 import yaml
+import gc
 import os
 os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+
+TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
 @ray.remote(num_returns=6)
 def data_parsing(var,config_dict,output):
@@ -103,12 +106,12 @@ if __name__ == "__main__":
     #Classifiers I wish to use
     classifiers = [
         	DecisionTreeClassifier(class_weight='balanced'),
-            #KNeighborsClassifier(),
-            #SGDClassifier(class_weight='balanced', n_jobs=-1),
+            KNeighborsClassifier(),
+            SGDClassifier(class_weight='balanced', n_jobs=-1),
             RandomForestClassifier(class_weight='balanced', n_jobs=-1),
             BalancedRandomForestClassifier(),
-            #GaussianNB(),
-            #LinearDiscriminantAnalysis(),
+            GaussianNB(),
+            LinearDiscriminantAnalysis(),
             GradientBoostingClassifier()
         ]
     
@@ -127,4 +130,5 @@ if __name__ == "__main__":
         f.write('Model\tCross_validate(avg_train_roc_auc)\tCross_validate(avg_test_roc_auc)\tCross_validate(avg_train_neg_log_loss)\tCross_validate(avg_test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]\n')
     remote_ml = [classifier.remote(i, var, X_train, X_test, Y_train, Y_test,  background, feature_names, output) for i in classifiers]
     ray.get(remote_ml)
+    gc.collect()
 

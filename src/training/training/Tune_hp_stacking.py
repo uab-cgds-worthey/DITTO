@@ -6,7 +6,7 @@ import argparse
 import pickle
 from joblib import dump
 import yaml
-#from ray import hp
+#from ray import tune
 from ray.tune import Trainable, run
 from hyperopt import hp
 from ray.tune.suggest.hyperopt import HyperOptSearch
@@ -32,7 +32,7 @@ warnings.simplefilter('ignore')
 import functools
 print = functools.partial(print, flush=True)
 
-hp_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
+TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
 def f_unpack_dict(dct):
     '''
