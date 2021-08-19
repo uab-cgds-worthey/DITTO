@@ -28,7 +28,7 @@ import yaml
 import os
 os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
 
-@ray.remote
+@ray.remote(num_returns=6)
 def data_parsing(var,config_dict,output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     #Load data
@@ -60,13 +60,9 @@ def data_parsing(var,config_dict,output):
 
 
 @ray.remote #(num_cpus=9)
-def classifier(clf,var,  x_train_id, x_test_id, y_train_id, y_test_id,background,feature_names, output):
+def classifier(clf,var, X_train, X_test, Y_train, Y_test, background,feature_names, output):
    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
    start = time.perf_counter()
-   X_train = ray.get(x_train_id)
-   X_test = ray.get(x_test_id)
-   Y_train = ray.get(y_train_id)
-   Y_test = ray.get(y_test_id)
    score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0, scoring=('roc_auc','neg_log_loss'))
    clf = score['estimator'][np.argmin(score['test_neg_log_loss'])]
    #y_score = cross_val_predict(clf, X_train, Y_train, cv=5, n_jobs=-1, verbose=0)
@@ -124,15 +120,11 @@ if __name__ == "__main__":
     if not os.path.exists('models/'+var):
         os.makedirs('./models/'+var)
     output = "models/"+var+"/ML_results_"+var+"_.csv"
-    print('Working with '+var+' dataset...', file=open(output, "a"))
+    #print('Working with '+var+' dataset...', file=open(output, "a"))
     print('Working with '+var+' dataset...')
-    X_train, X_test, Y_train, Y_test, background, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
-    x_train_id = ray.put(x_train)
-    x_test_id = ray.put(x_test)
-    y_train_id = ray.put(y_train)
-    y_test_id = ray.put(y_test)
+    X_train, X_test, Y_train, Y_test, background, feature_names = data_parsing.remote(var,config_dict,output)
     with open(output, 'a') as f:
         f.write('Model\tCross_validate(avg_train_roc_auc)\tCross_validate(avg_test_roc_auc)\tCross_validate(avg_train_neg_log_loss)\tCross_validate(avg_test_neg_log_loss)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]\n')
-    remote_ml = [classifier.remote(i, var, x_train_id, x_train_id, y_train_id, y_test_id, background, feature_names, output) for i in classifiers]
+    remote_ml = [classifier.remote(i, var, X_train, X_test, Y_train, Y_test,  background, feature_names, output) for i in classifiers]
     ray.get(remote_ml)
 
