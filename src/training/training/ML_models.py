@@ -17,12 +17,10 @@ from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 #from sklearn.multiclass import OneVsRestClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
 from imblearn.ensemble import BalancedRandomForestClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.neighbors import KNeighborsClassifier
 import matplotlib.pyplot as plt
 import yaml
 import gc
@@ -106,8 +104,6 @@ if __name__ == "__main__":
     #Classifiers I wish to use
     classifiers = [
         	DecisionTreeClassifier(class_weight='balanced'),
-            KNeighborsClassifier(),
-            SGDClassifier(class_weight='balanced', n_jobs=-1),
             RandomForestClassifier(class_weight='balanced', n_jobs=-1),
             BalancedRandomForestClassifier(),
             GaussianNB(),

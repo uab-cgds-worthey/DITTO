@@ -300,12 +300,6 @@ if __name__ == '__main__':
                 'rf__max_features' : hp.choice('rf__max_features', ['sqrt', 'log2']),
                 #'rf__oob_score' : hp.choice('rf__oob_score', [True, False]),
                 'rf__class_weight' : hp.choice('rf__class_weight', ['balanced', 'balanced_subsample']),
-            ##KNeighborsClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html?highlight=kn#sklearn.neighbors.KNeighborsClassifier
-            #    'knn__n_neighbors' : hp.randint('knn__n_neighbors', 1, 10),
-            #    'knn__weights' : hp.choice('knn__weights', ['uniform', 'distance']),
-            #    'knn__algorithm' : hp.choice('knn__algorithm', ['auto', 'ball_tree', 'kd_tree', 'brute']),
-            #    'knn__p' : hp.randint('knn__p', 1, 5),
-            #    'knn__metric' : hp.choice('knn__metric', ['minkowski', 'chebyshev']),
             #GradientBoostingClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier
                 'gbc__loss' : hp.choice('gbc__loss', ['deviance', 'exponential']),
                 'gbc__learning_rate': hp.loguniform('gbc__learning_rate', 0.01, 1.0),
