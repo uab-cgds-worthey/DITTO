@@ -79,7 +79,7 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     print('Filling NAs ....')
     #df = imp.fit_transform(df)
     #df = pd.DataFrame(df, columns = columns)
-    #df=df.fillna(df.median())
+    df=df.fillna(df.mean())
     df1 = pd.DataFrame()
     if 'non_snv' in stats:
         for key in tqdm(config_dict['non_snv_columns']):
@@ -112,10 +112,12 @@ def main(df, config_f, stats,column_info, null_info):
     print('Columns extracted! Extracting class info....')
     df.isnull().sum(axis = 0).to_csv(null_info)
     #print('\n Unique Impact (Class):\n', df.hgmd_class.unique(), file=open("./data/processed/stats1.csv", "a"))
-    y = df.hgmd_class.str.replace(r'DFP','high_impact').str.replace(r'DM\?','high_impact').str.replace(r'DM','high_impact')
-    y = y.str.replace(r'Pathogenic/Likely_pathogenic','high_impact').str.replace(r'Likely_pathogenic','high_impact').str.replace(r'Pathogenic','high_impact')
-    y = y.str.replace(r'DP','low_impact').str.replace(r'FP','low_impact')
-    y = y.str.replace(r'Benign/Likely_benign','low_impact').str.replace(r'Likely_benign','low_impact').str.replace(r'Benign','low_impact')
+    df['hgmd_class'] = df['hgmd_class'].str.replace(r'DFP','high_impact').str.replace(r'DM\?','high_impact').str.replace(r'DM','high_impact')
+    df['hgmd_class'] = df['hgmd_class'].str.replace(r'Pathogenic/Likely_pathogenic','high_impact').str.replace(r'Likely_pathogenic','high_impact').str.replace(r'Pathogenic','high_impact')
+    df['hgmd_class'] = df['hgmd_class'].str.replace(r'DP','low_impact').str.replace(r'FP','low_impact')
+    df['hgmd_class'] = df['hgmd_class'].str.replace(r'Benign/Likely_benign','low_impact').str.replace(r'Likely_benign','low_impact').str.replace(r'Benign','low_impact')
+    df.drop_duplicates()
+    y = df['hgmd_class']
     print('\nImpact (Class):\n', y.value_counts(), file=open(stats, "a"))
     #y = df.hgmd_class
     df = df.drop('hgmd_class', axis=1)
@@ -132,7 +134,7 @@ if __name__ == "__main__":
     config_f = "../../configs/columns_config.yaml"
 
     #variants = ['train_non_snv','train_snv','train_snv_protein_coding','test_snv','test_non_snv','test_snv_protein_coding']
-    variants = ['train_nssnv', 'test_nssnv']
+    variants = ['train_mean_nssnv', 'test_mean_nssnv']
     for var in variants:
         if not os.path.exists(var):
             os.mkdir(var)
