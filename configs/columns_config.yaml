@@ -1,5 +1,7 @@
 # columns to be needed in dataset
 columns:
+  -  Chromosome
+  -  Position
   -  Reference Allele
   -  Alternate Allele
   -  Consequence
@@ -117,6 +119,8 @@ ML_VAR:
   -  Consequence
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
+  -  Chromosome
+  -  Position
   -  Alternate Allele
   -  Reference Allele
   -  ID
@@ -127,6 +131,8 @@ var:
   -  Consequence
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
+  -  Chromosome
+  -  Position
   -  Alternate Allele
   -  Reference Allele
 
@@ -146,8 +152,40 @@ Consequence:
   -  splice_donor_variant&missense_variant
   -  start_lost&splice_region_variant&NMD_transcript_variant
 
+gnomad_columns:
+  -  gnomADv3_AF
+  -  gnomADv3_AF_afr
+  -  gnomADv3_AF_afr_female
+  -  gnomADv3_AF_afr_male
+  -  gnomADv3_AF_ami
+  -  gnomADv3_AF_ami_female
+  -  gnomADv3_AF_ami_male
+  -  gnomADv3_AF_amr
+  -  gnomADv3_AF_amr_female
+  -  gnomADv3_AF_amr_male
+  -  gnomADv3_AF_asj
+  -  gnomADv3_AF_asj_female
+  -  gnomADv3_AF_asj_male
+  -  gnomADv3_AF_eas
+  -  gnomADv3_AF_eas_female
+  -  gnomADv3_AF_eas_male
+  -  gnomADv3_AF_female
+  -  gnomADv3_AF_fin
+  -  gnomADv3_AF_fin_female
+  -  gnomADv3_AF_fin_male
+  -  gnomADv3_AF_male
+  -  gnomADv3_AF_nfe
+  -  gnomADv3_AF_nfe_female
+  -  gnomADv3_AF_nfe_male
+  -  gnomADv3_AF_oth
+  -  gnomADv3_AF_oth_female
+  -  gnomADv3_AF_oth_male
+  -  gnomADv3_AF_raw
+  -  gnomADv3_AF_sas
+  -  gnomADv3_AF_sas_female
+  -  gnomADv3_AF_sas_male
 
-snv_columns: 
+nssnv_columns: 
   SIFT: 0.5
   PolyPhen: 0.5
   CADD_PHRED: 20
@@ -177,37 +215,6 @@ snv_columns:
   phastCons30way_mammalian: 0.5
   phyloP100way_vertebrate: 20
   phyloP30way_mammalian: 20
-  gnomADv3_AF: 0
-  gnomADv3_AF_afr: 0
-  gnomADv3_AF_afr_female: 0
-  gnomADv3_AF_afr_male: 0
-  gnomADv3_AF_ami: 0
-  gnomADv3_AF_ami_female: 0
-  gnomADv3_AF_ami_male: 0
-  gnomADv3_AF_amr: 0
-  gnomADv3_AF_amr_female: 0
-  gnomADv3_AF_amr_male: 0
-  gnomADv3_AF_asj: 0
-  gnomADv3_AF_asj_female: 0
-  gnomADv3_AF_asj_male: 0
-  gnomADv3_AF_eas: 0
-  gnomADv3_AF_eas_female: 0
-  gnomADv3_AF_eas_male: 0
-  gnomADv3_AF_female: 0
-  gnomADv3_AF_fin: 0
-  gnomADv3_AF_fin_female: 0
-  gnomADv3_AF_fin_male: 0
-  gnomADv3_AF_male: 0
-  gnomADv3_AF_nfe: 0
-  gnomADv3_AF_nfe_female: 0
-  gnomADv3_AF_nfe_male: 0
-  gnomADv3_AF_oth: 0
-  gnomADv3_AF_oth_female: 0
-  gnomADv3_AF_oth_male: 0
-  gnomADv3_AF_raw: 0
-  gnomADv3_AF_sas: 0
-  gnomADv3_AF_sas_female: 0
-  gnomADv3_AF_sas_male: 0
   IMPACT_HIGH: 0
   IMPACT_LOW: 0
   IMPACT_MODERATE: 0
@@ -227,40 +234,9 @@ snv_columns:
   BIOTYPE_telomerase_RNA: 0
   BIOTYPE_transcribed_pseudogene: 0
 
-non_snv_columns:  
+non_nssnv_columns:  
   CADD_PHRED: 20
   GERP: 0
-  gnomADv3_AF: 0
-  gnomADv3_AF_afr: 0
-  gnomADv3_AF_afr_female: 0
-  gnomADv3_AF_afr_male: 0
-  gnomADv3_AF_ami: 0
-  gnomADv3_AF_ami_female: 0
-  gnomADv3_AF_ami_male: 0
-  gnomADv3_AF_amr: 0
-  gnomADv3_AF_amr_female: 0
-  gnomADv3_AF_amr_male: 0
-  gnomADv3_AF_asj: 0
-  gnomADv3_AF_asj_female: 0
-  gnomADv3_AF_asj_male: 0
-  gnomADv3_AF_eas: 0
-  gnomADv3_AF_eas_female: 0
-  gnomADv3_AF_eas_male: 0
-  gnomADv3_AF_female: 0
-  gnomADv3_AF_fin: 0
-  gnomADv3_AF_fin_female: 0
-  gnomADv3_AF_fin_male: 0
-  gnomADv3_AF_male: 0
-  gnomADv3_AF_nfe: 0
-  gnomADv3_AF_nfe_female: 0
-  gnomADv3_AF_nfe_male: 0
-  gnomADv3_AF_oth: 0
-  gnomADv3_AF_oth_female: 0
-  gnomADv3_AF_oth_male: 0
-  gnomADv3_AF_raw: 0
-  gnomADv3_AF_sas: 0
-  gnomADv3_AF_sas_female: 0
-  gnomADv3_AF_sas_male: 0
   IMPACT_HIGH: 0
   IMPACT_LOW: 0
   IMPACT_MODERATE: 0

@@ -37,6 +37,7 @@ def extract_col(config_dict,df, stats):
         print('\nData shape (snv) =', df.shape, file=open(stats, "a"))
     #df = df[config_dict['Consequence']]
     df= df.loc[df['Consequence'].isin(config_dict['Consequence'])]
+    print('\nData shape (nsSNV) =', df.shape, file=open(stats, "a"))
     if 'train' in stats:
         df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
     else:
@@ -45,7 +46,7 @@ def extract_col(config_dict,df, stats):
     if 'train' in stats:
         print('Dropping empty columns and rows along with duplicate rows...')
         #df.dropna(axis=1, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[0]/4)
-        df.dropna(axis=0, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
+        df.dropna(axis=0, thresh=(df.shape[1]*0.5), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
         df.drop_duplicates()
         df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
     print('\nhgmd_class:\n', df['hgmd_class'].value_counts(), file=open(stats, "a"))
@@ -79,23 +80,26 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     print('Filling NAs ....')
     #df = imp.fit_transform(df)
     #df = pd.DataFrame(df, columns = columns)
-    df=df.fillna(df.mean())
-    df1 = pd.DataFrame()
+    df1=df[config_dict['gnomad_columns']]
+    df1=df1.fillna(df1.median())
+    #df1=df1.fillna(0.005)
+    #df1 = pd.DataFrame()
     if 'non_snv' in stats:
-        for key in tqdm(config_dict['non_snv_columns']):
+        for key in tqdm(config_dict['non_nssnv_columns']):
             if key in df.columns:
-                df1[key] = df[key].fillna(config_dict['non_snv_columns'][key]).astype('float64')
+                df1[key] = df[key].fillna(config_dict['non_nssnv_columns'][key]).astype('float64')
             else:
-                df1[key] = config_dict['non_snv_columns'][key]
+                df1[key] = config_dict['non_nssnv_columns'][key]
     else:
-        for key in tqdm(config_dict['snv_columns']):
+        for key in tqdm(config_dict['nssnv_columns']):
             if key in df.columns:
-                df1[key] = df[key].fillna(config_dict['snv_columns'][key]).astype('float64')
+                df1[key] = df[key].fillna(config_dict['nssnv_columns'][key]).astype('float64')
             else:
-                df1[key] = config_dict['snv_columns'][key]
+                df1[key] = config_dict['nssnv_columns'][key]
     df = df1
     del df1
     df = df.reset_index(drop=True)
+    #df.dropna(axis=1, how='all', inplace=True)
     df['ID'] = [f'var_{num}' for num in range(len(df))]
     print('NAs filled!')
     df = pd.concat([var.reset_index(drop=True), df], axis=1)
@@ -117,6 +121,7 @@ def main(df, config_f, stats,column_info, null_info):
     df['hgmd_class'] = df['hgmd_class'].str.replace(r'DP','low_impact').str.replace(r'FP','low_impact')
     df['hgmd_class'] = df['hgmd_class'].str.replace(r'Benign/Likely_benign','low_impact').str.replace(r'Likely_benign','low_impact').str.replace(r'Benign','low_impact')
     df.drop_duplicates()
+    df.dropna(axis=1, how='all', inplace=True)
     y = df['hgmd_class']
     print('\nImpact (Class):\n', y.value_counts(), file=open(stats, "a"))
     #y = df.hgmd_class
@@ -134,13 +139,13 @@ if __name__ == "__main__":
     config_f = "../../configs/columns_config.yaml"
 
     #variants = ['train_non_snv','train_snv','train_snv_protein_coding','test_snv','test_non_snv','test_snv_protein_coding']
-    variants = ['train_mean_nssnv', 'test_mean_nssnv']
+    variants = ['train_AF_med_F_50_nssnv', 'test_AF_med_F_50_nssnv']
     for var in variants:
         if not os.path.exists(var):
             os.mkdir(var)
         stats = var+"/stats_"+var+".csv"
-        print("Filtering "+var+" variants with at-least 30 percent data for each variant...", file=open(stats, "w"))
-        print("Filtering "+var+" variants with at-least 30 percent data for each variant...")
+        print("Filtering "+var+" variants with at-least 50 percent data for each variant...", file=open(stats, "w"))
+        print("Filtering "+var+" variants with at-least 50 percent data for each variant...")
         column_info = var+"/"+var+'_columns.csv'
         null_info = var+"/Nulls_"+var+'.csv'
         df,y = main(var_f, config_f, stats, column_info, null_info)
