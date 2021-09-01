@@ -17,7 +17,7 @@ from sklearn.model_selection import cross_validate, StratifiedKFold
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 #from sklearn.multiclass import OneVsRestClassifier
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.linear_model import SGDClassifier
 import matplotlib.pyplot as plt
 import yaml
 import functools  
@@ -57,10 +57,16 @@ def data_parsing(var,config_dict,output):
 
 def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    model = AdaBoostClassifier()
+    model = SGDClassifier(n_jobs=1)
     config = {
-                "n_estimators" : tune.randint(1, 200),
-                "algorithm" : tune.choice(['SAMME','SAMME.R'])
+                'loss': tune.choice(['squared_hinge', 'hinge', 'log', 'modified_huber', 'perceptron', 'squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive']),
+                'penalty' : tune.choice(['l2', 'l1', 'elasticnet']),
+                'alpha': tune.loguniform(1e-9, 1e-1),
+                'epsilon': tune.uniform(1e-9, 1e-1),
+                'fit_intercept': tune.choice([True, False]),
+                'learning_rate': tune.choice(['constant', 'optimal', 'invscaling', 'adaptive']),   #'optimal', 
+                "class_weight" : tune.choice(["balanced"]),
+                'eta0':tune.uniform(0.01, 0.9)
             }
     start = time.perf_counter()
     clf = TuneSearchCV(model,

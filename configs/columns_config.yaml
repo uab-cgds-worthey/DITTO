@@ -88,19 +88,19 @@ ClinicalSignificance:
   -  Likely_benign
 
 Clinsig_train:
-
+  -  Pathogenic/Likely_pathogenic
   -  DM
   -  Benign
   -  Pathogenic
   -  Likely_benign
+  -  Likely_pathogenic
 
 Clinsig_test:
-  -  Pathogenic/Likely_pathogenic
+
   -  DM?
   -  DP
   -  DFP
   -  FP
-  -  Likely_pathogenic
   -  Benign/Likely_benign
 
 
@@ -186,6 +186,8 @@ gnomad_columns:
   -  gnomADv3_AF_sas_male
 
 nssnv_columns: 
+  gnomADv3_AF: 0
+  gnomADv3_AF_raw : 0
   SIFT: 0.5
   PolyPhen: 0.5
   CADD_PHRED: 20

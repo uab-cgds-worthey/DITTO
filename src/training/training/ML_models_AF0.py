@@ -14,7 +14,7 @@ import shap
 #from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.preprocessing import label_binarize
-from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
+from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score, plot_roc_curve
 #from sklearn.multiclass import OneVsRestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, ExtraTreesClassifier
@@ -35,20 +35,20 @@ def data_parsing(var,config_dict,output):
     os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     #Load data
     #print(f'\nUsing merged_data-train_{var}..', file=open(output, "a"))
-    X_train = pd.read_csv(f'train_mean_{var}/merged_data-train_mean_{var}.csv')
+    X_train = pd.read_csv(f'train_no_AF_F_50_{var}/merged_data-train_no_AF_F_50_{var}.csv')
     #var = X_train[config_dict['ML_VAR']]
     X_train = X_train.drop(config_dict['ML_VAR'], axis=1)
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
-    Y_train = pd.read_csv(f'train_mean_{var}/merged_data-y-train_mean_{var}.csv')
+    Y_train = pd.read_csv(f'train_no_AF_F_50_{var}/merged_data-y-train_no_AF_F_50_{var}.csv')
     Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']).ravel() 
 
-    X_test = pd.read_csv(f'test_mean_{var}/merged_data-test_mean_{var}.csv')
+    X_test = pd.read_csv(f'test_no_AF_F_50_{var}/merged_data-test_no_AF_F_50_{var}.csv')
     #var = X_test[config_dict['ML_VAR']]
     X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
     #feature_names = X_test.columns.tolist()
     X_test = X_test.values
-    Y_test = pd.read_csv(f'test_mean_{var}/merged_data-y-test_mean_{var}.csv')
+    Y_test = pd.read_csv(f'test_no_AF_F_50_{var}/merged_data-y-test_no_AF_F_50_{var}.csv')
     print('Data Loaded!')
     #Y = pd.get_dummies(y)
     Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']).ravel()  
@@ -71,7 +71,7 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test, background,feature_nam
    #class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
    #clf.fit(X_train, Y_train) #, class_weight=class_weights)
    clf_name = str(type(clf)).split("'")[1]  #.split(".")[3]
-   with open(f"./models/mean_{var}/{clf_name}_{var}.joblib", 'wb') as f:
+   with open(f"./models/no_AF_F_50_{var}/{clf_name}_{var}.joblib", 'wb') as f:
     dump(clf, f, compress='lz4')
    #del clf
    #with open(f"./models/{var}/{clf_name}_{var}.joblib", 'rb') as f:
@@ -85,6 +85,8 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test, background,feature_nam
    #score = clf.score(X_train, Y_train)
    #matrix = confusion_matrix(np.argmax(Y_test, axis=1), np.argmax(y_score, axis=1))
    matrix = confusion_matrix(Y_test, y_score)
+   plot_roc_curve(clf, X_test, Y_test)
+   plt.savefig(f"./models/no_AF_F_50_{var}/roc_{clf_name}_{var}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
 
    # explain all the predictions in the test set
    #background = shap.kmeans(X_train, 6)
@@ -95,7 +97,7 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test, background,feature_nam
    plt.figure()
    shap.summary_plot(shap_values, background, feature_names, show=False)
    #shap.plots.waterfall(shap_values[0], max_display=15)
-   plt.savefig(f"./models/mean_{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+   plt.savefig(f"./models/no_AF_F_50_{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
    finish = (time.perf_counter()-start)/60
    with open(output, 'a') as f:
         f.write(f"{clf_name}\t{np.mean(score['train_roc_auc'])}\t{np.mean(score['test_roc_auc'])}\t{np.mean(score['train_neg_log_loss'])}\t{np.mean(score['test_neg_log_loss'])}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}\n")
@@ -120,9 +122,9 @@ if __name__ == "__main__":
         config_dict = yaml.safe_load(fh)
 
     var = 'nssnv'
-    if not os.path.exists('models/mean_'+var):
-        os.makedirs('./models/mean_'+var)
-    output = "models/mean_"+var+"/ML_results_mean_"+var+"_.csv"
+    if not os.path.exists('models/no_AF_F_50_'+var):
+        os.makedirs('./models/no_AF_F_50_'+var)
+    output = "models/no_AF_F_50_"+var+"/ML_results_no_AF_F_50_"+var+"_.csv"
     #print('Working with '+var+' dataset...', file=open(output, "a"))
     print('Working with '+var+' dataset...')
     X_train, X_test, Y_train, Y_test, background, feature_names = data_parsing.remote(var,config_dict,output)

@@ -80,11 +80,11 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     print('Filling NAs ....')
     #df = imp.fit_transform(df)
     #df = pd.DataFrame(df, columns = columns)
-    df1=df[config_dict['gnomad_columns']]
-    df1=df1.fillna(df1.median())
-    #df1=df1.fillna(0.005)
-    #df1 = pd.DataFrame()
-    if 'non_snv' in stats:
+    #df1=df[config_dict['gnomad_columns']]
+    #df1=df1.fillna(df1.median())
+    #df1=df1.fillna(0)
+    df1 = pd.DataFrame()
+    if 'non_nssnv' in stats:
         for key in tqdm(config_dict['non_nssnv_columns']):
             if key in df.columns:
                 df1[key] = df[key].fillna(config_dict['non_nssnv_columns'][key]).astype('float64')
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     config_f = "../../configs/columns_config.yaml"
 
     #variants = ['train_non_snv','train_snv','train_snv_protein_coding','test_snv','test_non_snv','test_snv_protein_coding']
-    variants = ['train_AF_med_F_50_nssnv', 'test_AF_med_F_50_nssnv']
+    variants = ['train_raw_AF_F_50_nssnv', 'test_raw_AF_F_50_nssnv']
     for var in variants:
         if not os.path.exists(var):
             os.mkdir(var)

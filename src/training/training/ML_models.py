@@ -104,15 +104,15 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test, background,feature_nam
 if __name__ == "__main__":
     #Classifiers I wish to use
     classifiers = [
-        	DecisionTreeClassifier(class_weight='balanced'),
-            RandomForestClassifier(class_weight='balanced', n_jobs=-1),
-            BalancedRandomForestClassifier(),
-            AdaBoostClassifier(),
-            ExtraTreesClassifier(class_weight='balanced', n_jobs=-1),
+        DecisionTreeClassifier(class_weight='balanced'),
+        RandomForestClassifier(class_weight='balanced', n_jobs=-1),
+        BalancedRandomForestClassifier(),
+        AdaBoostClassifier(),
+        ExtraTreesClassifier(class_weight='balanced', n_jobs=-1),
             GaussianNB(),
             LinearDiscriminantAnalysis(),
-            GradientBoostingClassifier(),
-            MLPClassifier()
+        GradientBoostingClassifier(),
+        MLPClassifier()
         ]
     
     
