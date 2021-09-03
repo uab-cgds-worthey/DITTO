@@ -186,11 +186,10 @@ gnomad_columns:
   -  gnomADv3_AF_sas_male
 
 nssnv_columns: 
-  gnomADv3_AF: 0
-  gnomADv3_AF_raw : 0
   SIFT: 0.5
   PolyPhen: 0.5
   CADD_PHRED: 20
+  MetaSVM_score: 0.5   # range - -2 to 3
   FATHMM_score: 0         #weighted for human inherited- disease mutations with Disease Ontology (FATHMMori). Scores range from -18.09 to 11.0. This is for coding and MKL for non-coding variants
   MutationAssessor_score: 0   #MutationAssessor functional impact combined score (MAori). The score ranges from -5.135 to 6.49 in dbNSFP.
   PROVEAN_score: 0           # range - -14 to 13.57
@@ -209,7 +208,6 @@ nssnv_columns:
   LRT_score: 0.5  #The score ranges from 0 to 1 and a larger score signifies that the codon is more constrained or a NS is more likely to be deleterious.
   M-CAP_score: 0.5   # range - 0 to 1
   MetaLR_score: 0.5  # range - 0 to 1
-  MetaSVM_score: 0.5   # range - -2 to 3
   SiPhy_29way_logOdds: 15 # input range - 0 to 33.272. SiPhy score based on 29 mammals genomes. The larger the score, the more conserved the site.
   fathmm-MKL_coding_score: 0.5  # range - 0 to 1. This is for non-coding variants - functional prediction tool
   integrated_fitCons_score: 0.5 # range - 0 to 1
@@ -235,6 +233,10 @@ nssnv_columns:
   BIOTYPE_snoRNA: 0
   BIOTYPE_telomerase_RNA: 0
   BIOTYPE_transcribed_pseudogene: 0
+  BIOTYPE_nonsense_mediated_decay: 0
+  BIOTYPE_polymorphic_pseudogene: 0
+  BIOTYPE_IG_C_gene: 0
+  BIOTYPE_non_stop_decay: 0
 
 non_nssnv_columns:  
   CADD_PHRED: 20

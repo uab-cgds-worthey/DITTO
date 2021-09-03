@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#python slurm-launch.py --exp-name no_null --command "python training/data-prep/filter.py --var-tag no_null_nssnv --cutoff 1" --mem 50G
 
 import pandas as pd
 pd.set_option('display.max_rows', None)
 import numpy as np
 from tqdm import tqdm 
+import seaborn as sns
 import yaml
 import os
+import argparse
+import matplotlib.pyplot as plt
 #from sklearn.linear_model import LinearRegression
 #from sklearn.experimental import enable_iterative_imputer
 #from sklearn.impute import IterativeImputer
@@ -20,7 +24,7 @@ def get_col_configs(config_f):
     return config_dict
 
 
-def extract_col(config_dict,df, stats):
+def extract_col(config_dict,df, stats, list_tag):
     print('Extracting columns and rows according to config file !....')
     df = df[config_dict['columns']]
     if 'non_snv' in stats:
@@ -46,7 +50,7 @@ def extract_col(config_dict,df, stats):
     if 'train' in stats:
         print('Dropping empty columns and rows along with duplicate rows...')
         #df.dropna(axis=1, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[0]/4)
-        df.dropna(axis=0, thresh=(df.shape[1]*0.5), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
+        df.dropna(axis=0, thresh=(df.shape[1]*list_tag[1]), inplace=True)  #thresh=(df.shape[1]*0.3),   how='all',
         df.drop_duplicates()
         df.dropna(axis=1, how='all', inplace=True)  #thresh=(df.shape[0]/4)
     print('\nhgmd_class:\n', df['hgmd_class'].value_counts(), file=open(stats, "a"))
@@ -59,7 +63,7 @@ def extract_col(config_dict,df, stats):
     # CLNREVSTAT, CLNVC, MC
     return df
 
-def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
+def fill_na(df,config_dict, column_info, stats, list_tag): #(config_dict,df):
     #df1  = pd.DataFrame()
     var = df[config_dict['var']]
     df = df.drop(config_dict['var'], axis=1)
@@ -71,6 +75,10 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     #else:
     #    for col in tqdm(config_dict['col_conv']):
     #        df[col] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df[col].str.split('&')]
+    if 'train' in stats:
+        fig= plt.figure(figsize=(20, 15))
+        sns.heatmap(df.corr(), fmt='.2g',cmap= 'coolwarm') # annot = True, 
+        plt.savefig(f"train_{list_tag[0]}/correlation_filtered_raw_{list_tag[0]}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
     print('One-hot encoding...')
     df = pd.get_dummies(df, prefix_sep='_')
     print(df.columns.values.tolist(),file=open(column_info, "w"))
@@ -80,39 +88,67 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     print('Filling NAs ....')
     #df = imp.fit_transform(df)
     #df = pd.DataFrame(df, columns = columns)
-    #df1=df[config_dict['gnomad_columns']]
+    if list_tag[2] == 1:
+        df1=df[config_dict['gnomad_columns']]
+        df1=df1.fillna(list_tag[3])
+    else:
+        df1 = pd.DataFrame()
     #df1=df1.fillna(df1.median())
-    #df1=df1.fillna(0)
-    df1 = pd.DataFrame()
+
     if 'non_nssnv' in stats:
         for key in tqdm(config_dict['non_nssnv_columns']):
-            if key in df.columns:
+            if key in df.columns and list_tag[4] == 0:
                 df1[key] = df[key].fillna(config_dict['non_nssnv_columns'][key]).astype('float64')
+            elif key in df.columns and list_tag[4] == 1:
+                df1[key] = df[key].fillna(df[key].median())
             else:
                 df1[key] = config_dict['non_nssnv_columns'][key]
     else:
         for key in tqdm(config_dict['nssnv_columns']):
-            if key in df.columns:
+            if key in df.columns and list_tag[4] == 0:
                 df1[key] = df[key].fillna(config_dict['nssnv_columns'][key]).astype('float64')
+            elif key in df.columns and list_tag[4] == 1:
+                df1[key] = df[key].fillna(df[key].median())
             else:
                 df1[key] = config_dict['nssnv_columns'][key]
     df = df1
+    df = df.drop(df.std()[(df.std() == 0)].index, axis=1)
     del df1
     df = df.reset_index(drop=True)
+    print(df.columns.values.tolist(),file=open(column_info, "a"))
+    if 'train' in stats:
+        fig= plt.figure(figsize=(20, 15))
+        sns.heatmap(df.corr(),fmt='.2g',cmap= 'coolwarm') # annot = True, 
+        plt.savefig(f"train_{list_tag[0]}/correlation_before_{list_tag[0]}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+
+        # Create correlation matrix
+        corr_matrix = df.corr().abs()
+
+        # Select upper triangle of correlation matrix
+        upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(np.bool))
+
+        # Find features with correlation greater than 0.90
+        to_drop = [column for column in upper.columns if any(upper[column] > 0.90)]
+        print(f"Correlated columns being dropped: {to_drop}",file=open(column_info, "a"))
+
+        # Drop features 
+        df.drop(to_drop, axis=1, inplace=True)
+        df = df.reset_index(drop=True)
+    print(df.columns.values.tolist(),file=open(column_info, "a"))
     #df.dropna(axis=1, how='all', inplace=True)
     df['ID'] = [f'var_{num}' for num in range(len(df))]
     print('NAs filled!')
     df = pd.concat([var.reset_index(drop=True), df], axis=1)
     return df
 
-def main(df, config_f, stats,column_info, null_info):
+def main(df, config_f, stats,column_info, null_info, list_tag):
     # read QA config file
     config_dict = get_col_configs(config_f)
     print('Config file loaded!')
     # read clinvar data
     
     print('\nData shape (Before filtering) =', df.shape, file=open(stats, "a"))
-    df = extract_col(config_dict,df, stats)
+    df = extract_col(config_dict,df, stats, list_tag)
     print('Columns extracted! Extracting class info....')
     df.isnull().sum(axis = 0).to_csv(null_info)
     #print('\n Unique Impact (Class):\n', df.hgmd_class.unique(), file=open("./data/processed/stats1.csv", "a"))
@@ -123,32 +159,89 @@ def main(df, config_f, stats,column_info, null_info):
     df.drop_duplicates()
     df.dropna(axis=1, how='all', inplace=True)
     y = df['hgmd_class']
+    class_dummies = pd.get_dummies(df['hgmd_class'])
+    del class_dummies[class_dummies.columns[-1]]
     print('\nImpact (Class):\n', y.value_counts(), file=open(stats, "a"))
     #y = df.hgmd_class
     df = df.drop('hgmd_class', axis=1)
-    df = fill_na(df,config_dict,column_info, stats) #(config_dict,df)
-    print('\nData shape (After filtering) =', df.shape, file=open(stats, "a"))
-    print('Class shape=', y.shape,file=open(stats, "a"))
+    df = fill_na(df,config_dict,column_info, stats, list_tag)
+    
+    if 'train' in stats:
+        var = df[config_dict['ML_VAR']]
+        df = df.drop(config_dict['ML_VAR'], axis=1)
+        df = pd.concat([class_dummies, df], axis=1)
+        fig= plt.figure(figsize=(20, 15))
+        sns.heatmap(df.corr(), fmt='.2g',cmap= 'coolwarm')
+        plt.savefig(f"train_{list_tag[0]}/correlation_after_{list_tag[0]}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+        df = pd.concat([var, df], axis=1)
+        df = df.drop('high_impact', axis=1)
     return df,y
 
 if __name__ == "__main__":
-    os.chdir( '/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--var-tag",
+        "-v",
+        type=str,
+        required=True,
+        default='nssnv',
+        help="The tag used when generating train/test data. Default:'nssnv'")
+    parser.add_argument(
+        "--cutoff",
+        type=float,
+        default=0.5,
+        help=f"Cutoff to include at least __% of data for all rows. Default:0.5 (i.e. 50%)")
+    parser.add_argument(
+        "--af",
+        "-af",
+        type=bool,
+        default=0,
+        help=f"Include (1) or exclude (0) allele frequency columns . Default:0")
+    parser.add_argument(
+        "--af-values",
+        "-afv",
+        type=float,
+        default=0,
+        help=f"value to impute nulls for allele frequency columns. Default:0")
+    parser.add_argument(
+        "--other-values",
+        "-otv",
+        type=bool,
+        default=0,
+        help=f"Impute other columns with either custom defined values (0) or median (1). Default:0")
+
+    args = parser.parse_args()
+    list_tag = args.var_tag, args.cutoff, args.af, args.af_values, args.other_values
+    var = list_tag[0]
+
+    if not os.path.exists('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test'):
+            os.makedirs('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test')
+    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test')
     print('Loading data...')
-    var_f = pd.read_csv("../interim/merged_sig_norm_class_vep-annotated.tsv", sep='\t')
+    var_f = pd.read_csv("../../interim/merged_sig_norm_class_vep-annotated.tsv", sep='\t')
     print('Data Loaded !....')
-    config_f = "../../configs/columns_config.yaml"
+    config_f = "../../../configs/columns_config.yaml"
 
     #variants = ['train_non_snv','train_snv','train_snv_protein_coding','test_snv','test_non_snv','test_snv_protein_coding']
-    variants = ['train_raw_AF_F_50_nssnv', 'test_raw_AF_F_50_nssnv']
+    variants = ['train_'+var, 'test_'+var]
+    #variants = ['train_'+var]
     for var in variants:
         if not os.path.exists(var):
-            os.mkdir(var)
+            os.makedirs(var)
         stats = var+"/stats_"+var+".csv"
-        print("Filtering "+var+" variants with at-least 50 percent data for each variant...", file=open(stats, "w"))
-        print("Filtering "+var+" variants with at-least 50 percent data for each variant...")
+        print("Filtering "+var+" variants with at-least "+str(list_tag[1]*100)+" percent data for each variant...", file=open(stats, "w"))
+        #print("Filtering "+var+" variants with at-least 50 percent data for each variant...")
         column_info = var+"/"+var+'_columns.csv'
         null_info = var+"/Nulls_"+var+'.csv'
-        df,y = main(var_f, config_f, stats, column_info, null_info)
+        df,y = main(var_f, config_f, stats, column_info, null_info, list_tag)
+        if 'train' in stats:
+            train_columns = df.columns.values.tolist()
+        else:
+            df = df[train_columns]
+        
+        print('\nData shape (After filtering) =', df.shape, file=open(stats, "a"))
+        print('Class shape=', y.shape,file=open(stats, "a"))
         print('writing to csv...')
         df.to_csv(var+'/'+'merged_data-'+var+'.csv', index=False)
         y.to_csv(var+'/'+'merged_data-y-'+var+'.csv', index=False)

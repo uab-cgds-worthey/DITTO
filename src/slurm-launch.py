@@ -50,8 +50,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mem",
         type=str,
-        default="100G",
-        help="Total Memory to use. (Default: 100G)")
+        default="150G",
+        help="Total Memory to use. (Default: 150G)")
     parser.add_argument(
         "--partition",
         type=str,
