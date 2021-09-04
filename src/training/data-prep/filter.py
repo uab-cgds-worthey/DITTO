@@ -64,11 +64,10 @@ def extract_col(config_dict,df, stats, list_tag):
     return df
 
 def fill_na(df,config_dict, column_info, stats, list_tag): #(config_dict,df):
-    #df1  = pd.DataFrame()
+
     var = df[config_dict['var']]
     df = df.drop(config_dict['var'], axis=1)
     print('parsing difficult columns......')
-    #if 'non_snv' in stats:
     df['GERP'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['GERP'].str.split('&')]
     if 'nssnv' in stats:
         df['MutationTaster_score'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['MutationTaster_score'].str.split('&')]
@@ -88,27 +87,26 @@ def fill_na(df,config_dict, column_info, stats, list_tag): #(config_dict,df):
     print('Filling NAs ....')
     #df = imp.fit_transform(df)
     #df = pd.DataFrame(df, columns = columns)
-    if list_tag[2] == 1:
-        df1=df[config_dict['gnomad_columns']]
-        df1=df1.fillna(list_tag[3])
+    
+    df1=df[config_dict['gnomad_columns']]
+    df1=df1.fillna(list_tag[2])
+    
+    if list_tag[3] == 1:
+        df = df.drop(config_dict['gnomad_columns'], axis=1)
+        df=df.fillna(df.median())
     else:
-        df1 = pd.DataFrame()
-    #df1=df1.fillna(df1.median())
+        pass
 
     if 'non_nssnv' in stats:
         for key in tqdm(config_dict['non_nssnv_columns']):
-            if key in df.columns and list_tag[4] == 0:
+            if key in df.columns:
                 df1[key] = df[key].fillna(config_dict['non_nssnv_columns'][key]).astype('float64')
-            elif key in df.columns and list_tag[4] == 1:
-                df1[key] = df[key].fillna(df[key].median())
             else:
                 df1[key] = config_dict['non_nssnv_columns'][key]
     else:
         for key in tqdm(config_dict['nssnv_columns']):
-            if key in df.columns and list_tag[4] == 0:
+            if key in df.columns:
                 df1[key] = df[key].fillna(config_dict['nssnv_columns'][key]).astype('float64')
-            elif key in df.columns and list_tag[4] == 1:
-                df1[key] = df[key].fillna(df[key].median())
             else:
                 df1[key] = config_dict['nssnv_columns'][key]
     df = df1
@@ -169,7 +167,7 @@ def main(df, config_f, stats,column_info, null_info, list_tag):
     if 'train' in stats:
         var = df[config_dict['ML_VAR']]
         df = df.drop(config_dict['ML_VAR'], axis=1)
-        df = pd.concat([class_dummies, df], axis=1)
+        df = pd.concat([class_dummies.reset_index(drop=True), df], axis=1)
         fig= plt.figure(figsize=(20, 15))
         sns.heatmap(df.corr(), fmt='.2g',cmap= 'coolwarm')
         plt.savefig(f"train_{list_tag[0]}/correlation_after_{list_tag[0]}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
@@ -193,12 +191,6 @@ if __name__ == "__main__":
         default=0.5,
         help=f"Cutoff to include at least __% of data for all rows. Default:0.5 (i.e. 50%)")
     parser.add_argument(
-        "--af",
-        "-af",
-        type=bool,
-        default=0,
-        help=f"Include (1) or exclude (0) allele frequency columns . Default:0")
-    parser.add_argument(
         "--af-values",
         "-afv",
         type=float,
@@ -212,7 +204,7 @@ if __name__ == "__main__":
         help=f"Impute other columns with either custom defined values (0) or median (1). Default:0")
 
     args = parser.parse_args()
-    list_tag = args.var_tag, args.cutoff, args.af, args.af_values, args.other_values
+    list_tag = [args.var_tag, args.cutoff, args.af_values, args.other_values]
     var = list_tag[0]
 
     if not os.path.exists('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test'):
@@ -238,7 +230,14 @@ if __name__ == "__main__":
         if 'train' in stats:
             train_columns = df.columns.values.tolist()
         else:
-            df = df[train_columns]
+            df1 = pd.DataFrame()
+            for key in tqdm(train_columns):
+                if key in df.columns:
+                    df1[key] = df[key]
+                else:
+                    df1[key] = 0
+            df = df1
+            del df1
         
         print('\nData shape (After filtering) =', df.shape, file=open(stats, "a"))
         print('Class shape=', y.shape,file=open(stats, "a"))

@@ -515,3 +515,63 @@ There was a problem with dbNSFP database used by VEP. VEP doesn't parse out the 
 We don't want this to happen as we can't work with prediction score from this database for ML. Remember the complex columns that we tried to take mean off? That approach is wrong.
 So, Brandon wrote a formatting script to run before running the annotation scripts.
 Running the annotation process after formatting the database. Hopefully, it works this time :) 
+
+################### 9/3/21 ######################################################################
+working on a bunch filters and correlation plots for the last couple weeks.
+Also, the ML_models script can plot ROC and AUC curves for each dataset.
+
+Different combinations of filters - 
+```
+python slurm-launch.py --exp-name F_1_0_0_nssnv --command "python training/data-prep/filter.py -v F_1_0_0_nssnv  --cutoff 1 -afv 0 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_7_0_0_nssnv --command "python training/data-prep/filter.py -v F_7_0_0_nssnv --cutoff 0.7 -afv 0 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_3_0_0_nssnv --command "python training/data-prep/filter.py -v F_3_0_0_nssnv --cutoff 0.3 -afv 0 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_1_005_0_nssnv --command "python training/data-prep/filter.py -v F_1_005_0_nssnv --cutoff 1 -afv 0.005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_1_0005_0_nssnv --command "python training/data-prep/filter.py -v F_1_0005_0_nssnv --cutoff 1 -afv 0.0005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_1_00005_0_nssnv --command "python training/data-prep/filter.py -v F_1_00005_0_nssnv --cutoff 1 -afv 0.00005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_7_005_0_nssnv --command "python training/data-prep/filter.py -v F_7_005_0_nssnv --cutoff 0.7 -afv 0.005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_7_0005_0_nssnv --command "python training/data-prep/filter.py -v F_7_0005_0_nssnv --cutoff 0.7 -afv 0.0005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_7_00005_0_nssnv --command "python training/data-prep/filter.py -v F_7_00005_0_nssnv --cutoff 0.7 -afv 0.00005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_3_005_0_nssnv --command "python training/data-prep/filter.py -v F_3_005_0_nssnv --cutoff 0.3 -afv 0.005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_3_0005_0_nssnv --command "python training/data-prep/filter.py -v F_3_0005_0_nssnv --cutoff 0.3 -afv 0.0005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_3_00005_0_nssnv --command "python training/data-prep/filter.py -v F_3_00005_0_nssnv --cutoff 0.3 -afv 0.00005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_1_0_1_nssnv --command "python training/data-prep/filter.py -v F_1_0_1_nssnv --cutoff 1 -afv 0 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_7_0_1_nssnv --command "python training/data-prep/filter.py -v F_7_0_1_nssnv --cutoff 0.7 -afv 0 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_3_0_1_nssnv --command "python training/data-prep/filter.py -v F_3_0_1_nssnv --cutoff 0.3 -afv 0 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_1_005_1_nssnv --command "python training/data-prep/filter.py -v F_1_005_1_nssnv --cutoff 1 -afv 0.005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_1_0005_1_nssnv --command "python training/data-prep/filter.py -v F_1_0005_1_nssnv --cutoff 1 -afv 0.0005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_1_00005_1_nssnv --command "python training/data-prep/filter.py -v F_1_00005_1_nssnv --cutoff 1 -afv 0.00005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_7_005_1_nssnv --command "python training/data-prep/filter.py -v F_7_005_1_nssnv --cutoff 0.7 -afv 0.005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_7_0005_1_nssnv --command "python training/data-prep/filter.py -v F_7_0005_1_nssnv --cutoff 0.7 -afv 0.0005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_7_00005_1_nssnv --command "python training/data-prep/filter.py -v F_7_00005_1_nssnv --cutoff 0.7 -afv 0.00005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_3_005_1_nssnv --command "python training/data-prep/filter.py -v F_3_005_1_nssnv --cutoff 0.3 -afv 0.005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_3_0005_1_nssnv --command "python training/data-prep/filter.py -v F_3_0005_1_nssnv --cutoff 0.3 -afv 0.0005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_3_00005_1_nssnv --command "python training/data-prep/filter.py -v F_3_00005_1_nssnv --cutoff 0.3 -afv 0.00005 -otv 1" --mem 30G
+```
+
+Running ML models for different combinations of filters - 
+```
+python slurm-launch.py --exp-name F_1_0_0_nssnv --command "python training/training/ML_models.py -v F_1_0_0_nssnv"
+python slurm-launch.py --exp-name F_7_0_0_nssnv --command "python training/training/ML_models.py -v F_7_0_0_nssnv"
+python slurm-launch.py --exp-name F_3_0_0_nssnv --command "python training/training/ML_models.py -v F_3_0_0_nssnv"
+python slurm-launch.py --exp-name F_1_005_0_nssnv --command "python training/training/ML_models.py -v F_1_005_0_nssnv"
+python slurm-launch.py --exp-name F_1_0005_0_nssnv --command "python training/training/ML_models.py -v F_1_0005_0_nssnv"
+python slurm-launch.py --exp-name F_1_00005_0_nssnv --command "python training/training/ML_models.py -v F_1_00005_0_nssnv"
+python slurm-launch.py --exp-name F_7_005_0_nssnv --command "python training/training/ML_models.py -v F_7_005_0_nssnv"
+python slurm-launch.py --exp-name F_7_0005_0_nssnv --command "python training/training/ML_models.py -v F_7_0005_0_nssnv"
+python slurm-launch.py --exp-name F_7_00005_0_nssnv --command "python training/training/ML_models.py -v F_7_00005_0_nssnv"
+python slurm-launch.py --exp-name F_3_005_0_nssnv --command "python training/training/ML_models.py -v F_3_005_0_nssnv"
+python slurm-launch.py --exp-name F_3_0005_0_nssnv --command "python training/training/ML_models.py -v F_3_0005_0_nssnv"
+python slurm-launch.py --exp-name F_3_00005_0_nssnv --command "python training/training/ML_models.py -v F_3_00005_0_nssnv"
+python slurm-launch.py --exp-name F_1_0_1_nssnv --command "python training/training/ML_models.py -v F_1_0_1_nssnv"
+python slurm-launch.py --exp-name F_7_0_1_nssnv --command "python training/training/ML_models.py -v F_7_0_1_nssnv"
+python slurm-launch.py --exp-name F_3_0_1_nssnv --command "python training/training/ML_models.py -v F_3_0_1_nssnv"
+python slurm-launch.py --exp-name F_1_005_1_nssnv --command "python training/training/ML_models.py -v F_1_005_1_nssnv"
+python slurm-launch.py --exp-name F_1_0005_1_nssnv --command "python training/training/ML_models.py -v F_1_0005_1_nssnv"
+python slurm-launch.py --exp-name F_1_00005_1_nssnv --command "python training/training/ML_models.py -v F_1_00005_1_nssnv"
+python slurm-launch.py --exp-name F_7_005_1_nssnv --command "python training/training/ML_models.py -v F_7_005_1_nssnv"
+python slurm-launch.py --exp-name F_7_0005_1_nssnv --command "python training/training/ML_models.py -v F_7_0005_1_nssnv"
+python slurm-launch.py --exp-name F_7_00005_1_nssnv --command "python training/training/ML_models.py -v F_7_00005_1_nssnv"
+python slurm-launch.py --exp-name F_3_005_1_nssnv --command "python training/training/ML_models.py -v F_3_005_1_nssnv"
+python slurm-launch.py --exp-name F_3_0005_1_nssnv --command "python training/training/ML_models.py -v F_3_0005_1_nssnv"
+python slurm-launch.py --exp-name F_3_00005_1_nssnv --command "python training/training/ML_models.py -v F_3_00005_1_nssnv"
+```

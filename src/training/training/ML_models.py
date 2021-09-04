@@ -26,13 +26,12 @@ import matplotlib.pyplot as plt
 import yaml
 import gc
 import os
-os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test/')
 
 TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
 #@ray.remote(num_returns=6)
 def data_parsing(var,config_dict,output):
-    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     #Load data
     #print(f'\nUsing merged_data-train_{var}..', file=open(output, "a"))
     X_train = pd.read_csv(f'train_{var}/merged_data-train_{var}.csv')
@@ -63,7 +62,7 @@ def data_parsing(var,config_dict,output):
 
 @ray.remote #(num_cpus=9)
 def classifier(name, clf,var, X_train, X_test, Y_train, Y_test, background,feature_names, output):
-   os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+   os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test/')
    start = time.perf_counter()
    score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0, scoring=('roc_auc','neg_log_loss'))
    clf = score['estimator'][np.argmin(score['test_neg_log_loss'])]
@@ -71,7 +70,7 @@ def classifier(name, clf,var, X_train, X_test, Y_train, Y_test, background,featu
    #class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
    #clf.fit(X_train, Y_train) #, class_weight=class_weights)
    #name = str(type(clf)).split("'")[1]  #.split(".")[3]
-   with open(f"./models/{var}/{name}_{var}.joblib", 'wb') as f:
+   with open(f"../models/{var}/{name}_{var}.joblib", 'wb') as f:
     dump(clf, f, compress='lz4')
    #del clf
    #with open(f"./models/{var}/{name}_{var}.joblib", 'rb') as f:
@@ -90,12 +89,12 @@ def classifier(name, clf,var, X_train, X_test, Y_train, Y_test, background,featu
    #background = shap.kmeans(X_train, 6)
    explainer = shap.KernelExplainer(clf.predict, background)
    del clf, X_train
-   background1 = X_test[np.random.choice(X_test.shape[0], 1000, replace=False)]
+   background1 = X_test[np.random.choice(X_test.shape[0], 10000, replace=False)]
    shap_values = explainer.shap_values(background1)
    plt.figure()
    shap.summary_plot(shap_values, background1, feature_names, show=False)
    #shap.plots.waterfall(shap_values[0], max_display=15)
-   plt.savefig(f"./models/{var}/{name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+   plt.savefig(f"../models/{var}/{name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
    del shap_values, background1, explainer
    finish = (time.perf_counter()-start)/60
    with open(output, 'a') as f:
@@ -103,10 +102,11 @@ def classifier(name, clf,var, X_train, X_test, Y_train, Y_test, background,featu
    return None
 
 if __name__ == "__main__":
-
+    
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--var-tag",
+        "-v",
         type=str,
         required=True,
         default='nssnv',
@@ -127,14 +127,13 @@ if __name__ == "__main__":
             "MLP":MLPClassifier()
     }
     
-    
-    with open("../../configs/columns_config.yaml") as fh:
+    with open("../../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
     var = args.var_tag
-    if not os.path.exists('models/'+var):
-        os.makedirs('./models/'+var)
-    output = "models/"+var+"/ML_results_"+var+"_.csv"
+    if not os.path.exists('../models/'+var):
+        os.makedirs('../models/'+var)
+    output = "../models/"+var+"/ML_results_"+var+"_.csv"
     #print('Working with '+var+' dataset...', file=open(output, "a"))
     print('Working with '+var+' dataset...')
     X_train, X_test, Y_train, Y_test, background, feature_names = data_parsing(var,config_dict,output)
@@ -150,7 +149,7 @@ if __name__ == "__main__":
 
     for name, clf in classifiers.items():
         
-        with open(f"./models/{var}/{name}_{var}.joblib", 'rb') as f:
+        with open(f"../models/{var}/{name}_{var}.joblib", 'rb') as f:
             clf = load(f)
         
         plot_precision_recall_curve(clf, X_test, Y_test, ax=ax_prc, name=name)
@@ -163,6 +162,6 @@ if __name__ == "__main__":
     ax_prc.grid(linestyle='--')
 
     plt.legend()
-    plt.savefig(f"./models/{var}/roc_{var}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+    plt.savefig(f"../models/{var}/roc_{var}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
     gc.collect()
 
