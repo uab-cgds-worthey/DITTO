@@ -1,4 +1,6 @@
-#from numpy import mean
+#for FILE in Tuning/*.py; do python slurm-launch.py --exp-name $FILE  --command "python $FILE --vtype snv_protein_coding" ; done
+
+
 import numpy as np
 import pandas as pd
 import time
@@ -18,6 +20,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 #from sklearn.multiclass import OneVsRestClassifier
 from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
 import matplotlib.pyplot as plt
 import yaml
 import functools  
@@ -28,23 +31,22 @@ import gc
 TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
 def data_parsing(var,config_dict,output):
-    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     #Load data
-    #print(f'\nUsing merged_data-train_AF_0_{var}..')
-    X_train = pd.read_csv(f'train_AF_0_{var}/merged_data-train_AF_0_{var}.csv')
+    #print(f'\nUsing merged_data-train_{var}..')
+    X_train = pd.read_csv(f'train_{var}/merged_data-train_{var}.csv')
     #var = X_train[config_dict['ML_VAR']]
     X_train = X_train.drop(config_dict['ML_VAR'], axis=1)
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
-    Y_train = pd.read_csv(f'train_AF_0_{var}/merged_data-y-train_AF_0_{var}.csv')
+    Y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
     Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']).ravel() 
 
-    X_test = pd.read_csv(f'test_AF_0_{var}/merged_data-test_AF_0_{var}.csv')
+    X_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
     #var = X_test[config_dict['ML_VAR']]
     X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
     #feature_names = X_test.columns.tolist()
     X_test = X_test.values
-    Y_test = pd.read_csv(f'test_AF_0_{var}/merged_data-y-test_AF_0_{var}.csv')
+    Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
     print('Data Loaded!')
     #Y = pd.get_dummies(y)
     Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']).ravel()  
@@ -58,36 +60,37 @@ def data_parsing(var,config_dict,output):
 
 
 def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
-    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
-    model = AdaBoostClassifier()
+    model = AdaBoostClassifier(base_estimator=DecisionTreeClassifier())
+    clf_name = "AdaBoostClassifier"
     config = {
-                "n_estimators" : tune.randint(1, 200),
-                "algorithm" : tune.choice(['SAMME','SAMME.R'])
+                "n_estimators" : tune.randint(1, 300),
+                "algorithm" : tune.choice(['SAMME','SAMME.R']),
+                "learning_rate" : tune.uniform(0.0001, 2.0),
+                "max_depth" : tune.randint(1, 200)
             }
     start = time.perf_counter()
     clf = TuneSearchCV(model,
                 param_distributions=config,
-                n_trials=10,
+                n_trials=150,
                 early_stopping=False,
                 max_iters=1,    #max_iters specifies how many times tune-sklearn will be given the decision to start/stop training a model. Thus, if you have early_stopping=False, you should set max_iters=1 (let sklearn fit the entire estimator).
                 search_optimization="bayesian",
-                n_jobs=30,
+                n_jobs=10,
                 refit=True,
                 cv= StratifiedKFold(n_splits=5,shuffle=True,random_state=42),
                 verbose=0,
                 #loggers = "tensorboard",
                 random_state=42,
-                local_dir="./ray_results",
+                local_dir="../ray_results",
                 )
     clf.fit(X_train, Y_train)
-    print(f'{model}_AF_0_{var}:{clf.best_params_}', file=open("tuning/tuned_parameters.csv", "a"))
+    print(f'{model}_{var}:{clf.best_params_}', file=open("../tuning/tuned_parameters.csv", "a"))
     clf = clf.best_estimator_
     
     score = clf.score(X_train, Y_train)
-    clf_name = str(type(model)).split("'")[1]  #.split(".")[3]
-    with open(f"./tuning/AF_0_{var}/{model}_AF_0_{var}.joblib", 'wb') as f:
+    with open(f"../tuning/{var}/{clf_name}_{var}.joblib", 'wb') as f:
      dump(clf, f, compress='lz4')
-    #with open(f"./models/AF_0_{var}/{clf_name}_AF_0_{var}.joblib", 'rb') as f:
+    #with open(f"./models/{var}/{clf_name}_{var}.joblib", 'rb') as f:
     # clf = load(f)
     y_score = clf.predict(X_test)
     prc = precision_score(Y_test,y_score, average="weighted")
@@ -104,14 +107,14 @@ def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
     del X_train, Y_train
     explainer = shap.KernelExplainer(clf.predict, background)
     del clf, background
-    background = X_test[np.random.choice(X_test.shape[0], 1000, replace=False)]
+    background = X_test[np.random.choice(X_test.shape[0], 10, replace=False)]
     del X_test
     shap_values = explainer.shap_values(background)
     plt.figure()
     shap.summary_plot(shap_values, background, feature_names, show=False)
-    plt.savefig(f"./tuning/AF_0_{var}/{clf_name}_AF_0_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+    plt.savefig(f"../tuning/{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
     del background, explainer, feature_names
-    print(f'{model} training and testing done!')
+    print(f'{model} tuning and testing done!')
     return None
 
 if __name__ == "__main__":
@@ -119,30 +122,31 @@ if __name__ == "__main__":
     parser.add_argument(
         "--smoke-test", action="store_true", help="Finish quickly for testing")
     parser.add_argument(
-        "--vtype",
+        "--var-tag",
+        "-v",
         type=str,
         default="nssnv",
-        help="Type of variation/s (without spaces between) to tune the classifier (like: snv,non_snv,snv_protein_coding). (Default: non_snv)")
+        help="Var tag used while filtering or untuned models. (Default: nssnv)")
 
     args = parser.parse_args()
 
-    var = args.vtype
+    var = args.var_tag
     
     if args.smoke_test:
         ray.init(num_cpus=2)  # force pausing to happen for test
     else:
         ray.init(ignore_reinit_error=True)
 
-    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test')
 
-    with open("../../configs/columns_config.yaml") as fh:
+    with open("../../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
     ##variants = ['snv','non_snv','snv_protein_coding'] 
     
-    if not os.path.exists('tuning/AF_0_'+var):
-        os.makedirs('./tuning/AF_0_'+var)
-    output = "tuning/AF_0_"+var+"/ML_results_AF_0_"+var+".csv"
+    if not os.path.exists('../tuning/'+var):
+        os.makedirs('../tuning/'+var)
+    output = "../tuning/"+var+"/ML_results_"+var+".csv"
     #print('Working with '+var+' dataset...', file=open(output, "w"))
     print('Working with '+var+' dataset...')
     X_train, X_test, Y_train, Y_test, feature_names = data_parsing(var,config_dict,output)

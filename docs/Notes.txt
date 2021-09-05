@@ -575,3 +575,5 @@ python slurm-launch.py --exp-name F_3_005_1_nssnv --command "python training/tra
 python slurm-launch.py --exp-name F_3_0005_1_nssnv --command "python training/training/ML_models.py -v F_3_0005_1_nssnv"
 python slurm-launch.py --exp-name F_3_00005_1_nssnv --command "python training/training/ML_models.py -v F_3_00005_1_nssnv"
 ```
+
+python slurm-launch.py --exp-name ABC_tuning --command "python training/training/Tuning/ABC.py -v F_1_0_0_nssnv" --mem 2G

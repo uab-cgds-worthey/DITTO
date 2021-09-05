@@ -21,19 +21,18 @@ import matplotlib.pyplot as plt
 import yaml
 import gc
 import os
-os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test/')
 
 TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
 def data_parsing(var,config_dict):
-    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     #Load data
-    X_test = pd.read_csv(f'test_no_AF_F_50_{var}/merged_data-test_no_AF_F_50_{var}.csv')
+    X_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
     #var = X_test[config_dict['ML_VAR']]
     X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
     #feature_names = X_test.columns.tolist()
     X_test = X_test.values
-    Y_test = pd.read_csv(f'test_no_AF_F_50_{var}/merged_data-y-test_no_AF_F_50_{var}.csv')
+    Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
     print('Data Loaded!')
     #Y = pd.get_dummies(y)
     Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']).ravel()  
@@ -47,12 +46,24 @@ def data_parsing(var,config_dict):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--var-tag",
+        "-v",
+        type=str,
+        required=True,
+        default='nssnv',
+        help="The tag used when generating train/test data. Default:'nssnv'")
+
+    args = parser.parse_args()
+    var = args.var_tag
+
     #Classifiers I wish to use
     classifiers = {
         	"DT":DecisionTreeClassifier(class_weight='balanced'),
             "RF":RandomForestClassifier(class_weight='balanced', n_jobs=-1),
             "BalancedRF":BalancedRandomForestClassifier(),
-            "AdaBoost":AdaBoostClassifier(),
+            "AdaBoostClassifier":AdaBoostClassifier(),
             "ExtraTrees":ExtraTreesClassifier(class_weight='balanced', n_jobs=-1),
             "GaussianNB":GaussianNB(),
             "LDA":LinearDiscriminantAnalysis(),
@@ -61,22 +72,20 @@ if __name__ == "__main__":
     }
     
     
-    with open("../../configs/columns_config.yaml") as fh:
+    with open("../../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    var = 'nssnv'
-    if not os.path.exists('models/no_AF_F_50_'+var):
-        os.makedirs('./models/no_AF_F_50_'+var)
-    #print('Working with '+var+' dataset...', file=open(output, "a"))
-    print('Working with no_AF_F_50_'+var+' dataset...')
+    if not os.path.exists('../tuning/'+var):
+        os.makedirs('../tuning/'+var)
+        
+    print('Working with '+var+' dataset...')
     X_test,Y_test= data_parsing(var,config_dict)
 
     # prepare plots
     fig, [ax_roc, ax_prc] = plt.subplots(1, 2, figsize=(20, 10))
 
     for name, clf in classifiers.items():
-        clf_name = str(type(clf)).split("'")[1]  #.split(".")[3]
-        with open(f"./models/no_AF_F_50_{var}/{clf_name}_{var}.joblib", 'rb') as f:
+        with open(f"../tuning/{var}/{name}_{var}.joblib", 'rb') as f:
             clf = load(f)
         
         plot_precision_recall_curve(clf, X_test, Y_test, ax=ax_prc, name=name)
@@ -90,6 +99,6 @@ if __name__ == "__main__":
 
     plt.legend()
     plt.title('Model performances on Testing data with filters ()')
-    plt.savefig(f"./models/no_AF_F_50_{var}/roc_{var}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+    plt.savefig(f"../tuning/{var}/tuned_roc_{var}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
     gc.collect()
 
