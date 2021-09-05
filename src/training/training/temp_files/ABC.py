@@ -60,7 +60,7 @@ def data_parsing(var,config_dict,output):
 
 
 def tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output):
-    model = AdaBoostClassifier(base_estimator=DecisionTreeClassifier())
+    model = AdaBoostClassifier(base_estimator=DecisionTreeClassifier(max_depth=1))
     clf_name = "AdaBoostClassifier"
     config = {
                 "n_estimators" : tune.randint(1, 300),
@@ -152,5 +152,3 @@ if __name__ == "__main__":
     X_train, X_test, Y_train, Y_test, feature_names = data_parsing(var,config_dict,output)
     tuning(var, X_train, X_test, Y_train, Y_test,feature_names, output)
     gc.collect()
-            
-

@@ -10,7 +10,6 @@ import yaml
 from ray.tune import Trainable, run
 from hyperopt import hp
 from ray.tune.suggest.hyperopt import HyperOptSearch
-from ray.tune.schedulers import AsyncHyperBandScheduler
 #from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_validate  #, StratifiedKFold
 from sklearn.preprocessing import label_binarize
