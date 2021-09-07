@@ -214,11 +214,10 @@ if __name__ == '__main__':
     print('Working with '+var+' dataset...')
     x_train, x_test, y_train, y_test, feature_names = data_parsing(var,config_dict,output)
     config={
-        #RandomForest - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?highlight=randomforestclassifier#sklearn.ensemble.RandomForestClassifier
-            'n_estimators' : hp.randint('n_estimators', 1, 200),
-            "algorithm" : hp.choice('algorithm', ['SAMME','SAMME.R']),
-            'learning_rate': hp.loguniform('learning_rate', 0.01, 1.0),
-            'max_depth' : hp.randint('max_depth', 2, 200)
+        'n_estimators' : hp.randint('n_estimators', 1, 500),
+        "algorithm" : hp.choice('algorithm', ['SAMME','SAMME.R']),
+        'learning_rate': hp.uniform('learning_rate', 0.0001, 2.0),
+        'max_depth' : hp.randint('max_depth', 2, 500)
     }
     hyperopt_search = HyperOptSearch(config, metric='mean_accuracy', mode='max')
     #scheduler = AsyncHyperBandScheduler()
@@ -245,7 +244,7 @@ if __name__ == '__main__':
         stop={
             'training_iteration': 1,
         },
-        num_samples=300,
+        num_samples=500,
         #fail_fast=True,
         queue_trials=True
     )
