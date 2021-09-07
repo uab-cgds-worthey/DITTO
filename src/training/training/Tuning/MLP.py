@@ -14,8 +14,7 @@ from ray.tune.suggest.hyperopt import HyperOptSearch
 from sklearn.model_selection import cross_validate, StratifiedKFold
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.neural_network import MLPClassifier
 import os
 import gc
 import shap
@@ -61,14 +60,20 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
         self.y_train = y_train
         self.y_test = y_test
         self.config = f_unpack_dict(config)
-        self.model = AdaBoostClassifier(algorithm=self.config.get('algorithm', 'SAMME'), base_estimator=DecisionTreeClassifier(max_depth=self.config.get('max_depth', 1)), learning_rate=self.config.get('learning_rate', 1), n_estimators=self.config.get('n_estimators', 5))
+        self.model = MLPClassifier()
         
 
     def reset_config(self, new_config):
-        self.algorithm = new_config['algorithm']
-        self.max_depth = new_config['max_depth']
+        self.hidden_layer_sizes = new_config['hidden_layer_sizes']
+        self.activation = new_config['activation']
+        self.solver = new_config['solver']
+        self.alpha = new_config['alpha']
         self.learning_rate = new_config['learning_rate']
-        self.n_estimators = new_config['n_estimators']
+        self.tol = new_config['tol']
+        self.epsilon = new_config['epsilon']
+        self.max_iter = new_config['max_iter']
+        self.n_layers = new_config['n_layers']
+        self.n_neurons = new_config['n_neurons']
         self.config = new_config
         return True
 
@@ -98,8 +103,8 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     start1 = time.perf_counter()
     config = f_unpack_dict(config)
     #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
-    clf_name = "AdaBoostClassifier"
-    clf = AdaBoostClassifier(algorithm=config.get('algorithm', 'SAMME'), base_estimator=DecisionTreeClassifier(max_depth=config.get('max_depth', 1)), learning_rate=config.get('learning_rate', 1), n_estimators=config.get('n_estimators', 5))
+    clf_name = "MLPClassifier"
+    clf = MLPClassifier()
     #score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
     clf.fit(x_train,y_train)
     train_score = clf.score(x_train, y_train)
@@ -213,17 +218,30 @@ if __name__ == '__main__':
     #print('Working with '+var+' dataset...', file=open(output, 'w'))
     print('Working with '+var+' dataset...')
     x_train, x_test, y_train, y_test, feature_names = data_parsing(var,config_dict,output)
-    config={
-        'n_estimators' : hp.randint('n_estimators', 1, 500),
-        "algorithm" : hp.choice('algorithm', ['SAMME','SAMME.R']),
-        'learning_rate': hp.loguniform('learning_rate', 0.00001, 1.0),
-        'max_depth' : hp.randint('max_depth', 2, 500)
-    }
+    config={  #https://stackoverflow.com/questions/61502257/optimize-hyperparameters-hidden-layer-size-mlpclassifier-with-skopt
+                #"hidden_layer_sizes": hp.sample_from(lambda list: [list.append(tune.randint(1, 100)) for i in range(tune.randint(1, 50))]),
+                "activation": hp.choice("activation", ['identity', 'logistic', 'tanh', 'relu']),
+                "solver": hp.choice("solver", ['lbfgs', 'sgd', 'adam']),
+                'alpha': hp.loguniform('alpha', 1e-9, 1e-1),
+                'learning_rate': hp.choice('learning_rate',['constant','adaptive','invscaling']),
+                'tol': hp.loguniform('tol',1e-9, 1e-1),
+                'epsilon': hp.uniform('epsilon', 1e-9, 1e-1),
+                "max_iter": hp.randint("max_iter", 10, 300),
+                "n_neurons": hp.randint("n_neurons", 1, 300),
+                "n_layers": hp.randint("n_layers", 1, 50)
+            }
+    # create the hidden layers as a tuple with length n_layers and n_neurons per layer
+    config['hidden_layer_sizes']=(n_neurons,)*n_layers
+
+    # the parameters are deleted to avoid an error from the MLPRegressor
+    #config.pop('n_neurons_per_layer')
+    #config.pop('n_hidden_layer')
+
     hyperopt_search = HyperOptSearch(config, metric='mean_accuracy', mode='max')
     #scheduler = AsyncHyperBandScheduler()
     analysis = run(
         wrap_trainable(stacking, x_train, x_test, y_train, y_test),
-        name=f'AdaBoostClassifier_{var}',
+        name=f'MLPClassifier_{var}',
         verbose=1,
         #scheduler=scheduler,
         search_alg=hyperopt_search,
@@ -252,6 +270,6 @@ if __name__ == '__main__':
     #ttime = (finish- start)/120
     print(f'Total time in min: {finish}')
     config = analysis.best_config
-    print(f'AdaBoostClassifier_{var}:  {config}', file=open(f'../tuning/tuned_parameters.csv', 'a'))
+    print(f'MLPClassifier_{var}:  {config}', file=open(f'../tuning/tuned_parameters.csv', 'a'))
     results(config, x_train, x_test, y_train, y_test, var, output, feature_names)
     gc.collect()

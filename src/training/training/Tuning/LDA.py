@@ -14,8 +14,7 @@ from ray.tune.suggest.hyperopt import HyperOptSearch
 from sklearn.model_selection import cross_validate, StratifiedKFold
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import os
 import gc
 import shap
@@ -61,14 +60,12 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
         self.y_train = y_train
         self.y_test = y_test
         self.config = f_unpack_dict(config)
-        self.model = AdaBoostClassifier(algorithm=self.config.get('algorithm', 'SAMME'), base_estimator=DecisionTreeClassifier(max_depth=self.config.get('max_depth', 1)), learning_rate=self.config.get('learning_rate', 1), n_estimators=self.config.get('n_estimators', 5))
+        self.model = LinearDiscriminantAnalysis(solver=self.config.get('lda_solver', 'svd'), shrinkage=self.config.get('lda_shrinkage', None))
         
 
     def reset_config(self, new_config):
-        self.algorithm = new_config['algorithm']
-        self.max_depth = new_config['max_depth']
-        self.learning_rate = new_config['learning_rate']
-        self.n_estimators = new_config['n_estimators']
+        self.lda_solver = new_config['lda_solver']
+        self.lda_shrinkage = new_config['lda_shrinkage']
         self.config = new_config
         return True
 
@@ -98,8 +95,8 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     start1 = time.perf_counter()
     config = f_unpack_dict(config)
     #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
-    clf_name = "AdaBoostClassifier"
-    clf = AdaBoostClassifier(algorithm=config.get('algorithm', 'SAMME'), base_estimator=DecisionTreeClassifier(max_depth=config.get('max_depth', 1)), learning_rate=config.get('learning_rate', 1), n_estimators=config.get('n_estimators', 5))
+    clf_name = "LinearDiscriminantAnalysis"
+    clf = LinearDiscriminantAnalysis(solver=config.get('lda_solver', 'svd'), shrinkage=config.get('lda_shrinkage', None))
     #score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
     clf.fit(x_train,y_train)
     train_score = clf.score(x_train, y_train)
@@ -214,16 +211,17 @@ if __name__ == '__main__':
     print('Working with '+var+' dataset...')
     x_train, x_test, y_train, y_test, feature_names = data_parsing(var,config_dict,output)
     config={
-        'n_estimators' : hp.randint('n_estimators', 1, 500),
-        "algorithm" : hp.choice('algorithm', ['SAMME','SAMME.R']),
-        'learning_rate': hp.loguniform('learning_rate', 0.00001, 1.0),
-        'max_depth' : hp.randint('max_depth', 2, 500)
+        'lda_solver': hp.choice('lda_solver', [
+                                     {'lda_solver':'svd'},
+                                     {'lda_solver':'lsqr','lda_shrinkage':hp.choice('shrinkage_type_lsqr', ['auto', hp.uniform('shrinkage_value_lsqr', 0, 1)])}
+                                    ,{'lda_solver':'eigen','lda_shrinkage':hp.choice('shrinkage_type_eigen', ['auto', hp.uniform('shrinkage_value_eigen', 0, 1)])}
+                                    ]),
     }
     hyperopt_search = HyperOptSearch(config, metric='mean_accuracy', mode='max')
     #scheduler = AsyncHyperBandScheduler()
     analysis = run(
         wrap_trainable(stacking, x_train, x_test, y_train, y_test),
-        name=f'AdaBoostClassifier_{var}',
+        name=f'LinearDiscriminantAnalysis_{var}',
         verbose=1,
         #scheduler=scheduler,
         search_alg=hyperopt_search,
@@ -252,6 +250,6 @@ if __name__ == '__main__':
     #ttime = (finish- start)/120
     print(f'Total time in min: {finish}')
     config = analysis.best_config
-    print(f'AdaBoostClassifier_{var}:  {config}', file=open(f'../tuning/tuned_parameters.csv', 'a'))
+    print(f'LinearDiscriminantAnalysis_{var}:  {config}', file=open(f'../tuning/tuned_parameters.csv', 'a'))
     results(config, x_train, x_test, y_train, y_test, var, output, feature_names)
     gc.collect()

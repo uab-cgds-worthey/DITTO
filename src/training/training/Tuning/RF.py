@@ -60,7 +60,7 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
         self.y_train = y_train
         self.y_test = y_test
         self.config = f_unpack_dict(config)
-        self.model = RandomForestClassifier(random_state=42, n_estimators=self.config.get('n_estimators', 100), criterion=self.config.get('criterion','gini'), max_depth=self.config.get('max_depth', 2), min_samples_split=self.config.get('min_samples_split',2), min_samples_leaf=self.config.get('min_samples_leaf',1), max_features=self.config.get('max_features','sqrt'), oob_score=self.config.get('oob_score',False), class_weight=self.config.get('class_weight','balanced'), n_jobs = -1)),
+        self.model = RandomForestClassifier(random_state=42, n_estimators=self.config.get('n_estimators', 100), criterion=self.config.get('criterion','gini'), max_depth=self.config.get('max_depth', 2), min_samples_split=self.config.get('min_samples_split',2), min_samples_leaf=self.config.get('min_samples_leaf',1), max_features=self.config.get('max_features','sqrt'), oob_score=self.config.get('oob_score',False), class_weight=self.config.get('class_weight','balanced'), n_jobs = -1)
         
 
     def reset_config(self, new_config):
@@ -101,7 +101,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     config = f_unpack_dict(config)
     #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
     clf_name = "RandomForestClassifier"
-    clf = RandomForestClassifier(random_state=42, n_estimators=config.get('n_estimators', 100), criterion=config.get('criterion','gini'), max_depth=config.get('max_depth', 2), min_samples_split=config.get('min_samples_split',2), min_samples_leaf=config.get('min_samples_leaf',1), max_features=config.get('max_features','sqrt'), oob_score=config.get('oob_score',False), class_weight=config.get('class_weight','balanced'), n_jobs = -1)),
+    clf = RandomForestClassifier(random_state=42, n_estimators=config.get('n_estimators', 100), criterion=config.get('criterion','gini'), max_depth=config.get('max_depth', 2), min_samples_split=config.get('min_samples_split',2), min_samples_leaf=config.get('min_samples_leaf',1), max_features=config.get('max_features','sqrt'), oob_score=config.get('oob_score',False), class_weight=config.get('class_weight','balanced'), n_jobs = -1)
     #score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
     clf.fit(x_train,y_train)
     train_score = clf.score(x_train, y_train)
@@ -216,12 +216,6 @@ if __name__ == '__main__':
     print('Working with '+var+' dataset...')
     x_train, x_test, y_train, y_test, feature_names = data_parsing(var,config_dict,output)
     config={
-        'n_estimators' : hp.randint('n_estimators', 1, 500),
-        "algorithm" : hp.choice('algorithm', ['SAMME','SAMME.R']),
-        'learning_rate': hp.uniform('learning_rate', 0.0001, 2.0),
-        'max_depth' : hp.randint('max_depth', 2, 500)
-    }
-    {
                 "n_estimators" : hp.randint("n_estimators", 1, 500),
                 "min_samples_split" : hp.randint("min_samples_split", 2, 100),
                 "min_samples_leaf" : hp.randint("min_samples_leaf", 1, 100),
@@ -235,7 +229,7 @@ if __name__ == '__main__':
     #scheduler = AsyncHyperBandScheduler()
     analysis = run(
         wrap_trainable(stacking, x_train, x_test, y_train, y_test),
-        name=f'AdaBoostClassifier_{var}',
+        name=f'RandomForestClassifier_{var}',
         verbose=1,
         #scheduler=scheduler,
         search_alg=hyperopt_search,

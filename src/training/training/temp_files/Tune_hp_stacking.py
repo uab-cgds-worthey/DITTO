@@ -122,10 +122,10 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
         #self.brf__oob_score = new_config['brf__oob_score']
         self.brf__class_weight = new_config['brf__class_weight']
         self.lda_solver = new_config['lda_solver']
-        self.lda_shrinkage = new_config['shrinkage_type_eigen']
+        self.lda_shrinkage = new_config['lda_shrinkage']
         self.lr__C = new_config['lr__C']
         self.lr__solver = new_config['lr__solver']
-        self.lr__penalty = new_config['elasticnet']
+        self.lr__penalty = new_config['lr__penalty']
         self.lr__tol = new_config['lr__tol']
         self.lr__l1_ratio = new_config['lr__l1_ratio']
         self.lr__max_iter = new_config['lr__max_iter']
@@ -294,8 +294,8 @@ if __name__ == '__main__':
                 'rf__n_estimators' : hp.randint('rf__n_estimators', 1, 200),
                 'rf__criterion' : hp.choice('rf__criterion', ['gini', 'entropy']),
                 'rf__max_depth' : hp.randint('rf__max_depth', 2, 200),
-                'rf__min_samples_split' : hp.randint('rf__min_samples_split', 2, 10),
-                'rf__min_samples_leaf' : hp.randint('rf__min_samples_leaf', 1, 10),
+                'rf__min_samples_split' : hp.randint('rf__min_samples_split', 2, 100),
+                'rf__min_samples_leaf' : hp.randint('rf__min_samples_leaf', 1, 100),
                 'rf__max_features' : hp.choice('rf__max_features', ['sqrt', 'log2']),
                 #'rf__oob_score' : hp.choice('rf__oob_score', [True, False]),
                 'rf__class_weight' : hp.choice('rf__class_weight', ['balanced', 'balanced_subsample']),
@@ -330,8 +330,8 @@ if __name__ == '__main__':
                 'brf__class_weight' : hp.choice('brf__class_weight', ['balanced', 'balanced_subsample']),
             #LinearDiscriminantAnalysis - https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis
                 'lda_solver': hp.choice('lda_solver', [
-                                     {'lda_solver':'svd'}
-                                    ,{'lda_solver':'lsqr','lda_shrinkage':hp.choice('shrinkage_type_lsqr', ['auto', hp.uniform('shrinkage_value_lsqr', 0, 1)])}
+                                     {'lda_solver':'svd'},
+                                     {'lda_solver':'lsqr','lda_shrinkage':hp.choice('shrinkage_type_lsqr', ['auto', hp.uniform('shrinkage_value_lsqr', 0, 1)])}
                                     ,{'lda_solver':'eigen','lda_shrinkage':hp.choice('shrinkage_type_eigen', ['auto', hp.uniform('shrinkage_value_eigen', 0, 1)])}
                                     ]),
             #LogisticRegression - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?highlight=logistic#sklearn.linear_model.LogisticRegression; https://github.com/hyperopt/hyperopt/issues/304
