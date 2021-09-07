@@ -65,7 +65,7 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
 
     def reset_config(self, new_config):
         self.lda_solver = new_config['lda_solver']
-        self.lda_shrinkage = new_config['lda_shrinkage']
+        #self.lda_shrinkage = new_config['lda_shrinkage']
         self.config = new_config
         return True
 
