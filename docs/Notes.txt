@@ -522,30 +522,32 @@ Also, the ML_models script can plot ROC and AUC curves for each dataset.
 
 Different combinations of filters - 
 ```
-python slurm-launch.py --exp-name F_1_0_0_nssnv --command "python training/data-prep/filter.py -v F_1_0_0_nssnv  --cutoff 1 -afv 0 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_7_0_0_nssnv --command "python training/data-prep/filter.py -v F_7_0_0_nssnv --cutoff 0.7 -afv 0 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_3_0_0_nssnv --command "python training/data-prep/filter.py -v F_3_0_0_nssnv --cutoff 0.3 -afv 0 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_1_005_0_nssnv --command "python training/data-prep/filter.py -v F_1_005_0_nssnv --cutoff 1 -afv 0.005 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_1_0005_0_nssnv --command "python training/data-prep/filter.py -v F_1_0005_0_nssnv --cutoff 1 -afv 0.0005 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_1_00005_0_nssnv --command "python training/data-prep/filter.py -v F_1_00005_0_nssnv --cutoff 1 -afv 0.00005 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_7_005_0_nssnv --command "python training/data-prep/filter.py -v F_7_005_0_nssnv --cutoff 0.7 -afv 0.005 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_7_0005_0_nssnv --command "python training/data-prep/filter.py -v F_7_0005_0_nssnv --cutoff 0.7 -afv 0.0005 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_7_00005_0_nssnv --command "python training/data-prep/filter.py -v F_7_00005_0_nssnv --cutoff 0.7 -afv 0.00005 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_3_005_0_nssnv --command "python training/data-prep/filter.py -v F_3_005_0_nssnv --cutoff 0.3 -afv 0.005 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_3_0005_0_nssnv --command "python training/data-prep/filter.py -v F_3_0005_0_nssnv --cutoff 0.3 -afv 0.0005 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_3_00005_0_nssnv --command "python training/data-prep/filter.py -v F_3_00005_0_nssnv --cutoff 0.3 -afv 0.00005 -otv 0" --mem 30G
-python slurm-launch.py --exp-name F_1_0_1_nssnv --command "python training/data-prep/filter.py -v F_1_0_1_nssnv --cutoff 1 -afv 0 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_7_0_1_nssnv --command "python training/data-prep/filter.py -v F_7_0_1_nssnv --cutoff 0.7 -afv 0 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_3_0_1_nssnv --command "python training/data-prep/filter.py -v F_3_0_1_nssnv --cutoff 0.3 -afv 0 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_1_005_1_nssnv --command "python training/data-prep/filter.py -v F_1_005_1_nssnv --cutoff 1 -afv 0.005 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_1_0005_1_nssnv --command "python training/data-prep/filter.py -v F_1_0005_1_nssnv --cutoff 1 -afv 0.0005 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_1_00005_1_nssnv --command "python training/data-prep/filter.py -v F_1_00005_1_nssnv --cutoff 1 -afv 0.00005 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_7_005_1_nssnv --command "python training/data-prep/filter.py -v F_7_005_1_nssnv --cutoff 0.7 -afv 0.005 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_7_0005_1_nssnv --command "python training/data-prep/filter.py -v F_7_0005_1_nssnv --cutoff 0.7 -afv 0.0005 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_7_00005_1_nssnv --command "python training/data-prep/filter.py -v F_7_00005_1_nssnv --cutoff 0.7 -afv 0.00005 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_3_005_1_nssnv --command "python training/data-prep/filter.py -v F_3_005_1_nssnv --cutoff 0.3 -afv 0.005 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_3_0005_1_nssnv --command "python training/data-prep/filter.py -v F_3_0005_1_nssnv --cutoff 0.3 -afv 0.0005 -otv 1" --mem 30G
-python slurm-launch.py --exp-name F_3_00005_1_nssnv --command "python training/data-prep/filter.py -v F_3_00005_1_nssnv --cutoff 0.3 -afv 0.00005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_1_0_0_nssnv --command "python training/data-prep/filter.py -v F_1_0_0_nssnv  -af 1 --cutoff 1 -afv 0 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_7_0_0_nssnv --command "python training/data-prep/filter.py -v F_7_0_0_nssnv -af 1 --cutoff 0.7 -afv 0 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_3_0_0_nssnv --command "python training/data-prep/filter.py -v F_3_0_0_nssnv -af 1 --cutoff 0.3 -afv 0 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_1_005_0_nssnv --command "python training/data-prep/filter.py -v F_1_005_0_nssnv -af 1 --cutoff 1 -afv 0.005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_1_0005_0_nssnv --command "python training/data-prep/filter.py -v F_1_0005_0_nssnv -af 1 --cutoff 1 -afv 0.0005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_1_00005_0_nssnv --command "python training/data-prep/filter.py -v F_1_00005_0_nssnv -af 1 --cutoff 1 -afv 0.00005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_7_005_0_nssnv --command "python training/data-prep/filter.py -v F_7_005_0_nssnv -af 1 --cutoff 0.7 -afv 0.005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_7_0005_0_nssnv --command "python training/data-prep/filter.py -v F_7_0005_0_nssnv -af 1 --cutoff 0.7 -afv 0.0005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_7_00005_0_nssnv --command "python training/data-prep/filter.py -v F_7_00005_0_nssnv -af 1 --cutoff 0.7 -afv 0.00005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_3_005_0_nssnv --command "python training/data-prep/filter.py -v F_3_005_0_nssnv -af 1 --cutoff 0.3 -afv 0.005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_3_0005_0_nssnv --command "python training/data-prep/filter.py -v F_3_0005_0_nssnv -af 1 --cutoff 0.3 -afv 0.0005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_3_00005_0_nssnv --command "python training/data-prep/filter.py -v F_3_00005_0_nssnv -af 1 --cutoff 0.3 -afv 0.00005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_1_0_1_nssnv --command "python training/data-prep/filter.py -v F_1_0_1_nssnv -af 1 --cutoff 1 -afv 0 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_7_0_1_nssnv --command "python training/data-prep/filter.py -v F_7_0_1_nssnv -af 1 --cutoff 0.7 -afv 0 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_3_0_1_nssnv --command "python training/data-prep/filter.py -v F_3_0_1_nssnv -af 1 --cutoff 0.3 -afv 0 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_1_005_1_nssnv --command "python training/data-prep/filter.py -v F_1_005_1_nssnv -af 1 --cutoff 1 -afv 0.005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_1_0005_1_nssnv --command "python training/data-prep/filter.py -v F_1_0005_1_nssnv -af 1 --cutoff 1 -afv 0.0005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_1_00005_1_nssnv --command "python training/data-prep/filter.py -v F_1_00005_1_nssnv -af 1 --cutoff 1 -afv 0.00005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_7_005_1_nssnv --command "python training/data-prep/filter.py -v F_7_005_1_nssnv -af 1 --cutoff 0.7 -afv 0.005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_7_0005_1_nssnv --command "python training/data-prep/filter.py -v F_7_0005_1_nssnv -af 1 --cutoff 0.7 -afv 0.0005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_7_00005_1_nssnv --command "python training/data-prep/filter.py -v F_7_00005_1_nssnv -af 1 --cutoff 0.7 -afv 0.00005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_3_005_1_nssnv --command "python training/data-prep/filter.py -v F_3_005_1_nssnv -af 1 --cutoff 0.3 -afv 0.005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_3_0005_1_nssnv --command "python training/data-prep/filter.py -v F_3_0005_1_nssnv -af 1 --cutoff 0.3 -afv 0.0005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_3_00005_1_nssnv --command "python training/data-prep/filter.py -v F_3_00005_1_nssnv -af 1 --cutoff 0.3 -afv 0.00005 -otv 1" --mem 30G
+python slurm-launch.py --exp-name F_3_no_0_nssnv --command "python training/data-prep/filter.py -v F_3_no_0_nssnv -af 0 --cutoff 0.3 -afv 0.00005 -otv 0" --mem 30G
+python slurm-launch.py --exp-name F_3_no_1_nssnv --command "python training/data-prep/filter.py -v F_3_no_1_nssnv -af 0 --cutoff 0.3 -afv 0.00005 -otv 1" --mem 30G
 ```
 
 Running ML models for different combinations of filters - 
@@ -574,31 +576,35 @@ python slurm-launch.py --exp-name F_7_00005_1_nssnv --command "python training/t
 python slurm-launch.py --exp-name F_3_005_1_nssnv --command "python training/training/ML_models.py -v F_3_005_1_nssnv"
 python slurm-launch.py --exp-name F_3_0005_1_nssnv --command "python training/training/ML_models.py -v F_3_0005_1_nssnv"
 python slurm-launch.py --exp-name F_3_00005_1_nssnv --command "python training/training/ML_models.py -v F_3_00005_1_nssnv"
+python slurm-launch.py --exp-name F_3_no_0_nssnv --command "python training/training/ML_models.py -v F_3_no_0_nssnv"
+python slurm-launch.py --exp-name F_3_no_1_nssnv --command "python training/training/ML_models.py -v F_3_no_1_nssnv"
 ```
 Tune all classifier - 
 ```
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_1_0_0_nssnv --command "python $FILE -v F_1_0_0_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_7_0_0_nssnv --command "python $FILE -v F_7_0_0_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_1_005_0_nssnv --command "python $FILE -v F_1_005_0_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_1_0005_0_nssnv --command "python $FILE -v F_1_0005_0_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_1_00005_0_nssnv --command "python $FILE -v F_1_00005_0_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_7_005_0_nssnv --command "python $FILE -v F_7_005_0_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_7_0005_0_nssnv --command "python $FILE -v F_7_0005_0_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_7_00005_0_nssnv --command "python $FILE -v F_7_00005_0_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_1_0_1_nssnv --command "python $FILE -v F_1_0_1_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_7_0_1_nssnv --command "python $FILE -v F_7_0_1_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_1_005_1_nssnv --command "python $FILE -v F_1_005_1_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_1_0005_1_nssnv --command "python $FILE -v F_1_0005_1_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_1_00005_1_nssnv --command "python $FILE -v F_1_00005_1_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_7_005_1_nssnv --command "python $FILE -v F_7_005_1_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_7_0005_1_nssnv --command "python $FILE -v F_7_0005_1_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_7_00005_1_nssnv --command "python $FILE -v F_7_00005_1_nssnv" --mem 70G ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_3_0_0_nssnv --command "python $FILE -v F_3_0_0_nssnv" --mem 150G --partition long ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_3_005_0_nssnv --command "python $FILE -v F_3_005_0_nssnv" --mem 150G --partition long ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_3_0005_0_nssnv --command "python $FILE -v F_3_0005_0_nssnv" --mem 150G --partition long ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_3_00005_0_nssnv --command "python $FILE -v F_3_00005_0_nssnv" --mem 150G --partition long ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_3_0_1_nssnv --command "python $FILE -v F_3_0_1_nssnv" --mem 150G --partition long ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_3_005_1_nssnv --command "python $FILE -v F_3_005_1_nssnv" --mem 150G --partition long ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_3_0005_1_nssnv --command "python $FILE -v F_3_0005_1_nssnv" --mem 150G --partition long ; done
-for FILE in training/training/Tuning/*.py; do python slurm-launch.py --exp-name F_3_00005_1_nssnv --command "python $FILE -v F_3_00005_1_nssnv" --mem 150G --partition long ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_1_0_0_nssnv --command "python $FILE -v F_1_0_0_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_7_0_0_nssnv --command "python $FILE -v F_7_0_0_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_1_005_0_nssnv --command "python $FILE -v F_1_005_0_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_1_0005_0_nssnv --command "python $FILE -v F_1_0005_0_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_1_00005_0_nssnv --command "python $FILE -v F_1_00005_0_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_7_005_0_nssnv --command "python $FILE -v F_7_005_0_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_7_0005_0_nssnv --command "python $FILE -v F_7_0005_0_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_7_00005_0_nssnv --command "python $FILE -v F_7_00005_0_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_1_0_1_nssnv --command "python $FILE -v F_1_0_1_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_7_0_1_nssnv --command "python $FILE -v F_7_0_1_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_1_005_1_nssnv --command "python $FILE -v F_1_005_1_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_1_0005_1_nssnv --command "python $FILE -v F_1_0005_1_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_1_00005_1_nssnv --command "python $FILE -v F_1_00005_1_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_7_005_1_nssnv --command "python $FILE -v F_7_005_1_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_7_0005_1_nssnv --command "python $FILE -v F_7_0005_1_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_7_00005_1_nssnv --command "python $FILE -v F_7_00005_1_nssnv" --mem 100G ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_3_0_0_nssnv --command "python $FILE -v F_3_0_0_nssnv" --mem 200G --partition long ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_3_005_0_nssnv --command "python $FILE -v F_3_005_0_nssnv" --mem 200G --partition long ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_3_0005_0_nssnv --command "python $FILE -v F_3_0005_0_nssnv" --mem 200G --partition long ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_3_00005_0_nssnv --command "python $FILE -v F_3_00005_0_nssnv" --mem 200G --partition long ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_3_0_1_nssnv --command "python $FILE -v F_3_0_1_nssnv" --mem 200G --partition long ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_3_005_1_nssnv --command "python $FILE -v F_3_005_1_nssnv" --mem 200G --partition long ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_3_0005_1_nssnv --command "python $FILE -v F_3_0005_1_nssnv" --mem 200G --partition long ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_3_00005_1_nssnv --command "python $FILE -v F_3_00005_1_nssnv" --mem 200G --partition long ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_3_no_0_nssnv --command "python $FILE -v F_3_no_0_nssnv" --mem 200G --partition long ; done
+for FILE in training/training/Tuning/*.py; do python slurm-launch.py --num-cpus 20 --exp-name F_3_no_1_nssnv --command "python $FILE -v F_3_no_1_nssnv" --mem 200G --partition long ; done
 ```

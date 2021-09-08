@@ -40,12 +40,14 @@ import shap
 
 #EPOCHS = 150
 class Objective(object):
-    def __init__(self, train_x,test_x, train_y, test_y):
+    def __init__(self, train_x, val_x, test_x, train_y, val_y, test_y):
         
         self.train_x = train_x
         self.test_x = test_x
         self.train_y = train_y
         self.test_y = test_y
+        self.val_x = val_x
+        self.val_y = val_y
         #self.var = var
         #self.x = x
         #self.n_columns = 112
@@ -79,7 +81,7 @@ class Objective(object):
             # Train the model
             model.fit(
                 self.train_x, self.train_y, 
-                validation_data=(self.test_x, self.test_y),
+                validation_data=(self.val_x, self.val_y),
                 verbose=0,
                 shuffle=True,
                 callbacks=callbacks,
@@ -88,7 +90,7 @@ class Objective(object):
 
     
             # Evaluate the model accuracy on the validation set.
-            score = model.evaluate(self.test_x, self.test_y, verbose=0)
+            score = model.evaluate(self.val_x, self.val_y, verbose=0)
             return score[1]
         
     def tuned_run(self, config): 
@@ -139,7 +141,7 @@ class Objective(object):
             #prc_micro = average_precision_score(self.test_y, y_score, average='micro')
             matrix = confusion_matrix(np.argmax(self.test_y.values,axis=1), np.argmax(y_score, axis=1))
             print(f'Model\tTest_loss\tTest_accuracy\tPrecision\tRecall\troc_auc\tAccuracy\tConfusion_matrix[low_impact, high_impact]', file=open(output, 'a'))    #\tConfusion_matrix[low_impact, high_impact]
-            print(f'Neural_Network_{var}\t{results[0]}\t{results[1]}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\n{matrix}', file=open(output, "a")) #results:\nstorage ="sqlite:///../tuning/{var}/Neural_network_{var}.db"
+            print(f'Neural_Network\t{results[0]}\t{results[1]}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\n{matrix}', file=open(output, "a")) #results:\nstorage ="sqlite:///../tuning/{var}/Neural_network_{var}.db"
             # Calling `save('my_model')` creates a SavedModel folder `my_model`.
             model.save(f"../tuning/{var}/Neural_network/Neural_network_{var}")
             model.save_weights(f"../tuning/{var}/Neural_network/weights.h5")
@@ -173,6 +175,7 @@ def data_parsing(var,config_dict,output):
     Y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
     Y_train = pd.get_dummies(Y_train)
     #Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']).ravel() 
+    X_train,X_val, Y_train, Y_val= train_test_split(X_train,Y_train,test_size=.20,random_state=42)
 
     X_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
     #var = X_test[config_dict['ML_VAR']]
@@ -188,7 +191,7 @@ def data_parsing(var,config_dict,output):
     #X_train = scaler.transform(X_train)
     #X_test = scaler.transform(X_test)
     # explain all the predictions in the test set
-    return X_train, X_test, Y_train, Y_test,feature_names
+    return X_train, X_val, X_test, Y_train, Y_val, Y_test,feature_names
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -214,20 +217,20 @@ if __name__ == "__main__":
     #print('Working with '+var+' dataset...', file=open(output, "w"))
     print('Working with '+var+' dataset...')
     #X_train, X_test, Y_train, Y_test, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
-    X_train, X_test, Y_train, Y_test, feature_names = data_parsing(var,config_dict,output)
+    X_train, X_val, X_test, Y_train, Y_val, Y_test,feature_names = data_parsing(var,config_dict,output)
     #print('Model\tCross_validate(avg_train_score)\tCross_validate(avg_test_score)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
     #list1 = ray.get(classifier.remote(classifiers,var, X_train, X_test, Y_train, Y_test,background,feature_names))
     #print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\n{list1[8]}', file=open(output, "a"))
     #print(f'training and testing done!')
     
     print('Starting Objective...')
-    objective = Objective(X_train, X_test, Y_train, Y_test)
+    objective = Objective(X_train, X_val, X_test, Y_train, Y_val, Y_test)
     tensorboard_callback = TensorBoardCallback(f"../tuning/{var}/Neural_network_{var}_logs/", metric_name="accuracy")
     study = optuna.create_study(sampler=TPESampler(**TPESampler.hyperopt_parameters()), study_name= f"Neural_network_{var}", storage = f"sqlite:///../tuning/{var}/Neural_network_{var}.db", #study_name= "Ditto3",
-        direction="maximize", pruner=optuna.pruners.MedianPruner(n_startup_trials=10), load_if_exists=True #, pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
+        direction="maximize", pruner=optuna.pruners.MedianPruner(n_startup_trials=30), load_if_exists=True #, pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
     )
     #study = optuna.load_study(study_name= "Ditto_all", sampler=TPESampler(**TPESampler.hyperopt_parameters()),storage ="sqlite:///Ditto_all.db") # study_name= "Ditto3", 
-    study.optimize(objective, n_trials=30,  callbacks=[tensorboard_callback], n_jobs = -1, gc_after_trial=True) #, n_jobs = -1 timeout=600,
+    study.optimize(objective, n_trials=300,  callbacks=[tensorboard_callback], n_jobs = -1, gc_after_trial=True) #, n_jobs = -1 timeout=600,
     finish = (time.perf_counter()- start)/120
     #ttime = (finish- start)/120
     print(f'Total time in hrs: {finish}')

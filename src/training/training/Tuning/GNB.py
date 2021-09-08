@@ -64,8 +64,8 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
         
 
     def reset_config(self, new_config):
-        self.var_smoothing = new_config['var_smoothing']
-        self.config = new_config
+        score = cross_validate(self.model, self.x_train, self.y_train, cv=10, n_jobs=-1, verbose=0)
+        testing_score = np.mean(score['test_score'])
         return True
 
     def step(self):
@@ -237,7 +237,7 @@ if __name__ == '__main__':
         stop={
             'training_iteration': 1,
         },
-        num_samples=500,
+        num_samples=200,
         #fail_fast=True,
         queue_trials=True
     )

@@ -88,14 +88,23 @@ def fill_na(df,config_dict, column_info, stats, list_tag): #(config_dict,df):
     #df = imp.fit_transform(df)
     #df = pd.DataFrame(df, columns = columns)
     
-    df1=df[config_dict['gnomad_columns']]
-    df1=df1.fillna(list_tag[2])
-    
-    if list_tag[3] == 1:
-        df = df.drop(config_dict['gnomad_columns'], axis=1)
-        df=df.fillna(df.median())
+    if list_tag[2] == 1:
+        print("Including AF columns...")
+        df1=df[config_dict['gnomad_columns']]
+        df1=df1.fillna(list_tag[3])
+
+        if list_tag[4] == 1:
+            df = df.drop(config_dict['gnomad_columns'], axis=1)
+            df=df.fillna(df.median())
+        else:
+            pass
     else:
-        pass
+        print("Excluding AF columns...")
+        if list_tag[4] == 1:
+            df = df.drop(config_dict['gnomad_columns'], axis=1)
+            df1=df.fillna(df.median())
+        else:
+            df1 = pd.DataFrame()
 
     if 'non_nssnv' in stats:
         for key in tqdm(config_dict['non_nssnv_columns']):
@@ -158,7 +167,7 @@ def main(df, config_f, stats,column_info, null_info, list_tag):
     df.dropna(axis=1, how='all', inplace=True)
     y = df['hgmd_class']
     class_dummies = pd.get_dummies(df['hgmd_class'])
-    del class_dummies[class_dummies.columns[-1]]
+    #del class_dummies[class_dummies.columns[-1]]
     print('\nImpact (Class):\n', y.value_counts(), file=open(stats, "a"))
     #y = df.hgmd_class
     df = df.drop('hgmd_class', axis=1)
@@ -172,7 +181,7 @@ def main(df, config_f, stats,column_info, null_info, list_tag):
         sns.heatmap(df.corr(), fmt='.2g',cmap= 'coolwarm')
         plt.savefig(f"train_{list_tag[0]}/correlation_after_{list_tag[0]}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
         df = pd.concat([var, df], axis=1)
-        df = df.drop('high_impact', axis=1)
+        df = df.drop(['high_impact','low_impact'], axis=1)
     return df,y
 
 if __name__ == "__main__":
@@ -191,6 +200,12 @@ if __name__ == "__main__":
         default=0.5,
         help=f"Cutoff to include at least __% of data for all rows. Default:0.5 (i.e. 50%)")
     parser.add_argument(
+        "--af-columns",
+        "-af",
+        type=int,
+        default=0,
+        help=f"To include columns with Allele frequencies or not. Default:0")
+    parser.add_argument(
         "--af-values",
         "-afv",
         type=float,
@@ -199,12 +214,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--other-values",
         "-otv",
-        type=bool,
+        type=int,
         default=0,
         help=f"Impute other columns with either custom defined values (0) or median (1). Default:0")
 
     args = parser.parse_args()
-    list_tag = [args.var_tag, args.cutoff, args.af_values, args.other_values]
+    list_tag = [args.var_tag, args.cutoff, args.af_columns, args.af_values, args.other_values]
+    print(list_tag)
     var = list_tag[0]
 
     if not os.path.exists('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test'):
