@@ -253,7 +253,7 @@ if __name__ == '__main__':
         stop={
             'training_iteration': 1,
         },
-        num_samples=200,
+        num_samples=300,
         #fail_fast=True,
         queue_trials=True
     )
