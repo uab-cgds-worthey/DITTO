@@ -95,7 +95,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     start1 = time.perf_counter()
     config = f_unpack_dict(config)
     #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
-    clf_name = "LinearDiscriminantAnalysis"
+    clf_name = "LDA"
     clf = LinearDiscriminantAnalysis(solver=config.get('lda_solver', 'svd'), shrinkage=config.get('lda_shrinkage', None))
     #score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
     clf.fit(x_train,y_train)
@@ -221,7 +221,7 @@ if __name__ == '__main__':
     #scheduler = AsyncHyperBandScheduler()
     analysis = run(
         wrap_trainable(stacking, x_train, x_test, y_train, y_test),
-        name=f'LinearDiscriminantAnalysis_{var}',
+        name=f'LDA_{var}',
         verbose=1,
         #scheduler=scheduler,
         search_alg=hyperopt_search,
@@ -250,6 +250,6 @@ if __name__ == '__main__':
     #ttime = (finish- start)/120
     print(f'Total time in min: {finish}')
     config = analysis.best_config
-    print(f'LinearDiscriminantAnalysis_{var}:  {config}', file=open(f'../tuning/tuned_parameters.csv', 'a'))
+    print(f'LDA_{var}:  {config}', file=open(f'../tuning/tuned_parameters.csv', 'a'))
     results(config, x_train, x_test, y_train, y_test, var, output, feature_names)
     gc.collect()

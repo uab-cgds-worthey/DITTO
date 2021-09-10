@@ -6,8 +6,9 @@ import argparse
 import subprocess
 import sys
 import time
+import os
 
-template_file = "slurm-template.sh" #Path(__file__) / 
+#template_file = "slurm-template.sh" #Path(__file__) / 
 JOB_NAME = "${JOB_NAME}"
 NUM_NODES = "${NUM_NODES}"
 NUM_GPUS_PER_NODE = "${NUM_GPUS_PER_NODE}"
@@ -25,6 +26,12 @@ if __name__ == "__main__":
         type=str,
         required=True,
         help="The job name and path to logging file (exp_name.log).")
+    parser.add_argument(
+        "--slurm-template",
+        "-temp",
+        type=str,
+        default="./",
+        help="Path to slurm template. Default: ./ (current location)")
     parser.add_argument(
         "--num-nodes",
         "-n",
@@ -85,7 +92,7 @@ if __name__ == "__main__":
         args.partition) if args.partition else ""
 
     # ===== Modified the template script =====
-    with open(template_file, "r") as f:
+    with open(f"{args.slurm_template}slurm-template.sh", "r") as f:
         text = f.read()
     text = text.replace(JOB_NAME, job_name)
     text = text.replace(NUM_NODES, str(args.num_nodes))
@@ -103,7 +110,9 @@ if __name__ == "__main__":
         "RUNNABLE!")
 
     # ===== Save the script =====
-    script_file = "{}.sh".format(job_name)
+    if not os.path.exists("./logs/"):
+            os.makedirs("./logs/")
+    script_file = "./logs/{}.sh".format(job_name)
     with open(script_file, "w") as f:
         f.write(text)
 
@@ -112,5 +121,5 @@ if __name__ == "__main__":
     subprocess.Popen(["sbatch", script_file])
     print(
         "Job submitted! Script file is at: <{}>. Log file is at: <{}>".format(
-            script_file, "{}.log".format(job_name)))
+            script_file, "./logs/{}.log".format(job_name)))
     sys.exit(0)

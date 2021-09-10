@@ -59,17 +59,18 @@ if __name__ == "__main__":
     var = args.var_tag
 
     #Classifiers I wish to use
-    classifiers = {
-        	"DT":DecisionTreeClassifier(class_weight='balanced'),
-            "RF":RandomForestClassifier(class_weight='balanced', n_jobs=-1),
-            "BalancedRF":BalancedRandomForestClassifier(),
-            "AdaBoostClassifier":AdaBoostClassifier(),
-            "ExtraTrees":ExtraTreesClassifier(class_weight='balanced', n_jobs=-1),
-            "GaussianNB":GaussianNB(),
-            "LDA":LinearDiscriminantAnalysis(),
-            "GradientBoost":GradientBoostingClassifier(),
-            "MLP":MLPClassifier()
-    }
+    classifiers = [
+        	"DecisionTree",
+            "RandomForest",
+            "BalancedRF",
+            "AdaBoost",
+            "ExtraTrees",
+            "GaussianNB",
+            "LDA",
+            "GradientBoost",
+            "MLP",
+            "StackingClassifier"
+    ]
     
     
     with open("../../../configs/columns_config.yaml") as fh:
@@ -84,7 +85,7 @@ if __name__ == "__main__":
     # prepare plots
     fig, [ax_roc, ax_prc] = plt.subplots(1, 2, figsize=(20, 10))
 
-    for name, clf in classifiers.items():
+    for name in classifiers:
         with open(f"../tuning/{var}/{name}_{var}.joblib", 'rb') as f:
             clf = load(f)
         

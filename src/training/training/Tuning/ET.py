@@ -100,7 +100,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     start1 = time.perf_counter()
     config = f_unpack_dict(config)
     #self.x_train, self.x_test, self.y_train, self.y_test, self.feature_names = self._read_data(config)
-    clf_name = "ExtraTreesClassifier"
+    clf_name = "ExtraTrees"
     clf = ExtraTreesClassifier(random_state=42, n_estimators=config.get('n_estimators', 100), criterion=config.get('criterion','gini'), min_samples_split=config.get('min_samples_split',2), min_samples_leaf=config.get('min_samples_leaf',1), max_features=config.get('max_features','sqrt'), oob_score=config.get('oob_score',False), class_weight=config.get('class_weight','balanced'), n_jobs = -1)
     #score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
     clf.fit(x_train,y_train)
@@ -229,7 +229,7 @@ if __name__ == '__main__':
     #scheduler = AsyncHyperBandScheduler()
     analysis = run(
         wrap_trainable(stacking, x_train, x_test, y_train, y_test),
-        name=f'ExtraTreesClassifier_{var}',
+        name=f'ExtraTrees_{var}',
         verbose=1,
         #scheduler=scheduler,
         search_alg=hyperopt_search,
@@ -258,6 +258,6 @@ if __name__ == '__main__':
     #ttime = (finish- start)/120
     print(f'Total time in min: {finish}')
     config = analysis.best_config
-    print(f'ExtraTreesClassifier_{var}:  {config}', file=open(f'../tuning/tuned_parameters.csv', 'a'))
+    print(f'ExtraTrees_{var}:  {config}', file=open(f'../tuning/tuned_parameters.csv', 'a'))
     results(config, x_train, x_test, y_train, y_test, var, output, feature_names)
     gc.collect()

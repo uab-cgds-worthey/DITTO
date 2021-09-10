@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import time
+import argparse
 import ray
 # Start Ray.
 ray.init(ignore_reinit_error=True)
@@ -32,15 +33,14 @@ import warnings
 warnings.simplefilter('ignore')
 import gc
 import os
-os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test')
 
 TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
-@ray.remote(num_returns=6)
+#@ray.remote(num_returns=6)
 def data_parsing(var,config_dict,output):
-    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
     #Load data
-    print(f'\nUsing merged_data-train_{var}..', file=open(output, "a"))
+    #print(f'\nUsing merged_data-train_{var}..', file=open(output, "a"))
     X_train = pd.read_csv(f'train_{var}/merged_data-train_{var}.csv')
     #var = X_train[config_dict['ML_VAR']]
     X_train = X_train.drop(config_dict['ML_VAR'], axis=1)
@@ -67,17 +67,16 @@ def data_parsing(var,config_dict,output):
     return X_train, X_test, Y_train, Y_test, background, feature_names
 
 
-@ray.remote #(num_cpus=9)
+#@ray.remote #(num_cpus=9)
 def classifier(clf,var, X_train, X_test, Y_train, Y_test, background,feature_names, output):
-   os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
    start = time.perf_counter()
    #score = cross_validate(clf, X_train, Y_train, cv=10, return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0, scoring=('roc_auc','neg_log_loss'))
    #clf = score['estimator'][np.argmin(score['test_neg_log_loss'])]
    #y_score = cross_val_predict(clf, X_train, Y_train, cv=5, n_jobs=-1, verbose=0)
    #class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
    clf.fit(X_train, Y_train) #, class_weight=class_weights)
-   clf_name = str(type(clf)).split("'")[1]  #.split(".")[3]
-   with open(f"./models/{var}/{clf_name}_{var}.joblib", 'wb') as f:
+   clf_name = "StackingClassifier"
+   with open(f"../models/{var}/{clf_name}_{var}.joblib", 'wb') as f:
     dump(clf, f, compress='lz4')
    #del clf
    #with open(f"./models/{var}/{clf_name}_{var}.joblib", 'rb') as f:
@@ -97,12 +96,12 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test, background,feature_nam
    #background = shap.kmeans(X_train, 6)
    explainer = shap.KernelExplainer(clf.predict, background)
    del clf, X_train
-   background = X_test[np.random.choice(X_test.shape[0], 1000, replace=False)]
+   background = X_test[np.random.choice(X_test.shape[0], 10000, replace=False)]
    shap_values = explainer.shap_values(background)
    plt.figure()
    shap.summary_plot(shap_values, background, feature_names, show=False)
    #shap.plots.waterfall(shap_values[0], max_display=15)
-   plt.savefig(f"./models/{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+   plt.savefig(f"../models/{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
    finish = (time.perf_counter()-start)/60
    with open(output, 'a') as f:
         f.write(f"{clf_name}\t{train_score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}\n")
@@ -110,18 +109,28 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test, background,feature_nam
 
 
 if __name__ == "__main__":
-    #os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--var-tag",
+        "-v",
+        type=str,
+        required=True,
+        default='nssnv',
+        help="The tag used when generating train/test data. Default:'nssnv'")
+
+    args = parser.parse_args()
+
     #Classifiers I wish to use
     classifiers = StackingClassifier(estimators=[
-        ('DecisionTreeClassifier',DecisionTreeClassifier(class_weight='balanced')),
-        ('RandomForestClassifier',RandomForestClassifier(class_weight='balanced', n_jobs=-1)),
-        ('AdaBoostClassifier',AdaBoostClassifier()),
-	    ('ExtraTreesClassifier',ExtraTreesClassifier(class_weight='balanced', n_jobs=-1)),
-        ('BalancedRandomForestClassifier',BalancedRandomForestClassifier()),
-        ('GaussianNB',GaussianNB()),
-        ('LinearDiscriminantAnalysis',LinearDiscriminantAnalysis()),
-        ('MLPClassifier',MLPClassifier())
-        #,('EasyEnsembleClassifier',EasyEnsembleClassifier()) 
+        	("DecisionTree", DecisionTreeClassifier(class_weight='balanced')),
+            ("RandomForest", RandomForestClassifier(class_weight='balanced', n_jobs=-1)),
+            ("BalancedRF", BalancedRandomForestClassifier()),
+            ("AdaBoost", AdaBoostClassifier()),
+            ("ExtraTrees", ExtraTreesClassifier(class_weight='balanced', n_jobs=-1)),
+            ("GaussianNB", GaussianNB()),
+            ("LDA", LinearDiscriminantAnalysis()),
+            ("GradientBoost", GradientBoostingClassifier()),
+            ("MLP", MLPClassifier())
         ], cv = 5,
                     stack_method = 'predict_proba',
                     n_jobs=-1,
@@ -130,18 +139,18 @@ if __name__ == "__main__":
                     verbose=1)
     
     
-    with open("../../configs/columns_config.yaml") as fh:
+    with open("../../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    var = 'nssnv'
-    if not os.path.exists('models/'+var):
-        os.makedirs('./models/'+var)
-    output = "models/"+var+"/ML_results_"+var+"_.csv"
+    var = args.var_tag
+    if not os.path.exists('../models/'+var):
+        os.makedirs('../models/'+var)
+    output = "../models/"+var+"/ML_results_"+var+"_.csv"
     #print('Working with '+var+' dataset...', file=open(output, "a"))
     print('Working with '+var+' dataset...')
-    X_train, X_test, Y_train, Y_test, background, feature_names = data_parsing.remote(var,config_dict,output)
+    X_train, X_test, Y_train, Y_test, background, feature_names = data_parsing(var,config_dict,output)
     with open(output, 'a') as f:
         f.write('Model\ttrain_score\tPrecision\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]\n')
-    ray.get(classifier.remote(classifiers, var, X_train, X_test, Y_train, Y_test,  background, feature_names, output))
+    classifier(classifiers, var, X_train, X_test, Y_train, Y_test,  background, feature_names, output)
     gc.collect()
 
