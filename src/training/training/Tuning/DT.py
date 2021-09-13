@@ -241,7 +241,7 @@ if __name__ == '__main__':
         #    'gpu': 1
         #},
         #global_checkpoint_period=np.inf,   # Do not save checkpoints based on time interval
-        checkpoint_freq = 20,        # Save checkpoint every time the checkpoint_score_attr improves
+        checkpoint_freq = 50,        # Save checkpoint every time the checkpoint_score_attr improves
         checkpoint_at_end = True,   
         keep_checkpoints_num = 2,   # Keep only the best checkpoint
         checkpoint_score_attr = 'mean_accuracy', # Metric used to compare checkpoints
@@ -250,7 +250,7 @@ if __name__ == '__main__':
         stop={
             'training_iteration': 1,
         },
-        num_samples=300,
+        num_samples=1000,
         #fail_fast=True,
         queue_trials=True
     )

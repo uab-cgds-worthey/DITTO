@@ -227,10 +227,10 @@ if __name__ == "__main__":
     objective = Objective(X_train, X_val, X_test, Y_train, Y_val, Y_test)
     tensorboard_callback = TensorBoardCallback(f"../tuning/{var}/Neural_network_{var}_logs/", metric_name="accuracy")
     study = optuna.create_study(sampler=TPESampler(**TPESampler.hyperopt_parameters()), study_name= f"Neural_network_{var}", storage = f"sqlite:///../tuning/{var}/Neural_network_{var}.db", #study_name= "Ditto3",
-        direction="maximize", pruner=optuna.pruners.MedianPruner(n_startup_trials=30), load_if_exists=True #, pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
+        direction="maximize", pruner=optuna.pruners.MedianPruner(n_startup_trials=100), load_if_exists=True #, pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
     )
     #study = optuna.load_study(study_name= "Ditto_all", sampler=TPESampler(**TPESampler.hyperopt_parameters()),storage ="sqlite:///Ditto_all.db") # study_name= "Ditto3", 
-    study.optimize(objective, n_trials=300,  callbacks=[tensorboard_callback], n_jobs = -1, gc_after_trial=True) #, n_jobs = -1 timeout=600,
+    study.optimize(objective, n_trials=1000,  callbacks=[tensorboard_callback], n_jobs = -1, gc_after_trial=True) #, n_jobs = -1 timeout=600,
     finish = (time.perf_counter()- start)/120
     #ttime = (finish- start)/120
     print(f'Total time in hrs: {finish}')

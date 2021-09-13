@@ -581,32 +581,32 @@ python slurm-launch.py --exp-name F_3_no_1_nssnv --command "python training/trai
 ```
 Tune all classifier - 
 ```
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_7_0_0_nssnv_$FILE --command "python $FILE -v F_7_0_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_1_0_0_nssnv_$FILE --command "python $FILE -v F_1_0_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_1_005_0_nssnv_$FILE --command "python $FILE -v F_1_005_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_1_0005_0_nssnv_$FILE --command "python $FILE -v F_1_0005_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_1_00005_0_nssnv_$FILE --command "python $FILE -v F_1_00005_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_7_005_0_nssnv_$FILE --command "python $FILE -v F_7_005_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_7_0005_0_nssnv_$FILE --command "python $FILE -v F_7_0005_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_7_00005_0_nssnv_$FILE --command "python $FILE -v F_7_00005_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_1_0_1_nssnv_$FILE --command "python $FILE -v F_1_0_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_7_0_1_nssnv_$FILE --command "python $FILE -v F_7_0_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_1_005_1_nssnv_$FILE --command "python $FILE -v F_1_005_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_1_0005_1_nssnv_$FILE --command "python $FILE -v F_1_0005_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_1_00005_1_nssnv_$FILE --command "python $FILE -v F_1_00005_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_7_005_1_nssnv_$FILE --command "python $FILE -v F_7_005_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_7_0005_1_nssnv_$FILE --command "python $FILE -v F_7_0005_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_7_00005_1_nssnv_$FILE --command "python $FILE -v F_7_00005_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_0_0_nssnv_$FILE --command "python $FILE -v F_3_0_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_005_0_nssnv_$FILE --command "python $FILE -v F_3_005_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_0005_0_nssnv_$FILE --command "python $FILE -v F_3_0005_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_00005_0_nssnv_$FILE --command "python $FILE -v F_3_00005_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_0_1_nssnv_$FILE --command "python $FILE -v F_3_0_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_005_1_nssnv_$FILE --command "python $FILE -v F_3_005_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_0005_1_nssnv_$FILE --command "python $FILE -v F_3_0005_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_00005_1_nssnv_$FILE --command "python $FILE -v F_3_00005_1_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_no_0_nssnv_$FILE --command "python $FILE -v F_3_no_0_nssnv" ; done
-for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_no_1_nssnv_$FILE --command "python $FILE -v F_3_no_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_7_0_0_nssnv_$FILE --command "python $FILE -v F_7_0_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_1_0_0_nssnv_$FILE --command "python $FILE -v F_1_0_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_1_005_0_nssnv_$FILE --command "python $FILE -v F_1_005_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_1_0005_0_nssnv_$FILE --command "python $FILE -v F_1_0005_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_1_00005_0_nssnv_$FILE --command "python $FILE -v F_1_00005_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_7_005_0_nssnv_$FILE --command "python $FILE -v F_7_005_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_7_0005_0_nssnv_$FILE --command "python $FILE -v F_7_0005_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_7_00005_0_nssnv_$FILE --command "python $FILE -v F_7_00005_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_1_0_1_nssnv_$FILE --command "python $FILE -v F_1_0_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_7_0_1_nssnv_$FILE --command "python $FILE -v F_7_0_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_1_005_1_nssnv_$FILE --command "python $FILE -v F_1_005_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_1_0005_1_nssnv_$FILE --command "python $FILE -v F_1_0005_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_1_00005_1_nssnv_$FILE --command "python $FILE -v F_1_00005_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_7_005_1_nssnv_$FILE --command "python $FILE -v F_7_005_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_7_0005_1_nssnv_$FILE --command "python $FILE -v F_7_0005_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_7_00005_1_nssnv_$FILE --command "python $FILE -v F_7_00005_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_0_0_nssnv_$FILE --command "python $FILE -v F_3_0_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_005_0_nssnv_$FILE --command "python $FILE -v F_3_005_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_0005_0_nssnv_$FILE --command "python $FILE -v F_3_0005_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_00005_0_nssnv_$FILE --command "python $FILE -v F_3_00005_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_0_1_nssnv_$FILE --command "python $FILE -v F_3_0_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_005_1_nssnv_$FILE --command "python $FILE -v F_3_005_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_0005_1_nssnv_$FILE --command "python $FILE -v F_3_0005_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_00005_1_nssnv_$FILE --command "python $FILE -v F_3_00005_1_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_no_0_nssnv_$FILE --command "python $FILE -v F_3_no_0_nssnv" ; done
+for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_no_1_nssnv_$FILE --command "python $FILE -v F_3_no_1_nssnv" ; done
 ```
 
 Running Stacking Classifier for different combinations of filters - 
@@ -639,4 +639,4 @@ python slurm-launch.py --exp-name F_3_no_0_nssnv_stacking --command "python trai
 python slurm-launch.py --exp-name F_3_no_1_nssnv_stacking --command "python training/training/stacking.py -v F_3_no_1_nssnv"
 ```
 
-python ../../../slurm-launch.py --num-cpus 20 --mem 200G --partition long -temp ../../../ --exp-name F_3_00005_1_nssnv_stacking --command "python stacking.py -v F_3_00005_1_nssnv"
+python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_00005_1_nssnv_BRF --command "python BRF.py -v F_3_00005_1_nssnv"

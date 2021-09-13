@@ -60,7 +60,7 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
         self.y_train = y_train
         self.y_test = y_test
         self.config = f_unpack_dict(config)
-        self.model = BalancedRandomForestClassifier(random_state=42, n_estimators=self.config.get('n_estimators', 100), criterion=self.config.get('criterion','gini'), max_depth=self.config.get('max_depth', 2), min_samples_split=self.config.get('min_samples_split',2), min_samples_leaf=self.config.get('min_samples_leaf',1), max_features=self.config.get('max_features','sqrt'), oob_score=self.config.get('oob_score',False), class_weight=self.config.get('class_weight','balanced'), n_jobs = -1)
+        self.model = BalancedRandomForestClassifier(random_state=42, n_estimators=self.config.get('n_estimators', 100), criterion=self.config.get('criterion','gini'), max_depth=self.config.get('max_depth', 2), min_samples_split=self.config.get('min_samples_split',2), min_samples_leaf=self.config.get('min_samples_leaf',1), max_features=self.config.get('max_features','sqrt'), oob_score=self.config.get('oob_score',False), class_weight=self.config.get('class_weight','balanced'), n_jobs = 20)
         
 
     def reset_config(self, new_config):
@@ -75,7 +75,7 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
         return True
 
     def step(self):
-        score = cross_validate(self.model, self.x_train, self.y_train, cv=10, n_jobs=-1, verbose=0)
+        score = cross_validate(self.model, self.x_train, self.y_train, cv=10, n_jobs=20, verbose=0)
         testing_score = np.mean(score['test_score'])
         #testing_score = self.model.fit(self.x_train, self.y_train).accuracy_score(self.x_test, self.y_test)
         return {'mean_accuracy': testing_score}
@@ -241,7 +241,7 @@ if __name__ == '__main__':
         #    'gpu': 1
         #},
         #global_checkpoint_period=np.inf,   # Do not save checkpoints based on time interval
-        checkpoint_freq = 20,        # Save checkpoint every time the checkpoint_score_attr improves
+        checkpoint_freq = 50,        # Save checkpoint every time the checkpoint_score_attr improves
         checkpoint_at_end = True,   
         keep_checkpoints_num = 2,   # Keep only the best checkpoint
         checkpoint_score_attr = 'mean_accuracy', # Metric used to compare checkpoints
@@ -250,7 +250,7 @@ if __name__ == '__main__':
         stop={
             'training_iteration': 1,
         },
-        num_samples=300,
+        num_samples=1000,
         #fail_fast=True,
         queue_trials=True
     )

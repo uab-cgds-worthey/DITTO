@@ -16,10 +16,11 @@ from sklearn.preprocessing import label_binarize
 from sklearn.metrics import precision_score, roc_auc_score, accuracy_score, confusion_matrix, recall_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression   #SGDClassifier, 
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, ExtraTreesClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, ExtraTreesClassifier, StackingClassifier
 from sklearn.naive_bayes import GaussianNB
 from imblearn.ensemble import BalancedRandomForestClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from ray.tune.schedulers import AsyncHyperBandScheduler
 import os
 import gc
 import shap
@@ -66,13 +67,13 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
         self.config = f_unpack_dict(config)
         self.model = StackingClassifier(estimators = [
             ('dt', DecisionTreeClassifier(random_state=42, criterion=self.config.get('dt__criterion','gini'), splitter=self.config.get('dt__splitter','best'), max_depth=self.config.get('dt__max_depth', 2), min_samples_split=self.config.get('dt__min_samples_split',2), min_samples_leaf=self.config.get('dt__min_samples_leaf',1), max_features=self.config.get('dt__max_features','sqrt'), class_weight=self.config.get('dt__class_weight','balanced'))),
-            ('rf', RandomForestClassifier(random_state=42, n_estimators=self.config.get('rf__n_estimators', 100), criterion=self.config.get('rf__criterion','gini'), max_depth=self.config.get('rf__max_depth', 2), min_samples_split=self.config.get('rf__min_samples_split',2), min_samples_leaf=self.config.get('rf__min_samples_leaf',1), max_features=self.config.get('rf__max_features','sqrt'), oob_score=self.config.get('rf__oob_score',False), class_weight=self.config.get('rf__class_weight','balanced'), n_jobs = -1)),
-            ('brf', BalancedRandomForestClassifier(random_state=42, n_estimators=self.config.get('brf__n_estimators', 100), criterion=self.config.get('brf__criterion','gini'), max_depth=self.config.get('brf__max_depth', 2), min_samples_split=self.config.get('brf__min_samples_split',2), min_samples_leaf=self.config.get('brf__min_samples_leaf',1), max_features=self.config.get('brf__max_features','sqrt'), oob_score=self.config.get('brf__oob_score',False), class_weight=self.config.get('brf__class_weight','balanced'), n_jobs = -1)),
+            ('rf', RandomForestClassifier(random_state=42, n_estimators=self.config.get('rf__n_estimators', 100), criterion=self.config.get('rf__criterion','gini'), max_depth=self.config.get('rf__max_depth', 2), min_samples_split=self.config.get('rf__min_samples_split',2), min_samples_leaf=self.config.get('rf__min_samples_leaf',1), max_features=self.config.get('rf__max_features','sqrt'), oob_score=self.config.get('rf__oob_score',False), class_weight=self.config.get('rf__class_weight','balanced'), n_jobs = 20)),
+            ('brf', BalancedRandomForestClassifier(random_state=42, n_estimators=self.config.get('brf__n_estimators', 100), criterion=self.config.get('brf__criterion','gini'), max_depth=self.config.get('brf__max_depth', 2), min_samples_split=self.config.get('brf__min_samples_split',2), min_samples_leaf=self.config.get('brf__min_samples_leaf',1), max_features=self.config.get('brf__max_features','sqrt'), oob_score=self.config.get('brf__oob_score',False), class_weight=self.config.get('brf__class_weight','balanced'), n_jobs = 20)),
             ('ada', AdaBoostClassifier(algorithm=self.config.get('ada__algorithm', 'SAMME'), base_estimator=DecisionTreeClassifier(max_depth=self.config.get('ada__max_depth', 1)), learning_rate=self.config.get('ada__learning_rate', 1), n_estimators=self.config.get('ada__n_estimators', 5))),
-            ('et', ExtraTreesClassifier(random_state=42, n_estimators=self.config.get('et__n_estimators', 100), criterion=self.config.get('et__criterion','gini'), max_depth=self.config.get('et__max_depth', 2), min_samples_split=self.config.get('et__min_samples_split',2), min_samples_leaf=self.config.get('et__min_samples_leaf',1), max_features=self.config.get('et__max_features','sqrt'), oob_score=self.config.get('et__oob_score',False), class_weight=self.config.get('et__class_weight','balanced'), n_jobs = -1)),
+            #('et', ExtraTreesClassifier(random_state=42, n_estimators=self.config.get('et__n_estimators', 100), criterion=self.config.get('et__criterion','gini'), max_depth=self.config.get('et__max_depth', 2), min_samples_split=self.config.get('et__min_samples_split',2), min_samples_leaf=self.config.get('et__min_samples_leaf',1), max_features=self.config.get('et__max_features','sqrt'), oob_score=self.config.get('et__oob_score',False), class_weight=self.config.get('et__class_weight','balanced'), n_jobs = 20)),
             ('gnb', GaussianNB(var_smoothing=self.config.get('gnb__var_smoothing', 1e-09))),
-            ('lda', LinearDiscriminantAnalysis(solver=self.config.get('lda__solver', 'svd'), shrinkage=self.config.get('lda__shrinkage', None)))
-            ('gbc', GradientBoostingClassifier(random_state=42, loss=self.config.get('gbc__loss', 100), learning_rate = self.config.get('gbc__learning_rate', 0.1), n_estimators=self.config.get('gbc__n_estimators', 100), subsample=self.config.get('gbc__subsample',1), criterion=self.config.get('gbc__criterion','friedman_mse'), min_samples_split=self.config.get('gbc__min_samples_split',2), min_samples_leaf=self.config.get('gbc__min_samples_leaf',1), max_depth=self.config.get('gbc__max_depth', 2), max_features=self.config.get('gbc__max_features','sqrt'))),
+            #('lda', LinearDiscriminantAnalysis(solver=self.config.get('lda__solver', 'svd'), shrinkage=self.config.get('lda__shrinkage', None))),
+            ('gbc', GradientBoostingClassifier(random_state=42, loss=self.config.get('gbc__loss', 100), learning_rate = self.config.get('gbc__learning_rate', 0.1), n_estimators=self.config.get('gbc__n_estimators', 100), subsample=self.config.get('gbc__subsample',1), criterion=self.config.get('gbc__criterion','friedman_mse'), min_samples_split=self.config.get('gbc__min_samples_split',2), min_samples_leaf=self.config.get('gbc__min_samples_leaf',1), max_depth=self.config.get('gbc__max_depth', 2), max_features=self.config.get('gbc__max_features','sqrt')))
             ],
                     cv = 5,
                     stack_method = 'predict_proba',
@@ -110,14 +111,14 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
         self.ada__max_depth = new_config['ada__max_depth']
         self.ada__learning_rate = new_config['ada__learning_rate']
         self.ada__n_estimators = new_config['ada__n_estimators']
-        self.et__n_estimators = new_config['et__n_estimators']
-        self.et__min_samples_split = new_config['et__min_samples_split']
-        self.et__min_samples_leaf = new_config['et__min_samples_leaf']
-        self.et__criterion = new_config['et__criterion']
-        self.et__max_features = new_config['et__max_features']
-        self.et__class_weight = new_config['et__class_weight']
+        #self.et__n_estimators = new_config['et__n_estimators']
+        #self.et__min_samples_split = new_config['et__min_samples_split']
+        #self.et__min_samples_leaf = new_config['et__min_samples_leaf']
+        #self.et__criterion = new_config['et__criterion']
+        #self.et__max_features = new_config['et__max_features']
+        #self.et__class_weight = new_config['et__class_weight']
         self.gnb__var_smoothing = new_config['gnb__var_smoothing']
-        self.lda__solver = new_config['lda__solver']
+        #self.lda__solver = new_config['lda__solver']
         #self.lda_shrinkage = new_config['lda_shrinkage']
         self.gbc__loss = new_config['gbc__loss']
         self.gbc__learning_rate = new_config['gbc__learning_rate']
@@ -140,7 +141,7 @@ class stacking(Trainable):  #https://docs.ray.io/en/master/hp/examples/pbt_hp_ci
     def step(self):
         #score = cross_validate(self.model, self.x_train, self.y_train, cv=3, n_jobs=-1, verbose=0)
         #testing_score = np.max(score['test_score'])
-        testing_score = self.model.fit(self.x_train, self.y_train).accuracy_score(self.x_test, self.y_test)
+        testing_score = self.model.fit(self.x_train, self.y_train).score(self.x_test, self.y_test)
         return {'mean_accuracy': testing_score}
 
     def save_checkpoint(self, checkpoint_dir):
@@ -168,10 +169,10 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
             ('rf', RandomForestClassifier(random_state=42, n_estimators=config.get('rf__n_estimators', 100), criterion=config.get('rf__criterion','gini'), max_depth=config.get('rf__max_depth', 2), min_samples_split=config.get('rf__min_samples_split',2), min_samples_leaf=config.get('rf__min_samples_leaf',1), max_features=config.get('rf__max_features','sqrt'), oob_score=config.get('rf__oob_score',False), class_weight=config.get('rf__class_weight','balanced'), n_jobs = -1)),
             ('brf', BalancedRandomForestClassifier(random_state=42, n_estimators=config.get('brf__n_estimators', 100), criterion=config.get('brf__criterion','gini'), max_depth=config.get('brf__max_depth', 2), min_samples_split=config.get('brf__min_samples_split',2), min_samples_leaf=config.get('brf__min_samples_leaf',1), max_features=config.get('brf__max_features','sqrt'), oob_score=config.get('brf__oob_score',False), class_weight=config.get('brf__class_weight','balanced'), n_jobs = -1)),
             ('ada', AdaBoostClassifier(algorithm=config.get('ada__algorithm', 'SAMME'), base_estimator=DecisionTreeClassifier(max_depth=config.get('ada__max_depth', 1)), learning_rate=config.get('ada__learning_rate', 1), n_estimators=config.get('ada__n_estimators', 5))),
-            ('et', ExtraTreesClassifier(random_state=42, n_estimators=config.get('et__n_estimators', 100), criterion=config.get('et__criterion','gini'), max_depth=config.get('et__max_depth', 2), min_samples_split=config.get('et__min_samples_split',2), min_samples_leaf=config.get('et__min_samples_leaf',1), max_features=config.get('et__max_features','sqrt'), oob_score=config.get('et__oob_score',False), class_weight=config.get('et__class_weight','balanced'), n_jobs = -1)),
+            #('et', ExtraTreesClassifier(random_state=42, n_estimators=config.get('et__n_estimators', 100), criterion=config.get('et__criterion','gini'), max_depth=config.get('et__max_depth', 2), min_samples_split=config.get('et__min_samples_split',2), min_samples_leaf=config.get('et__min_samples_leaf',1), max_features=config.get('et__max_features','sqrt'), oob_score=config.get('et__oob_score',False), class_weight=config.get('et__class_weight','balanced'), n_jobs = -1)),
             ('gnb', GaussianNB(var_smoothing=config.get('gnb__var_smoothing', 1e-09))),
-            ('lda', LinearDiscriminantAnalysis(solver=config.get('lda__solver', 'svd'), shrinkage=config.get('lda__shrinkage', None)))
-            ('gbc', GradientBoostingClassifier(random_state=42, loss=config.get('gbc__loss', 100), learning_rate = config.get('gbc__learning_rate', 0.1), n_estimators=config.get('gbc__n_estimators', 100), subsample=config.get('gbc__subsample',1), criterion=config.get('gbc__criterion','friedman_mse'), min_samples_split=config.get('gbc__min_samples_split',2), min_samples_leaf=config.get('gbc__min_samples_leaf',1), max_depth=config.get('gbc__max_depth', 2), max_features=config.get('gbc__max_features','sqrt'))),
+            #('lda', LinearDiscriminantAnalysis(solver=config.get('lda__solver', 'svd'), shrinkage=config.get('lda__shrinkage', None))),
+            ('gbc', GradientBoostingClassifier(random_state=42, loss=config.get('gbc__loss', 100), learning_rate = config.get('gbc__learning_rate', 0.1), n_estimators=config.get('gbc__n_estimators', 100), subsample=config.get('gbc__subsample',1), criterion=config.get('gbc__criterion','friedman_mse'), min_samples_split=config.get('gbc__min_samples_split',2), min_samples_leaf=config.get('gbc__min_samples_leaf',1), max_depth=config.get('gbc__max_depth', 2), max_features=config.get('gbc__max_features','sqrt')))
             ],
                     cv = 5,
                     stack_method = 'predict_proba',
@@ -182,7 +183,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     #score = cross_validate(clf, x_train, y_train, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=42), return_train_score=True, return_estimator=True, n_jobs=-1, verbose=0)
     clf_name = "StackingClassifier"
     train_score = clf.score(x_train, y_train)
-    with open(f'../tuning/{var}/{clf_name}_{var}.joblib', 'wb') as f:
+    with open(f'../tuning/{var}/{clf_name}_tuned_{var}.joblib', 'wb') as f:
      dump(clf, f, compress='lz4')
     #training_score = np.mean(score['train_score'])
     #testing_score = np.mean(score['test_score'])
@@ -190,7 +191,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     prc = precision_score(y_test,y_score, average='weighted')
     recall  = recall_score(y_test,y_score, average='weighted')
     roc_auc = roc_auc_score(y_test, y_score)
-    accuracy = accuracy_score(y_test, y_score)
+    accuracy = score(y_test, y_score)
     matrix = confusion_matrix(y_test, y_score)
     finish = (time.perf_counter()-start1)/60
     #print(f'RandomForestClassifier: \nCross_validate(avg_train_score): {training_score}\nCross_validate(avg_test_score): {testing_score}\nPrecision: {prc}\nRecall: {recall}\nROC_AUC: {roc_auc}\nAccuracy: {accuracy}\nTime(in min): {finish}\nConfusion Matrix:\n{matrix}', file=open(output, 'a'))
@@ -207,7 +208,7 @@ def results(config,x_train, x_test, y_train, y_test, var, output, feature_names)
     shap_values = explainer.shap_values(background)
     plt.figure()
     shap.summary_plot(shap_values, background, feature_names, show=False)
-    plt.savefig(f'../tuning/{var}/{clf_name}_{var}_features.pdf', format='pdf', dpi=1000, bbox_inches='tight')
+    plt.savefig(f'../tuning/{var}/{clf_name}_tuned_{var}_features.pdf', format='pdf', dpi=1000, bbox_inches='tight')
     del background, explainer, feature_names
     print(f'training and testing done!')
     return None
@@ -323,21 +324,21 @@ if __name__ == '__main__':
             "ada__algorithm" : hp.choice('ada__algorithm', ['SAMME','SAMME.R']),
             'ada__learning_rate' : hp.loguniform('ada__learning_rate', 0.00001, 1.0),
             'ada__max_depth' : hp.randint('ada__max_depth', 2, 500),
-        #ExtraTrees - 
-            "et__n_estimators" : hp.randint("et__n_estimators", 1, 500),
-            "et__min_samples_split" : hp.randint("et__min_samples_split", 2, 100),
-            "et__min_samples_leaf" : hp.randint("et__min_samples_leaf", 1, 100),
-            "et__criterion" : hp.choice("et__criterion", ["gini", "entropy"]),
-            "et__max_features" : hp.choice("et__max_features", ["sqrt", "log2"]),
-            "et__class_weight" : hp.choice("et__class_weight", ["balanced", "balanced_subsample"]),
+        ##ExtraTrees - 
+        #    "et__n_estimators" : hp.randint("et__n_estimators", 1, 500),
+        #    "et__min_samples_split" : hp.randint("et__min_samples_split", 2, 100),
+        #    "et__min_samples_leaf" : hp.randint("et__min_samples_leaf", 1, 100),
+        #    "et__criterion" : hp.choice("et__criterion", ["gini", "entropy"]),
+        #    "et__max_features" : hp.choice("et__max_features", ["sqrt", "log2"]),
+        #    "et__class_weight" : hp.choice("et__class_weight", ["balanced", "balanced_subsample"]),
         #GaussianNB - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html#sklearn.naive_bayes.GaussianNB
             'gnb__var_smoothing' : hp.loguniform('gnb__var_smoothing', 1e-11, 1e-1),
-        #LinearDiscriminantAnalysis - https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis
-            'lda__solver': hp.choice('lda__solver', [
-                                 {'lda__solver':'svd'},
-                                 {'lda__solver':'lsqr','lda__shrinkage':hp.choice('shrinkage_type_lsqr', ['auto', hp.uniform('shrinkage_value_lsqr', 0, 1)])}
-                                ,{'lda__solver':'eigen','lda__shrinkage':hp.choice('shrinkage_type_eigen', ['auto', hp.uniform('shrinkage_value_eigen', 0, 1)])}
-                                ]),
+        ##LinearDiscriminantAnalysis - https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis
+        #    'lda__solver': hp.choice('lda__solver', [
+        #                         {'lda__solver':'svd'},
+        #                         {'lda__solver':'lsqr','lda__shrinkage':hp.choice('shrinkage_type_lsqr', ['auto', hp.uniform('shrinkage_value_lsqr', 0, 1)])}
+        #                        ,{'lda__solver':'eigen','lda__shrinkage':hp.choice('shrinkage_type_eigen', ['auto', hp.uniform('shrinkage_value_eigen', 0, 1)])}
+        #                        ]),
         #GradientBoostingClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier
             'gbc__loss' : hp.choice('gbc__loss', ['deviance', 'exponential']),
             'gbc__learning_rate': hp.loguniform('gbc__learning_rate', 0.01, 1.0),
@@ -379,7 +380,7 @@ if __name__ == '__main__':
         #    'gpu': 1
         #},
         #global_checkpoint_period=np.inf,   # Do not save checkpoints based on time interval
-        checkpoint_freq = 20,        # Save checkpoint every time the checkpoint_score_attr improves
+        checkpoint_freq = 50,        # Save checkpoint every time the checkpoint_score_attr improves
         checkpoint_at_end = True,   
         keep_checkpoints_num = 2,   # Keep only the best checkpoint
         checkpoint_score_attr = 'mean_accuracy', # Metric used to compare checkpoints
@@ -388,7 +389,7 @@ if __name__ == '__main__':
         stop={
             'training_iteration': 1,
         },
-        num_samples=1000,
+        num_samples=1500,
         #fail_fast=True,
         queue_trials=True
     )
