@@ -50,3 +50,8 @@ Extract Class information for all these variants -
     `python extract_class.py`
 Filter, stats and prep the data - 
     `python filter.py`
+
+
+
+
+bcftools annotate  -e'ALT="*" || type!="snp"'  CAGI6_RGP_TRAIN_11_PROBAND_vep-annotated.vcf.gz -Oz -o CAGI6_RGP_TRAIN_11_PROBAND_vep-annotated_filtered.vcf.gz

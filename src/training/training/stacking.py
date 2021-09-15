@@ -91,6 +91,9 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test, background,feature_nam
    #score = clf.score(X_train, Y_train)
    #matrix = confusion_matrix(np.argmax(Y_test, axis=1), np.argmax(y_score, axis=1))
    matrix = confusion_matrix(Y_test, y_score)
+   finish = (time.perf_counter()-start)/60
+   with open(output, 'a') as f:
+        f.write(f"{clf_name}\t{train_score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}\n")
 
    # explain all the predictions in the test set
    #background = shap.kmeans(X_train, 6)
@@ -102,9 +105,6 @@ def classifier(clf,var, X_train, X_test, Y_train, Y_test, background,feature_nam
    shap.summary_plot(shap_values, background, feature_names, show=False)
    #shap.plots.waterfall(shap_values[0], max_display=15)
    plt.savefig(f"../models/{var}/{clf_name}_{var}_features.pdf", format='pdf', dpi=1000, bbox_inches='tight')
-   finish = (time.perf_counter()-start)/60
-   with open(output, 'a') as f:
-        f.write(f"{clf_name}\t{train_score}\t{prc}\t{recall}\t{roc_auc}\t{accuracy}\t{finish}\n{matrix}\n")
    return None
 
 
@@ -126,11 +126,11 @@ if __name__ == "__main__":
             ("RandomForest", RandomForestClassifier(class_weight='balanced', n_jobs=-1)),
             ("BalancedRF", BalancedRandomForestClassifier()),
             ("AdaBoost", AdaBoostClassifier()),
-            ("ExtraTrees", ExtraTreesClassifier(class_weight='balanced', n_jobs=-1)),
+            #("ExtraTrees", ExtraTreesClassifier(class_weight='balanced', n_jobs=-1)),
             ("GaussianNB", GaussianNB()),
-            ("LDA", LinearDiscriminantAnalysis()),
+            #("LDA", LinearDiscriminantAnalysis()),
             ("GradientBoost", GradientBoostingClassifier()),
-            ("MLP", MLPClassifier())
+            #("MLP", MLPClassifier())
         ], cv = 5,
                     stack_method = 'predict_proba',
                     n_jobs=-1,

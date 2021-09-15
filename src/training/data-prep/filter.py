@@ -96,6 +96,9 @@ def fill_na(df,config_dict, column_info, stats, list_tag): #(config_dict,df):
         if list_tag[4] == 1:
             df = df.drop(config_dict['gnomad_columns'], axis=1)
             df=df.fillna(df.median())
+            if 'train' in stats:
+                print('\nColumns:\t', df.columns.values.tolist(), file=open(stats, "a"))
+                print('\nMedian values:\t', df.median().values.tolist(), file=open(stats, "a"))
         else:
             pass
     else:
@@ -103,6 +106,9 @@ def fill_na(df,config_dict, column_info, stats, list_tag): #(config_dict,df):
         if list_tag[4] == 1:
             df = df.drop(config_dict['gnomad_columns'], axis=1)
             df1=df.fillna(df.median())
+            if 'train' in stats:
+                print('\nColumns:\t', df.columns.values.tolist(), file=open(stats, "a"))
+                print('\nMedian values:\t', df.median().values.tolist(), file=open(stats, "a"))
         else:
             df1 = pd.DataFrame()
 
