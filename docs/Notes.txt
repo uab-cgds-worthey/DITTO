@@ -641,7 +641,9 @@ python slurm-launch.py --exp-name F_3_no_1_nssnv_stacking --command "python trai
 
 python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_00005_1_nssnv_stacking --command "python stacking.py -v F_3_00005_1_nssnv"
 
+cp /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/annotated_vcf/train/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated.vcf.gz ./
+module load BCFtools
+bcftools annotate  -e'ALT="*" || type!="snp"'  CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated.vcf.gz -Oz -o CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.vcf.gz
+python slurm-launch.py --exp-name testing --command "python Ditto/filter.py -v T_12_3_0_1_nssnv -i ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.tsv" 
 
-python slurm-launch.py --exp-name testing --command "python Ditto/filter.py -v T_3_0_1_nssnv -i ../data/processed/testing/CAGI6_RGP_TRAIN_11_PROBAND_vep-annotated_filtered.tsv" 
-
-python slurm-launch.py --exp-name testing --command "python Ditto/predict.py  -i ../data/processed/testing/T_3_0_1_nssnv/data-T_3_0_1_nssnv.csv -o ../data/processed/testing/T_3_0_1_nssnv/predictions.csv -o5 ../data/processed/testing/T_3_0_1_nssnv/predictions_500.csv" 
+python slurm-launch.py --exp-name testing --command "python Ditto/predict.py  -i ../data/processed/testing/T_12_3_0_1_nssnv/data-T_12_3_0_1_nssnv.csv -o ../data/processed/testing/T_12_3_0_1_nssnv/predictions.csv -o5 ../data/processed/testing/T_12_3_0_1_nssnv/predictions_500.csv" 
