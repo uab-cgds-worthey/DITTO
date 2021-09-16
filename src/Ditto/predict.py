@@ -29,6 +29,10 @@ parser.add_argument(
     type=str,
     required=True,
     help="Output csv file with path for Top 500 variants")
+parser.add_argument(
+    "--gene",
+    type=str,
+    help="Check index of gene of interest")
 args = parser.parse_args()
 
 #os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
@@ -66,12 +70,16 @@ overall = overall.merge(X,on='ID')
 #overall['hazel'] = X['Gene.refGene'].map(config_dict)
 del X, pred, y_score, clf
 overall.drop_duplicates(inplace=True)
-overall = overall.reset_index(drop=True)
+#overall = overall.reset_index(drop=True)
+#overall.sort_values('pred_Benign', ascending=False).head(500).to_csv(args.output500, index=False)
 overall = overall.sort_values('pred_Pathogenic', ascending=False)
+overall = overall.reset_index(drop=True)
+#genes = overall['SYMBOL_x'].drop_duplicates().reset_index(drop=True)
+#genes.to_csv(args.output500)
 overall.head(500).to_csv(args.output500, index=False)
 #overall = overall.sort_values([ 'CHROM', 'POS'])
 #columns = overall.columns
 print('writing to database...')
 overall.to_csv(args.output, index=False)
-
+print(f"Index of {args.gene}: {overall.loc[overall['SYMBOL_x'] == args.gene].index}")
 print('Database storage complete!')
