@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#python slurm-launch.py --exp-name no_null --command "python training/data-prep/filter.py --var-tag no_null_nssnv --cutoff 1" --mem 50G
-
+#python slurm-launch.py --exp-name testing --command "python Ditto/filter.py -i ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.tsv -O ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND" 
+    
 import pandas as pd
 pd.set_option('display.max_rows', None)
 import numpy as np
@@ -53,7 +53,7 @@ def extract_col(config_dict,df, stats):
     # CLNREVSTAT, CLNVC, MC
     return df
 
-def fill_na(df,config_dict, column_info, stats, var_info): #(config_dict,df):
+def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
 
     var = df[config_dict['var']]
     df = df.drop(config_dict['var'], axis=1)
@@ -104,7 +104,7 @@ def fill_na(df,config_dict, column_info, stats, var_info): #(config_dict,df):
     
     fig= plt.figure(figsize=(20, 15))
     sns.heatmap(df.corr(),fmt='.2g',cmap= 'coolwarm') # annot = True, 
-    plt.savefig(f"{var_info}/correlation_{var_info}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+    plt.savefig(f"correlation_plot.pdf", format='pdf', dpi=1000, bbox_inches='tight')
 
     #df.dropna(axis=1, how='all', inplace=True)
     df['ID'] = [f'var_{num}' for num in range(len(df))]
@@ -112,7 +112,7 @@ def fill_na(df,config_dict, column_info, stats, var_info): #(config_dict,df):
     df = pd.concat([var.reset_index(drop=True), df], axis=1)
     return df
 
-def main(df, config_f, stats,column_info, null_info, var):
+def main(df, config_f, stats,column_info, null_info):
     # read QA config file
     config_dict = get_col_configs(config_f)
     print('Config file loaded!')
@@ -124,51 +124,51 @@ def main(df, config_f, stats,column_info, null_info, var):
     df.isnull().sum(axis = 0).to_csv(null_info)
     #df.drop_duplicates()
     df.dropna(axis=1, how='all', inplace=True)
-    df = fill_na(df,config_dict,column_info, stats, var)
+    df = fill_na(df,config_dict,column_info, stats)
     return df
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--var-tag",
-        "-v",
+        "--out-dir",
+        "-O",
         type=str,
         required=True,
-        default='nssnv',
-        help="The tag used when generating train/test data. Default:'nssnv'")
+        help="File path to output directory")
+    parser.add_argument(
+        "--output",
+        "-o",
+        type=str,
+        default="data.csv",
+        help="Output File name. (Default: data.csv)")
     parser.add_argument(
         "--input",
         "-i",
         type=str,
         required=True,
-        help="Input file")
+        help="Input file with path")
 
     args = parser.parse_args()
-
-    var = args.var_tag
 
     print('Loading data...')
     var_f = pd.read_csv(args.input, sep='\t')
     print('Data Loaded !....')
 
-    if not os.path.exists('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/testing/'):
-            os.makedirs('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/testing/')
-    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/testing/')
+    config_f = "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/configs/testing.yaml"
 
-    config_f = "../../../configs/testing.yaml"
-
-    if not os.path.exists(var):
-        os.makedirs(var)
-    stats = var+"/stats_"+var+".csv"
+    if not os.path.exists(args.out_dir):
+        os.makedirs(args.out_dir)
+    os.chdir(args.out_dir)
+    stats = "stats_nssnv.csv"
     #print("Filtering "+var+" variants with at-least 50 percent data for each variant...")
-    column_info = var+"/"+var+'_columns.csv'
-    null_info = var+"/Nulls_"+var+'.csv'
-    df = main(var_f, config_f, stats, column_info, null_info, var)
+    column_info = 'columns.csv'
+    null_info = "Nulls.csv"
+    df = main(var_f, config_f, stats, column_info, null_info)
 
     
     print('\nData shape (After filtering) =', df.shape, file=open(stats, "a"))
     print('writing to csv...')
-    df.to_csv(var+'/'+'data-'+var+'.csv', index=False)
+    df.to_csv(args.output, index=False)
     del df
 
