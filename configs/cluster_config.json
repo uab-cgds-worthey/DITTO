@@ -1,0 +1,12 @@
+{
+    "__default__": {
+        "ntasks": 1,
+        "partition": "express",
+        "cpus-per-task": "{threads}",
+        "mem-per-cpu": "4G",
+        "output": "logs/rule_logs/{rule}-%j.log"
+    }
+    // "annotate_vcf": {
+    //     "partition": "short",
+    // }
+}

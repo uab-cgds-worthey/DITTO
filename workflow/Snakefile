@@ -1,0 +1,98 @@
+from pathlib import Path
+
+
+WORKFLOW_PATH = Path(workflow.basedir).parent
+
+
+configfile:  WORKFLOW_PATH / "configs/workflow_config.yaml"
+
+
+ANNOTATED_VCF_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/annotated_vcf")
+PROCESSED_DIR = Path("data/processed")
+
+SAMPLE_LIST = config["samples"]
+
+
+wildcard_constraints:
+    sample="|".join(SAMPLE_LIST) #"TRAIN_12|TRAIN_13"
+
+
+rule all:
+    input:
+        #TODO: specify all important output files here
+        expand(str(PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND_vep-annotated_filtered.vcf.gz"), sample=SAMPLE_LIST),
+        expand(str(PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND_vep-annotated_filtered.tsv"), sample=SAMPLE_LIST),
+        expand(str(PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/predictions.csv"), sample=SAMPLE_LIST),
+
+
+rule filter_variants:
+    input:
+        vcf = ANNOTATED_VCF_DIR / "train/CAGI6_RGP_{sample}_PROBAND_vep-annotated.vcf.gz"
+    output:
+        abc = PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND_vep-annotated_filtered.vcf.gz"
+    message:
+        "Filter variants from vcf: {wildcards.sample}"
+    conda:
+        str(WORKFLOW_PATH / "configs/envs/bcftools.yaml")
+    # threads: 2
+    shell:
+        r"""
+        bcftools annotate \
+            -e'ALT="*" || type!="snp"' \
+            {input.vcf} \
+            -Oz \
+            -o {output.abc}
+        """
+
+
+rule parse_annotated_vars:
+    input:
+        PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND_vep-annotated_filtered.vcf.gz"
+    output:
+        PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND_vep-annotated_filtered.tsv"
+    conda:
+        str(WORKFLOW_PATH / "configs/environment.yaml")
+    shell:
+        r"""
+        python annotation_parsing/parse_annotated_vars.py \
+            -i {input} \
+            -o {output}
+        """
+
+rule ditto_filter:
+    input:
+        PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND_vep-annotated_filtered.tsv"
+    output:
+        col = PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/columns.tsv",
+        data = PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/data.csv",
+        nulls = PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/Nulls.csv",
+    conda:
+        str(WORKFLOW_PATH / "configs/environment.yaml")
+    params:
+        outdir = lambda wildcards, output: Path(output['col']).parent
+    shell:
+        r"""
+        python src/Ditto/filter.py \
+            -i {input} \
+            -O {params.outdir}
+        """
+
+
+rule ditto_predict:
+    input:
+        data = PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/data.csv",
+    output:
+        pred = PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/predictions.csv",
+        pred_500 = PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/predictions_500.csv"
+    params:
+        variant="chrX,101412604,C,T"
+    shell:
+        r"""
+        python src/Ditto/predict.py  \
+            -i {input.data} \
+            -o {output.pred} \
+            -o5 {output.pred_500} \
+            --variant {params.variant}
+        """
+
+
