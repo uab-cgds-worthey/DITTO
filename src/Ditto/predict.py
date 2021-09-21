@@ -95,7 +95,7 @@ if __name__ == "__main__":
         if variants != "":
                 #print('Finding the rank....')
                 with open("Ditto_ranking.csv", 'a') as f:
-                    f.write(f"{args.input}: {variants}: {((genes.loc[(genes['Chromosome_x'] == variants[0]) & (genes['Position_x'] == int(variants[1])) & (genes['Alternate Allele_x'] == variants[3]) & (genes['Reference Allele_x'] == variants[2])].index)+1).tolist()}")
+                    f.write(f"{args.input}, {variants}, {((genes.loc[(genes['Chromosome_x'] == variants[0]) & (genes['Position_x'] == int(variants[1])) & (genes['Alternate Allele_x'] == variants[3]) & (genes['Reference Allele_x'] == variants[2])].index)+1).tolist()}")
     
                 #print(f"Index/Rank of {variants}: {((genes.loc[(genes['Chromosome_x'] == variants[0]) & (genes['Position_x'] == int(variants[1])) & (genes['Alternate Allele_x'] == variants[3]) & (genes['Reference Allele_x'] == variants[2])].index)+1).tolist()}", ) 
 

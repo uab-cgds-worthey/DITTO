@@ -70,8 +70,8 @@ rule ditto_filter:
     input:
         PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.tsv"
     output:
-        col = PROCESSED_DIR /  "{train_test}" / "{sample}/columns.tsv",
-        data = PROCESSED_DIR /  "{train_test}" / "{sample}/data.csv",
+        col = PROCESSED_DIR /  "{train_test}" / "{sample}/columns.csv",
+        data = PROCESSED_DIR /  "{train_test}" / "{sample}" / "data.csv",
         nulls = PROCESSED_DIR /  "{train_test}" / "{sample}/Nulls.csv",
         stats = PROCESSED_DIR /  "{train_test}" / "{sample}/stats_nssnv.csv",
         plot = PROCESSED_DIR /  "{train_test}" / "{sample}/correlation_plot.pdf",
@@ -80,7 +80,7 @@ rule ditto_filter:
     conda:
         str(WORKFLOW_PATH / "configs/envs/testing.yaml")
     params:
-        outdir = lambda wildcards, output: Path(output['col']).parent
+        outdir = lambda wildcards, output: Path(output['data']).parent
     shell:
         r"""
         python src/Ditto/filter.py \

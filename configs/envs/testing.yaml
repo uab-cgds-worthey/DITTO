@@ -16,6 +16,7 @@ dependencies:
   - pip=21.2.4
   - bioconda::snakefmt==0.4.0
   - bioconda::snakemake==6.0.5
+  - seaborn=0.11.2
   - gpy
   - pip:
     - lz4==3.1.3

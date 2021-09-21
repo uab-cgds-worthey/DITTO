@@ -3,13 +3,13 @@
 #SBATCH --output=logs/predict_variant_score-%j.log
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=4G
-#SBATCH --partition=long
+#SBATCH --partition=short
 
 set -euo pipefail
 
 module reset
 module load Anaconda3/2020.11
-conda activate rgp
+conda activate testing
 
 mkdir -p "logs/rule_logs"
 

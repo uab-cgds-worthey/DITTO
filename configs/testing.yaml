@@ -7,7 +7,6 @@ columns:
   -  Consequence
   -  IMPACT
   -  SYMBOL
-  -  Gene
   -  Feature
   -  BIOTYPE
   -  SIFT
@@ -79,7 +78,6 @@ ML_VAR:
   -  SYMBOL
   -  Feature
   -  Consequence
-  -  Gene
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
   -  Chromosome
@@ -92,7 +90,6 @@ var:
   -  SYMBOL
   -  Feature
   -  Consequence
-  -  Gene
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
   -  Chromosome

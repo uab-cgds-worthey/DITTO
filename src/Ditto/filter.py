@@ -137,12 +137,6 @@ if __name__ == "__main__":
         required=True,
         help="File path to output directory")
     parser.add_argument(
-        "--output",
-        "-o",
-        type=str,
-        default="data.csv",
-        help="Output File name. (Default: data.csv)")
-    parser.add_argument(
         "--input",
         "-i",
         type=str,
@@ -169,6 +163,6 @@ if __name__ == "__main__":
     
     print('\nData shape (After filtering) =', df.shape, file=open(stats, "a"))
     print('writing to csv...')
-    df.to_csv(args.output, index=False)
+    df.to_csv("data.csv", index=False)
     del df
 
