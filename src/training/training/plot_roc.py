@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import time
 import warnings
+import argparse
 warnings.simplefilter("ignore")
 from joblib import dump, load
 #from sklearn.preprocessing import StandardScaler
@@ -21,7 +22,7 @@ import matplotlib.pyplot as plt
 import yaml
 import gc
 import os
-os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test/')
+
 
 TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
@@ -46,6 +47,8 @@ def data_parsing(var,config_dict):
 
 
 if __name__ == "__main__":
+    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test/')
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--var-tag",
@@ -76,17 +79,19 @@ if __name__ == "__main__":
     with open("../../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
-    if not os.path.exists('../tuning/'+var):
-        os.makedirs('../tuning/'+var)
+    if not os.path.exists('../models/'+var):
+        os.makedirs('../models/'+var)
         
     print('Working with '+var+' dataset...')
     X_test,Y_test= data_parsing(var,config_dict)
 
     # prepare plots
     fig, [ax_roc, ax_prc] = plt.subplots(1, 2, figsize=(20, 10))
+    fig.suptitle(f"Model performances on Testing data", fontsize=20)
 
     for name in classifiers:
-        with open(f"../tuning/{var}/{name}_{var}.joblib", 'rb') as f:
+        
+        with open(f"../models/{var}/{name}_{var}.joblib", 'rb') as f:
             clf = load(f)
         
         plot_precision_recall_curve(clf, X_test, Y_test, ax=ax_prc, name=name)
@@ -99,7 +104,7 @@ if __name__ == "__main__":
     ax_prc.grid(linestyle='--')
 
     plt.legend()
-    plt.title('Model performances on Testing data with filters ()')
-    plt.savefig(f"../tuning/{var}/tuned_roc_{var}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
+    plt.savefig(f"../models/{var}/roc_{var}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
     gc.collect()
+
 
