@@ -28,6 +28,7 @@ dask-worker-space/
 *.db
 *.py*.sh
 *.tsv
+*.csv
 *.gz*
 
 
