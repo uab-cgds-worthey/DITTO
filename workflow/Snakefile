@@ -96,20 +96,21 @@ rule ditto_predict:
     output:
         pred = PROCESSED_DIR /  "{train_test}" / "{sample}" / "predictions.csv",
         pred_500 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "predictions_500.csv"
-    message:
-        "Run Ditto predictions: {wildcards.sample}"
+    #message:
+    #    "Run Ditto predictions: {wildcards.sample}"
     conda:
         str(WORKFLOW_PATH / "configs/envs/testing.yaml")
-    params:
-        variant= lambda wildcards, output: 'Chr' + str(config['train']['CAGI6_RGP_TRAIN_1_MOTHER']['solves'][0]["Chrom"]) + ',' + str(config['train']['CAGI6_RGP_TRAIN_1_MOTHER']['solves'][0]["Pos"]) + ',' + config['train']['CAGI6_RGP_TRAIN_1_MOTHER']['solves'][0]["Ref"] + ',' + config['train']['CAGI6_RGP_TRAIN_1_MOTHER']['solves'][0]["Alt"]
+    #params:
+        
+    #    variant= lambda wildcards: str('Chr' + str(config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Chrom"]) + ',' + str(config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Pos"]) + ',' + config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Ref"] + ',' + config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Alt"])
     shell:
         r"""
         python src/Ditto/predict.py  \
             -i {input.data} \
-            -ep {input.exomiser}
+            -ep {input.exomiser} \
             -o {output.pred} \
-            -o5 {output.pred_500} \
-            --variant {params.variant}
+            -o5 {output.pred_500} 
+
         """
 
-
+     #       --variant {params.variant}

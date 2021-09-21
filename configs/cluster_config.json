@@ -7,6 +7,6 @@
         "output": "logs/rule_logs/{rule}-%j.log"
     },
      "ditto_filter": {
-        "mem-per-cpu": "150G",
+        "mem-per-cpu": "150G"
      }
 }

@@ -42,7 +42,7 @@ if __name__ == "__main__":
             help="Check index/rank of variant of interest. Format: chrX,101412604,C,T")
         args = parser.parse_args()
 
-        variants = args.variant.split(',')
+        
         #print("Loading data....")
 
         with open("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/configs/testing.yaml") as fh:
@@ -92,7 +92,8 @@ if __name__ == "__main__":
         
         genes = genes.drop_duplicates(subset=['SYMBOL_x','Chromosome_x','Position_x','Alternate Allele_x','Reference Allele_x'], keep='first').reset_index(drop=True)
 
-        if variants != "":
+        if args.variant:
+                variants = args.variant.split(',')
                 #print('Finding the rank....')
                 with open("Ditto_ranking.csv", 'a') as f:
                     f.write(f"{args.input}, {variants}, {((genes.loc[(genes['Chromosome_x'] == variants[0]) & (genes['Position_x'] == int(variants[1])) & (genes['Alternate Allele_x'] == variants[3]) & (genes['Reference Allele_x'] == variants[2])].index)+1).tolist()}")
