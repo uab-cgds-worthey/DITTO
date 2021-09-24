@@ -79,7 +79,7 @@ if __name__ == "__main__":
         overall.to_csv(args.output, index=False)
         #print('Database storage complete!')
 
-        overall = overall.drop_duplicates(subset=['SYMBOL','Chromosome','Position','Alternate Allele','Reference Allele'], keep='first').reset_index(drop=True)
+        overall = overall.drop_duplicates(subset=['Chromosome','Position','Alternate Allele','Reference Allele'], keep='first').reset_index(drop=True)
         overall = overall[['PROBANDID','Chromosome','Position','Reference Allele','Alternate Allele','Ditto_Deleterious','SD','C']]
         overall.columns = ['PROBANDID','CHROM','POS','REF','ALT','P','SD','C']
         overall.head(100).to_csv(args.output100, index=False, sep=':')
