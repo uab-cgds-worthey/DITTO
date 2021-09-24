@@ -10,6 +10,6 @@
         "mem-per-cpu": "150G"
      },
      "combine_scores": {
-        "mem-per-cpu": "50G"
+        "mem-per-cpu": "40G"
      }
 }

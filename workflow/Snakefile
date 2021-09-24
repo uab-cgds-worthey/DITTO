@@ -37,7 +37,7 @@ rule filter_variants:
     input:
         ANNOTATED_VCF_DIR /  "{train_test}" / "{sample}_vep-annotated.vcf.gz"
     output:
-        PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.vcf.gz" 
+        PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.vcf.gz"
     message:
         "Filter variants from vcf using BCFTools: {wildcards.sample}"
     conda:
@@ -55,7 +55,7 @@ rule filter_variants:
 
 rule parse_annotated_vars:
     input:
-        PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.vcf.gz" 
+        PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.vcf.gz"
     output:
         PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.tsv"
     message:
@@ -111,7 +111,6 @@ rule ditto_predict:
             --sample {params.sample_name} \
             -o {output.pred} \
             -o100 {output.pred_100} \
-
         """
 
 rule combine_scores:
@@ -125,20 +124,18 @@ rule combine_scores:
     message:
         "Combine Ditto predictions with Exomiser: {wildcards.sample}"
     params:
-        sample_name = lambda wildcards: f"{wildcards.sample}", 
+        sample_name = lambda wildcards: f"{wildcards.sample}",
     conda:
         str(WORKFLOW_PATH / "configs/envs/testing.yaml")
     #params:
-        
     #    variant= lambda wildcards: --variant str('Chr' + str(config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Chrom"]) + ',' + str(config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Pos"]) + ',' + config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Ref"] + ',' + config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Alt"]) if 'TRAIN' in {wildcards.sample}
     shell:
         r"""
         python src/Ditto/combine_scores.py  \
-            --raw {input.raw} \ 
-            --ditto {input.ditto} \  
+            --raw {input.raw} \
+            --ditto {input.ditto} \
             -ep {input.exomiser} \
             --sample {params.sample_name} \
             -o {output.pred} \
             -o100 {output.pred_100} \
-
         """
