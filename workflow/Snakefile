@@ -28,8 +28,7 @@ rule all:
         [PROCESSED_DIR / dataset_type / sample / "ditto_predictions_100.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
         [PROCESSED_DIR / dataset_type / sample / "predictions_with_exomiser.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
         [PROCESSED_DIR / dataset_type / sample / "predictions_with_exomiser_100.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
-
-
+        [PROCESSED_DIR / dataset_type / sample / "predictions_with_exomiser_1000.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
         #expand(str(PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/predictions.csv"), sample=SAMPLE_LIST),
 
 
@@ -120,7 +119,8 @@ rule combine_scores:
         exomiser = EXOMISER_DIR /  "{train_test}" / "{sample}",
     output:
         pred = PROCESSED_DIR /  "{train_test}" / "{sample}" / "predictions_with_exomiser.csv",
-        pred_100 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "predictions_with_exomiser_100.csv"
+        pred_100 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "predictions_with_exomiser_100.csv",
+        pred_1000 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "predictions_with_exomiser_1000.csv"
     message:
         "Combine Ditto predictions with Exomiser: {wildcards.sample}"
     params:
@@ -138,4 +138,5 @@ rule combine_scores:
             --sample {params.sample_name} \
             -o {output.pred} \
             -o100 {output.pred_100} \
+            -o1000 {output.pred_1000} \
         """

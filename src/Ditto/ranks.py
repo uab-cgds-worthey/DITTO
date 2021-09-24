@@ -5,11 +5,13 @@ json_file = json.load(open("/data/project/worthey_lab/projects/experimental_pipe
 
 for samples in json_file['train'].keys():
         if "PROBAND" in samples and "TRAIN" in samples:
-            genes = pd.read_csv(f"/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/predictions/{'train'}/{samples}/ditto_predictions.csv")#, sep=':')
-            genes = genes.drop_duplicates(subset=['Chromosome','Position','Alternate Allele','Reference Allele'], keep='first').reset_index(drop=True)
+            genes = pd.read_csv(f"/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/predictions/{'train'}/{samples}/predictions_with_exomiser_1000.csv", sep=':')
+            #genes = genes.drop_duplicates(subset=['Chromosome','Position','Alternate Allele','Reference Allele'], keep='first').reset_index(drop=True)
+            genes = genes.drop_duplicates(subset=['CHROM','POS','ALT','REF'], keep='first').reset_index(drop=True)
             variants = str('chr' + str(json_file['train'][samples]["solves"][0]["Chrom"]).split('.')[0] + ',' + str(json_file['train'][samples]["solves"][0]["Pos"]) + ',' + json_file['train'][samples]["solves"][0]["Ref"] + ',' + json_file['train'][samples]["solves"][0]["Alt"]).split(',')
-            rank = ((genes.loc[(genes['Chromosome'] == variants[0]) & (genes['Position'] == int(variants[1])) & (genes['Alternate Allele'] == variants[3]) & (genes['Reference Allele'] == variants[2])].index)+1).tolist()
-            with open("Ditto_ranking.csv", 'a') as f:
+            #rank = ((genes.loc[(genes['Chromosome'] == variants[0]) & (genes['Position'] == int(variants[1])) & (genes['Alternate Allele'] == variants[3]) & (genes['Reference Allele'] == variants[2])].index)+1).tolist()
+            rank = ((genes.loc[(genes['CHROM'] == variants[0]) & (genes['POS'] == int(variants[1])) & (genes['ALT'] == variants[3]) & (genes['REF'] == variants[2])].index)+1).tolist()
+            with open("Exomiser_ranking_1000.csv", 'a') as f:
                     f.write(f"{samples}, {variants}, {rank}\n")
-    
+
             #print(f'{i}:{samples}: {variant}', file=open("Ditto_ranking.csv", "a"))
