@@ -19,27 +19,26 @@ if __name__ == "__main__":
             required=True,
             help="Input csv file with path for predictions")
         parser.add_argument(
-            "--exo-path",
-            "-ep",
+            "--sample",
             type=str,
             #required=True,
-            help="Input path to combine exomiser results")
+            help="Input sample name to showup in results")
         parser.add_argument(
             "--output",
             "-o",
             type=str,
-            default="predictions.csv",
+            default="ditto_predictions.csv",
             help="Output csv file with path")
         parser.add_argument(
-            "--output500",
-            "-o5",
+            "--output100",
+            "-o100",
             type=str,
-            default="predictions_500.csv",
-            help="Output csv file with path for Top 500 variants")
-        parser.add_argument(
-            "--variant",
-            type=str,
-            help="Check index/rank of variant of interest. Format: chrX,101412604,C,T")
+            default="ditto_predictions_100.csv",
+            help="Output csv file with path for Top 100 variants")
+        #parser.add_argument(
+        #    "--variant",
+        #    type=str,
+        #    help="Check index/rank of variant of interest. Format: chrX,101412604,C,T")
         args = parser.parse_args()
 
         
@@ -66,43 +65,24 @@ if __name__ == "__main__":
         y_score = clf.predict_proba(X_test)
         del X_test
         #print('Predictions finished!\nSorting ....')
-        pred = pd.DataFrame(y_score, columns = ['pred_Benign','pred_Pathogenic'])
+        pred = pd.DataFrame(y_score, columns = ['Ditto_Benign','Ditto_Deleterious'])
 
         overall = pd.concat([var, pred], axis=1)
 
-        overall = overall.merge(X,on='ID')
+        #overall = overall.merge(X,on='Gene')
         del X, pred, y_score, clf
         overall.drop_duplicates(inplace=True)
-
-        if args.exo_path != "":
-            #print('Reading Exomiser scores...')
-            all_files = glob.glob(os.path.join(args.exo_path, "*.tsv"))
-            exo_scores = pd.concat((pd.read_csv(f, sep='\t') for f in all_files), ignore_index=True)
-            exo_scores = exo_scores[['#GENE_SYMBOL', 'ENTREZ_GENE_ID', 'EXOMISER_GENE_PHENO_SCORE']]
-            overall = overall.merge(exo_scores, left_on='SYMBOL_x', right_on='#GENE_SYMBOL')
-            overall = overall.sort_values([ 'pred_Pathogenic', 'EXOMISER_GENE_PHENO_SCORE'], ascending=[False,False])
-            genes = overall[['SYMBOL_x','Chromosome_x','Position_x','Alternate Allele_x','Reference Allele_x','EXOMISER_GENE_PHENO_SCORE', 'pred_Pathogenic']]
-            genes = genes[genes['EXOMISER_GENE_PHENO_SCORE'] != 0]
-
-        #overall.sort_values('pred_Benign', ascending=False).head(500).to_csv(args.output500, index=False)
-        else:
-            overall = overall.sort_values('pred_Pathogenic', ascending=False)
-            genes = overall[['SYMBOL_x','Chromosome_x','Position_x','Alternate Allele_x','Reference Allele_x', 'pred_Pathogenic']]
-        overall = overall.reset_index(drop=True)
-        
-        genes = genes.drop_duplicates(subset=['SYMBOL_x','Chromosome_x','Position_x','Alternate Allele_x','Reference Allele_x'], keep='first').reset_index(drop=True)
-
-        if args.variant:
-                variants = args.variant.split(',')
-                #print('Finding the rank....')
-                with open("Ditto_ranking.csv", 'a') as f:
-                    f.write(f"{args.input}, {variants}, {((genes.loc[(genes['Chromosome_x'] == variants[0]) & (genes['Position_x'] == int(variants[1])) & (genes['Alternate Allele_x'] == variants[3]) & (genes['Reference Allele_x'] == variants[2])].index)+1).tolist()}")
-    
-                #print(f"Index/Rank of {variants}: {((genes.loc[(genes['Chromosome_x'] == variants[0]) & (genes['Position_x'] == int(variants[1])) & (genes['Alternate Allele_x'] == variants[3]) & (genes['Reference Allele_x'] == variants[2])].index)+1).tolist()}", ) 
-
-        genes.head(500).to_csv(args.output500, index=False)
+        overall.insert(0, 'PROBANDID', args.sample)
+        overall[['SD','C']] = ''
+        overall = overall.sort_values('Ditto_Deleterious', ascending=False)
         #print('writing to database...')
         overall.to_csv(args.output, index=False)
         #print('Database storage complete!')
-        del genes, overall
+
+        overall = overall.drop_duplicates(subset=['SYMBOL','Chromosome','Position','Alternate Allele','Reference Allele'], keep='first').reset_index(drop=True)
+        overall = overall[['PROBANDID','Chromosome','Position','Reference Allele','Alternate Allele','Ditto_Deleterious','SD','C']]
+        overall.columns = ['PROBANDID','CHROM','POS','REF','ALT','P','SD','C']
+        overall.head(100).to_csv(args.output100, index=False, sep=':')
+        del overall
+        
         

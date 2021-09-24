@@ -8,5 +8,8 @@
     },
      "ditto_filter": {
         "mem-per-cpu": "150G"
+     },
+     "combine_scores": {
+        "mem-per-cpu": "150G"
      }
 }

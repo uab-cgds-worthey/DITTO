@@ -5,6 +5,8 @@ columns:
   -  Reference Allele
   -  Alternate Allele
   -  Consequence
+  -  Gene
+  -  HGNC_ID
   -  IMPACT
   -  SYMBOL
   -  Feature
@@ -73,23 +75,33 @@ columns:
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
 
+col_conv:
+  -  MutationTaster_score
+  -  MutationAssessor_score
+  -  PROVEAN_score
+  -  VEST4_score
+  -  FATHMM_score
 
 ML_VAR:
   -  SYMBOL
   -  Feature
   -  Consequence
+  -  Gene
+  -  HGNC_ID
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
   -  Chromosome
   -  Position
   -  Alternate Allele
   -  Reference Allele
-  -  ID
+  #-  ID
 
 var:
   -  SYMBOL
   -  Feature
   -  Consequence
+  -  Gene
+  -  HGNC_ID
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
   -  Chromosome
