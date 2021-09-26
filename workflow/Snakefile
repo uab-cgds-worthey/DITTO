@@ -1,8 +1,6 @@
 from pathlib import Path
 
-
 WORKFLOW_PATH = Path(workflow.basedir).parent
-
 
 configfile:  "/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata.json"
 PROCESSED_DIR = Path("data/processed/predictions")
@@ -26,9 +24,9 @@ rule all:
         #[PROCESSED_DIR / dataset_type / f"{sample}_vep-annotated_filtered.vcf.gz" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if config[dataset_type][sample]["affected_status"]=="Affected"],
         [PROCESSED_DIR / dataset_type / sample / "ditto_predictions.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
         [PROCESSED_DIR / dataset_type / sample / "ditto_predictions_100.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
-        [PROCESSED_DIR / dataset_type / sample / "predictions_with_exomiser.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
-        [PROCESSED_DIR / dataset_type / sample / "predictions_with_exomiser_100.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
-        [PROCESSED_DIR / dataset_type / sample / "predictions_with_exomiser_1000.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
+        [PROCESSED_DIR / dataset_type / sample / "combined_predictions.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
+        [PROCESSED_DIR / dataset_type / sample / "combined_predictions_100.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
+        [PROCESSED_DIR / dataset_type / sample / "combined_predictions_1000.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
         #expand(str(PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/predictions.csv"), sample=SAMPLE_LIST),
 
 
@@ -118,9 +116,9 @@ rule combine_scores:
         ditto = PROCESSED_DIR /  "{train_test}" / "{sample}" / "ditto_predictions.csv",
         exomiser = EXOMISER_DIR /  "{train_test}" / "{sample}",
     output:
-        pred = PROCESSED_DIR /  "{train_test}" / "{sample}" / "predictions_with_exomiser.csv",
-        pred_100 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "predictions_with_exomiser_100.csv",
-        pred_1000 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "predictions_with_exomiser_1000.csv"
+        pred = PROCESSED_DIR /  "{train_test}" / "{sample}" / "combined_predictions.csv",
+        pred_100 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "combined_predictions_100.csv",
+        pred_1000 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "combined_predictions_1000.csv"
     message:
         "Combine Ditto predictions with Exomiser: {wildcards.sample}"
     params:

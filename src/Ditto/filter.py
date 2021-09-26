@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#python slurm-launch.py --exp-name testing --command "python Ditto/filter.py -i ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.tsv -O ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND" 
-    
+#python slurm-launch.py --exp-name testing --command "python Ditto/filter.py -i ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.tsv -O ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND"
+
 import pandas as pd
 pd.set_option('display.max_rows', None)
 import numpy as np
-from tqdm import tqdm 
+from tqdm import tqdm
 import seaborn as sns
 import yaml
 import os
@@ -27,22 +27,21 @@ def get_col_configs(config_f):
 def extract_col(config_dict,df, stats):
     print('Extracting columns and rows according to config file !....')
     df = df[config_dict['columns']]
-    #if 'non_snv' in stats:
-    #    #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
-    #    df=df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
-    #    print('\nData shape (non-snv) =', df.shape, file=open(stats, "a"))
-    #else:
-    #    #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
-    #    df=df[(df['Alternate Allele'].str.len() < 2) & (df['Reference Allele'].str.len() < 2)]
-    #    if 'protein' in stats:
-    #        df = df[df['BIOTYPE']=='protein_coding']
-    #    else:
-    #        pass
-    #    print('\nData shape (snv) =', df.shape, file=open(stats, "a"))
-    #df = df[config_dict['Consequence']]
+    if 'non_snv' in stats:
+        #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
+        df=df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
+        print('\nData shape (non-snv) =', df.shape, file=open(stats, "a"))
+    else:
+        #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
+        df=df[(df['Alternate Allele'].str.len() < 2) & (df['Reference Allele'].str.len() < 2)]
+        if 'protein' in stats:
+            df = df[df['BIOTYPE']=='protein_coding']
+        else:
+            pass
+        print('\nData shape (snv) =', df.shape, file=open(stats, "a"))
     df= df.loc[df['Consequence'].isin(config_dict['Consequence'])]
     print('\nData shape (nsSNV) =', df.shape, file=open(stats, "a"))
-    
+
     #print('\nhgmd_class:\n', df['hgmd_class'].value_counts(), file=open(stats, "a"))
     print('\nclinvar_CLNSIG:\n', df['clinvar_CLNSIG'].value_counts(), file=open(stats, "a"))
     print('\nclinvar_CLNREVSTAT:\n', df['clinvar_CLNREVSTAT'].value_counts(), file=open(stats, "a"))
@@ -78,7 +77,7 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     print('Filling NAs ....')
     #df = imp.fit_transform(df)
     #df = pd.DataFrame(df, columns = columns)
-    
+
     df1 = pd.DataFrame()
 
     if 'non_nssnv' in stats:
@@ -98,9 +97,9 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
     del df1
     df = df.reset_index(drop=True)
     print(df.columns.values.tolist(),file=open(column_info, "a"))
-    
+
     fig= plt.figure(figsize=(20, 15))
-    sns.heatmap(df.corr(),fmt='.2g',cmap= 'coolwarm') # annot = True, 
+    sns.heatmap(df.corr(),fmt='.2g',cmap= 'coolwarm') # annot = True,
     plt.savefig(f"correlation_plot.pdf", format='pdf', dpi=1000, bbox_inches='tight')
 
     #df.dropna(axis=1, how='all', inplace=True)
@@ -156,7 +155,7 @@ if __name__ == "__main__":
     null_info = "Nulls.csv"
     df = main(var_f, config_dict, stats, column_info, null_info)
 
-    
+
     print('\nData shape (After filtering) =', df.shape, file=open(stats, "a"))
     print('writing to csv...')
     df.to_csv("data.csv", index=False)

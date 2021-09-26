@@ -68,18 +68,22 @@ if __name__ == "__main__":
             id_map = id_map.merge(exo_scores, left_on='NCBI gene ID', right_on='ENTREZ_GENE_ID')
             overall = overall.merge(id_map, how='left', left_on='HGNC_ID_x', right_on='HGNC ID')
             del id_map, exo_scores
-            overall = overall.sort_values(by = ['Ditto_Deleterious','EXOMISER_GENE_PHENO_SCORE'], axis=0, ascending=[False,False], kind='quicksort', ignore_index=True)
-            overall = overall[['Chromosome','Position','Reference Allele','Alternate Allele','EXOMISER_GENE_PHENO_SCORE', 'Ditto_Deleterious','SD','C']]
-            overall.insert(0, 'PROBANDID', args.sample)
-            overall.columns = ['PROBANDID','CHROM','POS','REF','ALT','E','P','SD','C']
+            #overall = overall.sort_values(by = ['Ditto_Deleterious','EXOMISER_GENE_PHENO_SCORE'], axis=0, ascending=[False,False], kind='quicksort', ignore_index=True)
+            overall['Exo_norm'] = (overall['EXOMISER_GENE_PHENO_SCORE'] - overall['EXOMISER_GENE_PHENO_SCORE'].min()) / (overall['EXOMISER_GENE_PHENO_SCORE'].max() - overall['EXOMISER_GENE_PHENO_SCORE'].min())
+            overall['combined'] = (overall['Exo_norm'].fillna(0) + overall['Ditto_Deleterious'].fillna(0))/2
+            overall = overall[['Chromosome','Position','Reference Allele','Alternate Allele','combined','SD','C']]
+            #overall.insert(0, 'PROBANDID', args.sample)
+            #overall.columns = ['PROBANDID','CHROM','POS','REF','ALT','P','SD','C']
             #genes = genes[genes['EXOMISER_GENE_PHENO_SCORE'] != 0]
 
         #overall.sort_values('pred_Benign', ascending=False).head(500).to_csv(args.output500, index=False)
         else:
-            overall = overall.sort_values('Ditto_Deleterious', ascending=False)
+            #overall = overall.sort_values('Ditto_Deleterious', ascending=False)
             overall = overall[['Chromosome','Position','Reference Allele', 'Alternate Allele','Ditto_Deleterious','SD','C']]
-            overall.insert(0, 'PROBANDID', args.sample)
-            overall.columns = ['PROBANDID','CHROM','POS','REF','ALT','P','SD','C']
+
+        overall.insert(0, 'PROBANDID', args.sample)
+        overall.columns = ['PROBANDID','CHROM','POS','REF','ALT','P','SD','C']
+        overall = overall.sort_values('P', ascending=False)
         overall = overall.reset_index(drop=True)
         overall.to_csv(args.output, index=False)
 
