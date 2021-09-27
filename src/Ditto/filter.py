@@ -27,18 +27,18 @@ def get_col_configs(config_f):
 def extract_col(config_dict,df, stats):
     print('Extracting columns and rows according to config file !....')
     df = df[config_dict['columns']]
-    if 'non_snv' in stats:
-        #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
-        df=df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
-        print('\nData shape (non-snv) =', df.shape, file=open(stats, "a"))
-    else:
-        #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
-        df=df[(df['Alternate Allele'].str.len() < 2) & (df['Reference Allele'].str.len() < 2)]
-        if 'protein' in stats:
-            df = df[df['BIOTYPE']=='protein_coding']
-        else:
-            pass
-        print('\nData shape (snv) =', df.shape, file=open(stats, "a"))
+    #if 'non_snv' in stats:
+    #    #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
+    #    df=df[(df['Alternate Allele'].str.len() > 1) | (df['Reference Allele'].str.len() > 1)]
+    #    print('\nData shape (non-snv) =', df.shape, file=open(stats, "a"))
+    #else:
+    #    #df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
+    #    df=df[(df['Alternate Allele'].str.len() < 2) & (df['Reference Allele'].str.len() < 2)]
+    #    if 'protein' in stats:
+    #        df = df[df['BIOTYPE']=='protein_coding']
+    #    else:
+    #        pass
+    #    print('\nData shape (snv) =', df.shape, file=open(stats, "a"))
     df= df.loc[df['Consequence'].isin(config_dict['Consequence'])]
     print('\nData shape (nsSNV) =', df.shape, file=open(stats, "a"))
 

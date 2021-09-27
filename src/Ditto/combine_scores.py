@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
 
         ditto = pd.read_csv(args.ditto)
-        raw = pd.read_csv(args.raw, sep='\t', usecols=['Chromosome','Position','Reference Allele','Alternate Allele','SYMBOL','Gene','Feature', 'HGNC_ID'])
+        raw = pd.read_csv(args.raw, sep='\t', usecols=['SYMBOL','Chromosome','Position','Reference Allele','Alternate Allele','SYMBOL','Gene','Feature', 'HGNC_ID'])
         #raw = raw[['Chromosome','Position','Reference Allele','Alternate Allele','SYMBOL','Gene','Feature', 'HGNC_ID']]
         print("Raw file loaded!")
 
@@ -71,23 +71,24 @@ if __name__ == "__main__":
             #overall = overall.sort_values(by = ['Ditto_Deleterious','EXOMISER_GENE_PHENO_SCORE'], axis=0, ascending=[False,False], kind='quicksort', ignore_index=True)
             overall['Exo_norm'] = (overall['EXOMISER_GENE_PHENO_SCORE'] - overall['EXOMISER_GENE_PHENO_SCORE'].min()) / (overall['EXOMISER_GENE_PHENO_SCORE'].max() - overall['EXOMISER_GENE_PHENO_SCORE'].min())
             overall['combined'] = (overall['Exo_norm'].fillna(0) + overall['Ditto_Deleterious'].fillna(0))/2
-            overall = overall[['Chromosome','Position','Reference Allele','Alternate Allele','combined','SD','C']]
-            #overall.insert(0, 'PROBANDID', args.sample)
-            #overall.columns = ['PROBANDID','CHROM','POS','REF','ALT','P','SD','C']
+            overall = overall[['SYMBOL_x','Chromosome','Position','Reference Allele','Alternate Allele','EXOMISER_GENE_PHENO_SCORE','Ditto_Deleterious','combined','SD','C']]
+            overall.insert(0, 'PROBANDID', args.sample)
+            overall.columns = ['PROBANDID','SYMBOL','CHROM','POS','REF','ALT','E','D','P','SD','C']
             #genes = genes[genes['EXOMISER_GENE_PHENO_SCORE'] != 0]
 
         #overall.sort_values('pred_Benign', ascending=False).head(500).to_csv(args.output500, index=False)
         else:
             #overall = overall.sort_values('Ditto_Deleterious', ascending=False)
-            overall = overall[['Chromosome','Position','Reference Allele', 'Alternate Allele','Ditto_Deleterious','SD','C']]
+            overall = overall[['SYMBOL_x','Chromosome','Position','Reference Allele', 'Alternate Allele','Ditto_Deleterious','SD','C']]
+            overall.insert(0, 'PROBANDID', args.sample)
+            overall.columns = ['PROBANDID','SYMBOL','CHROM','POS','REF','ALT','P','SD','C']
 
-        overall.insert(0, 'PROBANDID', args.sample)
-        overall.columns = ['PROBANDID','CHROM','POS','REF','ALT','P','SD','C']
         overall = overall.sort_values('P', ascending=False)
         overall = overall.reset_index(drop=True)
         overall.to_csv(args.output, index=False)
 
         overall = overall.drop_duplicates(subset=['CHROM','POS','REF','ALT'], keep='first').reset_index(drop=True)
+        overall = overall[['PROBANDID','CHROM','POS','REF','ALT','P','SD','C']]
         overall.head(100).to_csv(args.output100, index=False, sep=':')
         overall.head(1000).to_csv(args.output1000, index=False, sep=':')
 

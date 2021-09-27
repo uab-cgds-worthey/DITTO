@@ -27,8 +27,8 @@ Unzip Annovar - tar xvfz annovar.latest.tar.gz
 Download all annotation databases using the following commands
     perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGene humandb/
     perl annotate_variation.pl -buildver hg19 -downdb cytoBand humandb/
-    perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 humandb/ 
-    perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 humandb/ 
+    perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 humandb/
+    perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 humandb/
     perl annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a humandb/
 
 SLURM interactive session before annotating variants
@@ -38,11 +38,11 @@ SLURM interactive session before annotating variants
 Annotate variants-
     Tab delimited input -
         perl table_annovar.pl ../../processed/clinvar.avinput humandb/ -buildver hg19 -out ../myanno -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -csvout -polish -xref example/gene_xref.txt
-    VCF file input - 
+    VCF file input -
         perl table_annovar.pl ../../external/clinvar.vcf humandb/ -buildver hg19 -out ../myanno -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation gx,r,f,f,f -nastring . -vcfinput -polish -xref example/gene_xref.txt
 
 
-Install scikit-allel to extract info from vcf as csv. 
+Install scikit-allel to extract info from vcf as csv.
     conda install -c conda-forge scikit-allel
 Run "parse_clinvar.py" code to convert vcf annotations to txt format.
 
@@ -71,7 +71,7 @@ Again, Downloaded the "updated" clinvar vcf file and ran Brandon's script for an
 ################### 7/8/20 ############################################
 
 data/processed/class-count.csv has the summary statistics of all variants categorized according to ACMG guidelines.
-Filtering out only the necessary columns - 
+Filtering out only the necessary columns -
     Polyphen-2 HDIV vs HVAR - While PolyPhen-2 HDIV uses alleles encoding human proteins and their closely related mammalian homologs as TN observations, PolyPhen-2 HVAR applies common human nsSNVs as TN observations.
     LRTori is a two-sided P-value of the likelihood ratio test of codon constraint. Each LRTori is associated with an estimated nonsynonymous-to-synonymous-rate ratio (ω) and an amino acid alignment of 31 species at the test codon. The score ranges from 0 to 1 and a larger score signifies that the codon is more constrained or a NS is more likely to be deleterious.
     Eigen-PC-raw: Eigen PC score for genome-wide SNVs. A functional prediction score based on conservation, allele frequencies, deleteriousness prediction (for missense SNVs) and epigenomic signals (for synonymous and non-coding SNVs) using an unsupervised learning method (doi: 10.1038/ng.3477).
@@ -85,7 +85,7 @@ It covers most of the annotations but not all.
 ### Variants per each ACMG category #########
 >>> df[['InterVar_automated','ID']].groupby('InterVar_automated').count()
                             ID
-InterVar_automated        Count    
+InterVar_automated        Count
 Benign                   20859
 Likely_benign           187722
 Likely_pathogenic        23539
@@ -95,7 +95,7 @@ Total                   494738
 
 >>> df[['CLNSIG','ID']].groupby('CLNSIG').count()
 
-CLNSIG                                              
+CLNSIG
 Affects                                          112
 Benign                                         29704
 Benign/Likely_benign                           13909
@@ -149,7 +149,7 @@ risk_factor	                                    441
 
 Extract rows with only 5 ACMG classified annotations.
     - (648422, 141)
-     
+
 Impute values to NAs
 
 ################# 7/29/20 #######################################################################
@@ -191,7 +191,7 @@ Under classification, developing sklearn pipeline - refer to models.py
 ################### 8/27/20 ######################################################################
 Started working on JSON parsing - output from CodiCem and input for this tool.
 Trying out multiprocessing for our models. Ref - https://www.youtube.com/watch?v=fKl2JW_qrso
-Parameter tuning - 
+Parameter tuning -
     https://towardsdatascience.com/credit-risk-management-classification-models-hyperparameter-tuning-d3785edd8371
 
 ################### 8/31 & 9/1 ###################################################################
@@ -216,7 +216,7 @@ Hyperparameter tuning for NN
     - Also look in to Brandon's code
 
 ################### 9/11/20 ######################################################################
-Plan for today -   
+Plan for today -
     - Work on creating neural Network
     - use standard scalar for NN (mandatory).
     - Parameter tuning as mentioned by youtube video above and parameters from Brandon's code
@@ -236,13 +236,13 @@ Converting keras script from CPU to GPU usage on cheaha. This needs Tensorflow-g
         - module load CUDA/10.1.243
         - module load cuDNN/7.6.2.24-CUDA-10.1.243
 Next step is to modify the NN builder definition to create layers and neurons on its own. Use this tutorial for this - https://github.com/jeffheaton/t81_558_deep_learning/blob/master/t81_558_class_08_4_bayesian_hyperparameter_opt.ipynb
-Note- I saw a worker stopping and errors out the script. This is cause of njobs=-1 (according to web), where parallel fits take up all the memory and this might exit out? A proposed solution is to update matplotlib (pip install -U matplotlib). 
+Note- I saw a worker stopping and errors out the script. This is cause of njobs=-1 (according to web), where parallel fits take up all the memory and this might exit out? A proposed solution is to update matplotlib (pip install -U matplotlib).
 I know it's strange, but whatever works and doesn't throw an error, lol. I have to look up how Cheaha's GPU split jobs among them and how ntasks work.
 
 Cool plots for parameter tuning using hiplot - https://medium.com/roonyx/neural-network-hyper-parameter-tuning-with-keras-tuner-and-hiplot-7637677821fa
 Try this for tomorrow. looks promising.
     - https://medium.com/python-data/hyperparameter-tuning-tensorflow-2-models-with-keras-tuner-81f36f801040
-    
+
 
 ################### 9/15/20 ######################################################################
 Looks like hyperopt is the way to go. Use this video to build your model - https://www.youtube.com/watch?v=RublDm4J1vY
@@ -288,24 +288,24 @@ Made wrike tasks to use keras-tuner, Ray tune algorithms like hyper-opt and drag
 Also have to tune ML models on the side.
 
 ################### 12/16/20 ######################################################################
-Making a pipeline of the whole process. Here's the plan - 
+Making a pipeline of the whole process. Here's the plan -
     -   We need to have a vcf file to start with. I'm taking this one from UDN solves.
         -------------
-        52	Proband	UDN308376	C1019-HJ-0012	SL156674	GABRG2	GABRG2-related encephalopathy		GABRG2(NM_00081.3,c.316G>A,p.Ala106Thr,Pathogenic)	
+        52	Proband	UDN308376	C1019-HJ-0012	SL156674	GABRG2	GABRG2-related encephalopathy		GABRG2(NM_00081.3,c.316G>A,p.Ala106Thr,Pathogenic)
         -------------
-    -   We have an annotated vcf file for this in our lab workspace on cheaha. 
+    -   We have an annotated vcf file for this in our lab workspace on cheaha.
         `python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_annotation/Annovar.py  /data/project/worthey_lab/projects/PyxisMap/analysis/UDN/SL156674.vcf.gz /data/scratch/tmamidi/ /data/project/worthey_lab/projects/experimental_pipelines/tarun/Varsight/data/interim/ /data/project/worthey_lab/tools/annovar/annovar_hg19_db`
     -   Once we have the annotated vcf file, I'm going to run the following python scripts for annotation and feature extraction. Basically, prepping the data for prediction.
         -   vcf to csv conversion - parse_clinvar.py
         -   csv to test file - filter.py
     -   Now, we'll have the test csv for prediction. We'll be using predict.py for predictions.
 
-For training the classifier/model, I'll be using `parse_clinvar.py` and `filter.py` for prepping the clinvar dataset. Then I'll be running Optuna for hyper-parameter tuning `optuna-tpe.ipy`. 
-Copy the best parameters and run the final code for model performance stats.  
+For training the classifier/model, I'll be using `parse_clinvar.py` and `filter.py` for prepping the clinvar dataset. Then I'll be running Optuna for hyper-parameter tuning `optuna-tpe.ipy`.
+Copy the best parameters and run the final code for model performance stats.
 
 Below are the other cases to work on.
 -----------
-63	Proband	UDN587784	C1006-HJ-0022	SL201103	ENG	TELANGIECTASIA, HEREDITARY HEMORRHAGIC, TYPE 1; HHT1; SYSTEMIC LUPUS ERYTHEMATOSIS (NO MOLEC DIAGNOSIS)		ENG(NM_000118.3,c.816+6T>C,N/A,Research)	
+63	Proband	UDN587784	C1006-HJ-0022	SL201103	ENG	TELANGIECTASIA, HEREDITARY HEMORRHAGIC, TYPE 1; HHT1; SYSTEMIC LUPUS ERYTHEMATOSIS (NO MOLEC DIAGNOSIS)		ENG(NM_000118.3,c.816+6T>C,N/A,Research)
 68	Proband	UDN021466	C1012-HJ-0066	SL202061	KMT2B	KMT2B-related dystonia		KMT2B(NM_014727.2,c.7613delC,p.Thr2539Profs*75,Research)		SHANK2(NM_133266.4,c.902dupC,p.Pro302Serfs*32,Pathogenic)
 -----------
 
@@ -330,10 +330,10 @@ python /data/project/worthey_lab/projects/experimental_pipelines/annovar_vcf_ann
 Imputation notes
 Using this for now - logistic regression for transform
     https://medium.com/nerd-for-tech/how-to-implement-mice-algorithm-using-iterative-imputer-to-handle-missing-values-3d6792d4ba7f
-Alternate resources - 
+Alternate resources -
     https://towardsdatascience.com/6-different-ways-to-compensate-for-missing-values-data-imputation-with-examples-6022d9ca0779
     https://www.analyticsvidhya.com/blog/2020/07/knnimputer-a-robust-way-to-impute-missing-values-using-scikit-learn/
-    
+
 Something to read on Overfitting - https://elitedatascience.com/overfitting-in-machine-learning
 
 ################### 1/12/21 ######################################################################
@@ -341,10 +341,10 @@ Installed Hazel on to my laptop.
 Hazel is a gene prioritizing tool given phenotype as input.
 
 ################### 1/13/21 ######################################################################
-Testing Ditto - 
+Testing Ditto -
 Sample - SL212589	IQCB1	Senior-Loken syndrome5		IQCB1(NM_001023570.3,c.1518_1519delCA,p.His506GlnfsTer13,Pathogenic)	IQCB1(NM_001023570.3,c.1465C>T,p.Arg489Ter,Pathogenic)
 HPO - HP:0000510, HP:0003774, HP:0000090
-Command for Hazel - 
+Command for Hazel -
 curl -d '{"terms": ["HP:0000479", "HP:0001129", "HP:0003774", "HP:0007481"]}' -H "Content-Type: application/json" \
 -X GET http://localhost:5000/v1/cosine > SL212589_genes.yaml
 
@@ -376,18 +376,18 @@ I believe we can make the VEP annotation work for SVs by tweaking some settings 
 Also, I looked for SVs in clinvar (by searching for SVTYPE tag), and I'm surprised they didn't have any.
 PS- I looked at the one of the deletion SVs (size 637Kb), which was successfully annotated. That particular line in VCF had 14578054 characters. Yup, 14.5 million characters
 
-One more error - 
-So here is the issue that is causing trouble when annotating HGMD vcf with VEP. (To be more specific, bcftools is the one that has trouble). Info field PHEN is not supposed to include semicolon character, 
+One more error -
+So here is the issue that is causing trouble when annotating HGMD vcf with VEP. (To be more specific, bcftools is the one that has trouble). Info field PHEN is not supposed to include semicolon character,
 
 Removing SV from HGMD and working with modified VCF-
-Converting VCF of chromosomes '1' to 'chr1' and removing special characters from INFO column - 
+Converting VCF of chromosomes '1' to 'chr1' and removing special characters from INFO column -
 `
 module load Anaconda3/2020.02
 module load tabix
 module load BCFtools
 
 cp /data/project/worthey_lab/manual_datasets_central/hgmd/2020q4/hgmd_pro_2020.4_hg38.vcf ./`
-check all the chromosomes present in the VCF - 
+check all the chromosomes present in the VCF -
 `grep -v ^# clinvar.vcf | cut -f1 -d$'\t' | sort -u
 
 sed -E -i 's/(^[^#]+)/chr\1/' <vcf file path>
@@ -405,7 +405,7 @@ tabix -fp vcf hgmd_pro_2020.4_hg38_edited.vcf.gz`
 Run the pipeline for annotation-
 `./src/run_pipeline.sh -s -v ../data/external/hgmd_pro_2020.4_hg38_edited.vcf.gz -o ../data/processed/HGMD -d ~/.ditto_datasets.yaml`
 
-Things to note down - 
+Things to note down -
 However there is one more thing. Briefly looking at the HGMD dataset, I noticed a deletion SV of size 30 bases. And this makes me wonder what's their min. size definition for a SV. More common limit is 50 bases, but this is opinionated and hence not a surprise they have smaller ones included.
 So removing variants based on string SVTYPE would also remove "large" indels. I think this is acceptable but this needs to be kept in mind. Or better yet, log these decisions somewhere.
 
@@ -414,44 +414,44 @@ Current workflow:
 `module load Anaconda3/2020.02
 module load tabix
 module load BCFtools`
-Download Clinvar - 
+Download Clinvar -
     `wget -P /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/external/ https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz
     tabix -fp vcf clinvar.vcf.gz `
-Check chromosomes and keep note for modifications - 
+Check chromosomes and keep note for modifications -
     `zgrep -v ^# clinvar.vcf.gz | cut -f1 -d$'\t' | sort -u`
-Copy HGMD VCF - 
+Copy HGMD VCF -
     `cp /data/project/worthey_lab/manual_datasets_central/hgmd/2020q4/hgmd_pro_2020.4_hg38.vcf ./`
-Check chromosomes and keep note for modifications - 
+Check chromosomes and keep note for modifications -
     `grep -v ^# hgmd_pro_2020.4_hg38.vcf | cut -f1 -d$'\t' | sort -u`
-Fix the INFO column and index for merging - 
+Fix the INFO column and index for merging -
     `sed -E 's/(^[^#]+)(=")([^;"]+)(;)+([^;]*?)(")/\1\2\3%3B\5\6/' hgmd_pro_2020.4_hg38.vcf > hgmd_pro_2020.4_hg38_fixed_info.vcf`
     bgzip -c  hgmd_pro_2020.4_hg38_fixed_info.vcf > hgmd_pro_2020.4_hg38_fixed_info.vcf.gz
     tabix -fp vcf hgmd_pro_2020.4_hg38_fixed_info.vcf.gz `
-Merge Clinvar and HGMD - 
+Merge Clinvar and HGMD -
     `bcftools merge clinvar.vcf.gz hgmd_pro_2020.4_hg38_fixed_info.vcf.gz -Ov -o ../interim/merged.vcf`
-Add `chr` to chromosomes columns - 
+Add `chr` to chromosomes columns -
     `sed -E -i 's/(^[^#]+)/chr\1/' ../interim/merged.vcf `
-Fix chromosome issues noted before - 
-    `sed -i 's/^chrMT/chrM/g' ../interim/merged.vcf 
+Fix chromosome issues noted before -
+    `sed -i 's/^chrMT/chrM/g' ../interim/merged.vcf
     grep -v ^chrNW ../interim/merged.vcf > ../interim/merged_chr_fix.vcf`
-Check chromosomes and fix any remaining issues - 
+Check chromosomes and fix any remaining issues -
     `grep -v ^# ../interim/merged_chr_fix.vcf | cut -f1 -d$'\t' | sort -u`
-Normalize the variants using reference genome - 
+Normalize the variants using reference genome -
     `bcftools norm -f /data/project/worthey_lab/datasets_central/human_reference_genome/processed/GRCh38/no_alt_rel20190408/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna ../interim/merged_chr_fix.vcf -Oz -o ../interim/merged_norm.vcf.gz`
-Filter variants by size (<30kb) and class - 
+Filter variants by size (<30kb) and class -
     `python ../../src/training/data-prep/extract_variants.py`
     Clinvar variants: 300280
     HGMD variants: 156402
-bgzip and Tabix index the file - 
+bgzip and Tabix index the file -
     `bgzip -c ../interim/merged_sig_norm.vcf > ../interim/merged_sig_norm.vcf.gz
     tabix -fp vcf ../interim/merged_sig_norm.vcf.gz`
-Run variant annotation as shown in ReadMe file - 
+Run variant annotation as shown in ReadMe file -
     `./src/run_pipeline.sh -s -v ../data/interim/merged_sig_norm.vcf.gz -o ../data/interim -d ~/.ditto_datasets.yaml`
-Parse the annotated vcf file - 
+Parse the annotated vcf file -
     `python parse_annotated_vars.py -i ../data/processed/merged_sig_norm_vep-annotated.vcf.gz -o ../data/processed/merged_sig_norm_vep-annotated.tsv`
-Extract Class information for all these variants - 
+Extract Class information for all these variants -
     `python extract_class.py`
-Filter, stats and prep the data - 
+Filter, stats and prep the data -
     `python filter.py`
 
 ################### 2/22/21 ######################################################################
@@ -462,7 +462,7 @@ Go ontology, PPI, regulatory network, enzyme activity, binding pockets
 
 
 ################### 2/24/21 ######################################################################
-Switching from pandas and scikit-learn to RAPIDS - 
+Switching from pandas and scikit-learn to RAPIDS -
 conda create -n rapids-0.17 -c rapidsai -c nvidia -c conda-forge \
     -c defaults rapids-blazing=0.17 python=3.7 cudatoolkit=10.1
 conda activate rapids-0.17
@@ -502,7 +502,7 @@ Working the past week to tune the classifiers.
 Finally, I can make classifiers to tune with Ray Tune PB2. Only downside is that the default parameters perform better than tuned models, lol
 
 ################### 3/17/21 ######################################################################
-Tuning all the models with TuneSearchCV. They're all under the folder Tuning. Code to tune them - 
+Tuning all the models with TuneSearchCV. They're all under the folder Tuning. Code to tune them -
     `for FILE in Tuning/*.py; do python slurm-launch.py --exp-name $FILE  --command "python $FILE --vtype snv_protein_coding" ; done`
 
 ################### 6/27/21 ######################################################################
@@ -511,16 +511,16 @@ Shifted from `voting classifier` to `stacking classifier` cause it can tune the 
 Shifted from `tune` parameters to `hyperopt` parametes as they work with conditional search spaces.
 Final working script for tuning is at `src/training/training/Tune_hp_stacking.py`.
 
-There was a problem with dbNSFP database used by VEP. VEP doesn't parse out the transcript info from the database but just replaces `;` with `&` and combines all transcripts in to a single line. 
+There was a problem with dbNSFP database used by VEP. VEP doesn't parse out the transcript info from the database but just replaces `;` with `&` and combines all transcripts in to a single line.
 We don't want this to happen as we can't work with prediction score from this database for ML. Remember the complex columns that we tried to take mean off? That approach is wrong.
 So, Brandon wrote a formatting script to run before running the annotation scripts.
-Running the annotation process after formatting the database. Hopefully, it works this time :) 
+Running the annotation process after formatting the database. Hopefully, it works this time :)
 
 ################### 9/3/21 ######################################################################
 working on a bunch filters and correlation plots for the last couple weeks.
 Also, the ML_models script can plot ROC and AUC curves for each dataset.
 
-Different combinations of filters - 
+Different combinations of filters -
 ```
 python slurm-launch.py --exp-name F_1_0_0_nssnv --command "python training/data-prep/filter.py -v F_1_0_0_nssnv  -af 1 --cutoff 1 -afv 0 -otv 0" --mem 30G
 python slurm-launch.py --exp-name F_7_0_0_nssnv --command "python training/data-prep/filter.py -v F_7_0_0_nssnv -af 1 --cutoff 0.7 -afv 0 -otv 0" --mem 30G
@@ -550,7 +550,7 @@ python slurm-launch.py --exp-name F_3_no_0_nssnv --command "python training/data
 python slurm-launch.py --exp-name F_3_no_1_nssnv --command "python training/data-prep/filter.py -v F_3_no_1_nssnv -af 0 --cutoff 0.3 -afv 0.00005 -otv 1" --mem 30G
 ```
 
-Running ML models for different combinations of filters - 
+Running ML models for different combinations of filters -
 ```
 python slurm-launch.py --exp-name F_1_0_0_nssnv --command "python training/training/ML_models.py -v F_1_0_0_nssnv"
 python slurm-launch.py --exp-name F_7_0_0_nssnv --command "python training/training/ML_models.py -v F_7_0_0_nssnv"
@@ -579,7 +579,7 @@ python slurm-launch.py --exp-name F_3_00005_1_nssnv --command "python training/t
 python slurm-launch.py --exp-name F_3_no_0_nssnv --command "python training/training/ML_models.py -v F_3_no_0_nssnv"
 python slurm-launch.py --exp-name F_3_no_1_nssnv --command "python training/training/ML_models.py -v F_3_no_1_nssnv"
 ```
-Tune all classifier - 
+Tune all classifier -
 ```
 for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_7_0_0_nssnv_$FILE --command "python $FILE -v F_7_0_0_nssnv" ; done
 for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_1_0_0_nssnv_$FILE --command "python $FILE -v F_1_0_0_nssnv" ; done
@@ -609,7 +609,7 @@ for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --
 for FILE in *.py; do python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_no_1_nssnv_$FILE --command "python $FILE -v F_3_no_1_nssnv" ; done
 ```
 
-Running Stacking Classifier for different combinations of filters - 
+Running Stacking Classifier for different combinations of filters -
 ```
 python slurm-launch.py --exp-name F_1_0_0_nssnv_stacking --command "python training/training/stacking.py -v F_1_0_0_nssnv"
 python slurm-launch.py --exp-name F_7_0_0_nssnv_stacking --command "python training/training/stacking.py -v F_7_0_0_nssnv"
@@ -641,14 +641,14 @@ python slurm-launch.py --exp-name F_3_no_1_nssnv_stacking --command "python trai
 
 python ../../../slurm-launch.py --num-cpus 20 --mem 250G --partition long -temp ../../../ --exp-name F_3_00005_1_nssnv_stacking --command "python stacking.py -v F_3_00005_1_nssnv"
 
-For testing Ditto - 
+For testing Ditto -
 ```
     cp /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/annotated_vcf/train/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated.vcf.gz ./data/processed/testing/
     module load BCFtools
     bcftools annotate  -e'ALT="*" || type!="snp"'  CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated.vcf.gz -Oz -o CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.vcf.gz
     python parse_annotated_vars.py -i ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.vcf.gz -o ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.tsv
-    python slurm-launch.py --exp-name testing --command "python Ditto/filter.py -i ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.tsv -O ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND" 
-    python slurm-launch.py --exp-name testing --command "python Ditto/predict.py  -i ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/data.csv -o ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/predictions.csv -o5 ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/predictions_500.csv --variant chrX,101412604,C,T" 
+    python slurm-launch.py --exp-name testing --command "python Ditto/filter.py -i ../data/processed/predictions/CAGI6_RGP_TRAIN_18_PROBAND_vep-annotated_filtered.tsv -O ../data/processed/predictions/CAGI6_RGP_TRAIN_18_PROBAND"
+    python slurm-launch.py --exp-name testing --command "python Ditto/predict.py  -i ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/data.csv -o ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/predictions.csv -o5 ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/predictions_500.csv --variant chrX,101412604,C,T"
     python slurm-launch.py --exp-name testing --command "python Ditto/combine_scores.py --sample CAGI6_RGP_TRAIN_12_PROBAND --raw ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.tsv --ditto ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/ditto_predictions.csv -ep /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/exomiser/train/CAGI6_RGP_TRAIN_12_PROBAND -o ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/predictions_with_exomiser.csv -o100 ../data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/predictions_with_exomiser_100.csv"
     python slurm-launch.py --exp-name testing --command "python Ditto/ranks.py"
 
