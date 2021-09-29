@@ -85,6 +85,8 @@ if __name__ == "__main__":
 
         overall = overall.sort_values('P', ascending=False)
         overall = overall.reset_index(drop=True)
+        overall['SD']=0
+        overall['C']='*'
         overall.to_csv(args.output, index=False)
 
         overall = overall.drop_duplicates(subset=['CHROM','POS','REF','ALT'], keep='first').reset_index(drop=True)

@@ -41,7 +41,7 @@ if __name__ == "__main__":
         #    help="Check index/rank of variant of interest. Format: chrX,101412604,C,T")
         args = parser.parse_args()
 
-        
+
         #print("Loading data....")
 
         with open("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/configs/testing.yaml") as fh:
@@ -73,7 +73,8 @@ if __name__ == "__main__":
         del X, pred, y_score, clf
         overall.drop_duplicates(inplace=True)
         overall.insert(0, 'PROBANDID', args.sample)
-        overall[['SD','C']] = ''
+        overall['SD']=0
+        overall['C']='*'
         overall = overall.sort_values('Ditto_Deleterious', ascending=False)
         #print('writing to database...')
         overall.to_csv(args.output, index=False)
@@ -84,5 +85,4 @@ if __name__ == "__main__":
         overall.columns = ['PROBANDID','CHROM','POS','REF','ALT','P','SD','C']
         overall.head(100).to_csv(args.output100, index=False, sep=':')
         del overall
-        
-        
+

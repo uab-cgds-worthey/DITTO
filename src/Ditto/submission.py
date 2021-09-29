@@ -11,4 +11,6 @@ for train_test in json_file.keys():
             fnames.append(f"/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/predictions/{train_test}/{samples}/combined_predictions_100.csv")#, sep=':')
 #print(fnames)
 model = pd.concat((pd.read_csv(f, sep=':') for f in fnames), ignore_index=True)
-model.to_csv("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto_model_1.txt", index=False, sep=':')
+model['SD']=0
+model['C']='*'
+model.to_csv("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/ditto_model_1.txt", index=False, sep=':')

@@ -17,10 +17,10 @@ def parse_n_print(vcf, outfile):
                     output_header = ["Chromosome", "Position", "Reference Allele", "Alternate Allele"] + \
                         line.replace(" Allele|"," VEP_Allele_Identifier|").split("Format: ")[1].rstrip(">").rstrip('"').split("|")
                 elif line.startswith("#CHROM"):
-                    vcf_header = line.split("\t")    
+                    vcf_header = line.split("\t")
             else:
                 break
-    
+
     for idx, sample in enumerate(vcf_header):
         if idx > 8:
             output_header.append(f"{sample} allele depth")
@@ -36,7 +36,7 @@ def parse_n_print(vcf, outfile):
                     line = line.rstrip("\n")
                     cols = line.split("\t")
                     csq = parse_csq(next(filter(lambda info: info.startswith("CSQ="),cols[7].split(";"))).replace("CSQ=",""))
-                    #var_info = parse_var_info(vcf_header, cols)
+                    var_info = parse_var_info(vcf_header, cols)
                     alt_alleles = cols[4].split(",")
                     alt2csq = format_alts_for_csq_lookup(cols[3], alt_alleles)
                     for alt_allele in alt_alleles:
@@ -45,14 +45,14 @@ def parse_n_print(vcf, outfile):
                             possible_alt_allele4lookup = alt_allele
                         try:
                             write_parsed_variant(
-                                out, 
-                                vcf_header, 
-                                cols[0], 
-                                cols[1], 
-                                cols[3], 
-                                alt_allele, 
+                                out,
+                                vcf_header,
+                                cols[0],
+                                cols[1],
+                                cols[3],
+                                alt_allele,
                                 csq[possible_alt_allele4lookup]
-                                #,var_info[alt_allele]
+                                ,var_info[alt_allele]
                             )
                         except KeyError:
                             print("Variant annotation matching based on allele failed!")
@@ -62,15 +62,15 @@ def parse_n_print(vcf, outfile):
                             raise SystemExit(1)
 
 
-def write_parsed_variant(out_fp, vcf_header, chr, pos, ref, alt, annots):#, var_info):
+def write_parsed_variant(out_fp, vcf_header, chr, pos, ref, alt, annots, var_info):
     var_list = [chr, pos, ref, alt]
     for annot_info in annots:
         full_fmt_list = var_list + annot_info
-        #for idx, sample in enumerate(vcf_header):
-        #    if idx > 8:
-        #        full_fmt_list.append(str(var_info[sample]["alt_depth"]))
-        #        full_fmt_list.append(str(var_info[sample]["total_depth"]))
-        #        full_fmt_list.append(str(var_info[sample]["prct_reads"]))
+        for idx, sample in enumerate(vcf_header):
+            if idx > 8:
+                full_fmt_list.append(str(var_info[sample]["alt_depth"]))
+                full_fmt_list.append(str(var_info[sample]["total_depth"]))
+                full_fmt_list.append(str(var_info[sample]["prct_reads"]))
 
         out_fp.write("\t".join(full_fmt_list) + "\n")
 
@@ -103,9 +103,9 @@ def parse_csq(csq):
         parsed_annot = annot.split("|")
         if parsed_annot[0] not in csq_allele_dict:
             csq_allele_dict[parsed_annot[0]] = list()
-        
+
         csq_allele_dict[parsed_annot[0]].append(parsed_annot)
-    
+
     return csq_allele_dict
 
 
@@ -129,13 +129,13 @@ def parse_var_info(headers, cols):
                         alt_depth = int(ad_info[alt_index + 1])
                         total_depth = sum([int(dp) for dp in ad_info])
                         prct_reads = (alt_depth / total_depth) * 100
-                    
+
                     allele_dict[sample] = {
                         "alt_depth": alt_depth,
                         "total_depth": total_depth,
                         "prct_reads": prct_reads
                     }
-            
+
             parsed_alleles[alt_allele] = allele_dict
 
         return parsed_alleles
@@ -184,5 +184,5 @@ if __name__ == "__main__":
 
     inputf = Path(ARGS.input_vcf)
     outputf = Path(ARGS.output) if ARGS.output else inputf.parent / inputf.stem.rstrip(".vcf") + ".tsv"
-    
+
     parse_n_print(inputf, outputf)
