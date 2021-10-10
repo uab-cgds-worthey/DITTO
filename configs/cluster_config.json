@@ -7,6 +7,7 @@
         "output": "logs/rule_logs/{rule}-%j.log"
     },
      "ditto_filter": {
+    "partition": "largemem",
       "mem-per-cpu": "200G"
      },
      "combine_scores": {

@@ -2,10 +2,10 @@ from pathlib import Path
 
 WORKFLOW_PATH = Path(workflow.basedir).parent
 
-configfile:  "/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata.json"
-PROCESSED_DIR = Path("data/processed/predictions")
-EXOMISER_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/exomiser")
-ANNOTATED_VCF_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/annotated_vcf")
+configfile:  "/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata_original.json"
+PROCESSED_DIR = Path("data/processed/filter_vcf_by_DP8_AB_hpo_removed")
+EXOMISER_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/exomiser/hpo_nonGeneticHPOsRemoved")
+ANNOTATED_VCF_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/filter_vcf_by_DP8_AB")
 
 TRAIN_TEST = list(config.keys())
 SAMPLES = {}

@@ -69,8 +69,8 @@ if __name__ == "__main__":
             overall = overall.merge(id_map, how='left', left_on='HGNC_ID_x', right_on='HGNC ID')
             del id_map, exo_scores
             #overall = overall.sort_values(by = ['Ditto_Deleterious','EXOMISER_GENE_PHENO_SCORE'], axis=0, ascending=[False,False], kind='quicksort', ignore_index=True)
-            overall['Exo_norm'] = (overall['EXOMISER_GENE_PHENO_SCORE'] - overall['EXOMISER_GENE_PHENO_SCORE'].min()) / (overall['EXOMISER_GENE_PHENO_SCORE'].max() - overall['EXOMISER_GENE_PHENO_SCORE'].min())
-            overall['combined'] = (overall['Exo_norm'].fillna(0) + overall['Ditto_Deleterious'].fillna(0))/2
+            #overall['Exo_norm'] = (overall['EXOMISER_GENE_PHENO_SCORE'] - overall['EXOMISER_GENE_PHENO_SCORE'].min()) / (overall['EXOMISER_GENE_PHENO_SCORE'].max() - overall['EXOMISER_GENE_PHENO_SCORE'].min())
+            overall['combined'] = (overall['EXOMISER_GENE_PHENO_SCORE'].fillna(0) + overall['Ditto_Deleterious'].fillna(0))/2
             overall = overall[['SYMBOL_x','Chromosome','Position','Reference Allele','Alternate Allele','EXOMISER_GENE_PHENO_SCORE','Ditto_Deleterious','combined','SD','C']]
             overall.insert(0, 'PROBANDID', args.sample)
             overall.columns = ['PROBANDID','SYMBOL','CHROM','POS','REF','ALT','E','D','P','SD','C']
