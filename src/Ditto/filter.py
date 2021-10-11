@@ -66,7 +66,7 @@ def fill_na(df,config_dict, column_info, stats): #(config_dict,df):
         #df['FATHMM_score'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['FATHMM_score'].str.split('&')]
     #else:
         for col in tqdm(config_dict['col_conv']):
-            df[col] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df[col].str.split('&')]
+            df[col] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i.split('&')]) if '&' in str(i) else i for i in df[col]]
 
     print('One-hot encoding...')
     df = pd.get_dummies(df, prefix_sep='_')
