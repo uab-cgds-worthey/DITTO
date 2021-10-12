@@ -81,6 +81,7 @@ col_conv:
   -  PROVEAN_score
   -  VEST4_score
   -  FATHMM_score
+  -  GERP
 
 ML_VAR:
   -  SYMBOL
@@ -111,7 +112,7 @@ var:
 
 Consequence:
   -  missense_variant
-  -  missense_variant&splice_region_variant 
+  -  missense_variant&splice_region_variant
   -  stop_gained
   -  start_lost&NMD_transcript_variant
   -  start_lost
@@ -125,7 +126,7 @@ Consequence:
   -  splice_donor_variant&missense_variant
   -  start_lost&splice_region_variant&NMD_transcript_variant
 
-nssnv_median_3_0_1: 
+nssnv_median_3_0_1:
   gnomADv3_AF: 0
   SIFT: 0.02
   PolyPhen: 0.757

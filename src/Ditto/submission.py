@@ -10,9 +10,9 @@ for samples in json_file['test'].keys():
         #for samples in json_file[train_test].keys():
           if "PROBAND" in samples:
                   #fnames.append(train_test+samples)
-            fnames.append(f"/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/annotated_vcf/test/{samples}/combined_predictions_100.csv")#, sep=':')
+            fnames.append(f"/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/filter_vcf_by_DP6_AB_hpo_removed/test/{samples}/combined_predictions_100.csv")#, sep=':')
 #print(fnames)
 model = pd.concat((pd.read_csv(f, sep=':') for f in fnames), ignore_index=True)
 model['SD']=0
 model['C']='*'
-model.to_csv("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/ditto_model_annotated_vcf.txt", index=False, sep=':')
+model.to_csv("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/ditto_model_debugged_filter_vcf_by_DP6_AB_hpo_removed.txt", index=False, sep=':')
