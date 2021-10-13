@@ -47,7 +47,7 @@ if __name__ == "__main__":
             default="predictions_with_exomiser_1000.csv",
             help="Output csv file with path for Top 1000 variants")
         args = parser.parse_args()
-        print (args)
+        #print (args)
 
 
         ditto = pd.read_csv(args.ditto)
