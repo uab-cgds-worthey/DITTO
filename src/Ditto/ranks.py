@@ -46,8 +46,9 @@ for samples in json_file['train'].keys():
                     #f.write(f"{samples}, {variants}, {genes.loc[rank-1]['SYMBOL'].values}, {genes.loc[rank-1]['Ditto_Deleterious'].values}, {rank.tolist()}\n")
 
 with open(f"{args.input_dir}/{args.output}", 'a') as f:
-        f.write(f"\nList,{rank_list}\n")
+        #f.write(f"\nList,{rank_list}\n")
         f.write(f"Rank-1,{sum(i < 2 for i in rank_list)}\n")
+
         f.write(f"Rank-5,{sum(i < 6 for i in rank_list)}\n")
         f.write(f"Rank-10,{sum(i < 11 for i in rank_list)}\n")
         f.write(f"Rank-20,{sum(i < 21 for i in rank_list)}\n")
