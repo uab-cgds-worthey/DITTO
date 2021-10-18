@@ -84,8 +84,22 @@ Please look at the steps to parse VEP annotations [here](annotation_parsing/READ
 
 #### Filter variants for Ditto prediction
 
+Filtering step includes imputation and one-hot encoding of columns.
+
 ```sh
 python src/Ditto/filter.py -i path/to/parsed_vcf_file.tsv -O path/to/output_directory
+```
+
+Output from this step includes -
+
+```directory
+output_directory/
+├── data.csv               <--- used for Ditto predictions
+├── Nulls.csv - indicates number of Nulls in each column
+├── stats_nssnv.csv - variant stats from the vcf
+├── correlation_plot.pdf- Plot to check if any columns are directly correlated (cutoff >0.95)
+└── columns.csv - columns before and after filtering step
+
 ```
 
 #### Ditto prediction
@@ -96,13 +110,22 @@ python src/Ditto/predict.py  -i path/to/output_directory/data.csv --sample sampl
 
 #### Combine with Exomiser scores
 
+If phenotype terms are present for the sample, one could use Exomiser to rank genes and then prioritize Ditto predictions according to the phenotype.
+
 ```sh
 python src/Ditto/combine_scores.py  --raw .path/to/parsed_vcf_file.tsv --sample sample_name --ditto path/to/output_directory/ditto_predictions.csv -ep path/to/exomiser_scores/directory -o .path/to/output_directory/predictions_with_exomiser.csv -o100 path/to/output_directory/predictions_with_exomiser_100.csv
 ```
 
-**Note**: For help, use the `-h` help argument.
 
-For cohort analysis, please refer to [CAGI6-RGP](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/mana/mini_projects/rgp_cagi6) project.
+### Cohort level analysis
+
+Please refer to [CAGI6-RGP](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/mana/mini_projects/rgp_cagi6) project for annotation.
+
+For predictions, make necessary directory edits to the snakemake [workflow](workflow/Snakefile) and run the following command.
+
+```sh
+sbatch predict_variant_score.sh
+```
 
 ## Contact information
 
