@@ -8,10 +8,13 @@
         - [Installation](#installation)
         - [Requirements](#requirements)
         - [Activate conda environment](#activate-conda-environment)
-        - [Run VEP annotation](#run-vep-annotation)
-        - [Parse VEP annotations](#parse-vep-annotations)
-        - [Run DITTO predictions](#run-ditto-predictions)
-        - [Unit Testing](#unit-testing)
+        - [Steps to run DITTO predictions](#steps-to-run-ditto-predictions)
+            - [Run VEP annotation](#run-vep-annotation)
+            - [Parse VEP annotations](#parse-vep-annotations)
+            - [Filter variants for Ditto prediction](#filter-variants-for-ditto-prediction)
+            - [DITTO prediction](#ditto-prediction)
+            - [Combine with Exomiser scores](#combine-with-exomiser-scores)
+        - [Cohort level analysis](#cohort-level-analysis)
     - [Contact information](#contact-information)
 
 **Aim:** Diagnosis prediction tool using AI.
