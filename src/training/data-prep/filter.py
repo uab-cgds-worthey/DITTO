@@ -5,7 +5,7 @@
 import pandas as pd
 pd.set_option('display.max_rows', None)
 import numpy as np
-from tqdm import tqdm 
+from tqdm import tqdm
 import seaborn as sns
 import yaml
 import os
@@ -46,7 +46,7 @@ def extract_col(config_dict,df, stats, list_tag):
         df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_train'])]
     else:
         df= df.loc[df['hgmd_class'].isin(config_dict['Clinsig_test'])]
-    
+
     if 'train' in stats:
         print('Dropping empty columns and rows along with duplicate rows...')
         #df.dropna(axis=1, thresh=(df.shape[1]*0.3), inplace=True)  #thresh=(df.shape[0]/4)
@@ -68,15 +68,16 @@ def fill_na(df,config_dict, column_info, stats, list_tag): #(config_dict,df):
     var = df[config_dict['var']]
     df = df.drop(config_dict['var'], axis=1)
     print('parsing difficult columns......')
-    df['GERP'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['GERP'].str.split('&')]
+    #df['GERP'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['GERP'].str.split('&')]
     if 'nssnv' in stats:
-        df['MutationTaster_score'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['MutationTaster_score'].str.split('&')]
+    #    df['MutationTaster_score'] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df['MutationTaster_score'].str.split('&')]
     #else:
-    #    for col in tqdm(config_dict['col_conv']):
-    #        df[col] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i]) if type(i) is list else i for i in df[col].str.split('&')]
+        for col in tqdm(config_dict['col_conv']):
+            df[col] = [np.mean([float(item.replace('.', '0')) if item == '.' else float(item) for item in i.split('&')]) if '&' in str(i) else i for i in df[col]]
+            df[col] = df[col].astype('float64')
     if 'train' in stats:
         fig= plt.figure(figsize=(20, 15))
-        sns.heatmap(df.corr(), fmt='.2g',cmap= 'coolwarm') # annot = True, 
+        sns.heatmap(df.corr(), fmt='.2g',cmap= 'coolwarm') # annot = True,
         plt.savefig(f"train_{list_tag[0]}/correlation_filtered_raw_{list_tag[0]}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
     print('One-hot encoding...')
     df = pd.get_dummies(df, prefix_sep='_')
@@ -87,7 +88,7 @@ def fill_na(df,config_dict, column_info, stats, list_tag): #(config_dict,df):
     print('Filling NAs ....')
     #df = imp.fit_transform(df)
     #df = pd.DataFrame(df, columns = columns)
-    
+
     if list_tag[2] == 1:
         print("Including AF columns...")
         df1=df[config_dict['gnomad_columns']]
@@ -131,7 +132,7 @@ def fill_na(df,config_dict, column_info, stats, list_tag): #(config_dict,df):
     print(df.columns.values.tolist(),file=open(column_info, "a"))
     if 'train' in stats:
         fig= plt.figure(figsize=(20, 15))
-        sns.heatmap(df.corr(),fmt='.2g',cmap= 'coolwarm') # annot = True, 
+        sns.heatmap(df.corr(),fmt='.2g',cmap= 'coolwarm') # annot = True,
         plt.savefig(f"train_{list_tag[0]}/correlation_before_{list_tag[0]}.pdf", format='pdf', dpi=1000, bbox_inches='tight')
 
         # Create correlation matrix
@@ -144,7 +145,7 @@ def fill_na(df,config_dict, column_info, stats, list_tag): #(config_dict,df):
         to_drop = [column for column in upper.columns if any(upper[column] > 0.90)]
         print(f"Correlated columns being dropped: {to_drop}",file=open(column_info, "a"))
 
-        # Drop features 
+        # Drop features
         df.drop(to_drop, axis=1, inplace=True)
         df = df.reset_index(drop=True)
     print(df.columns.values.tolist(),file=open(column_info, "a"))
@@ -159,7 +160,7 @@ def main(df, config_f, stats,column_info, null_info, list_tag):
     config_dict = get_col_configs(config_f)
     print('Config file loaded!')
     # read clinvar data
-    
+
     print('\nData shape (Before filtering) =', df.shape, file=open(stats, "a"))
     df = extract_col(config_dict,df, stats, list_tag)
     print('Columns extracted! Extracting class info....')
@@ -178,7 +179,7 @@ def main(df, config_f, stats,column_info, null_info, list_tag):
     #y = df.hgmd_class
     df = df.drop('hgmd_class', axis=1)
     df = fill_na(df,config_dict,column_info, stats, list_tag)
-    
+
     if 'train' in stats:
         var = df[config_dict['ML_VAR']]
         df = df.drop(config_dict['ML_VAR'], axis=1)
@@ -260,7 +261,7 @@ if __name__ == "__main__":
                     df1[key] = 0
             df = df1
             del df1
-        
+
         print('\nData shape (After filtering) =', df.shape, file=open(stats, "a"))
         print('Class shape=', y.shape,file=open(stats, "a"))
         print('writing to csv...')

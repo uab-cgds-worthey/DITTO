@@ -113,7 +113,7 @@ python src/Ditto/predict.py  -i path/to/output_directory/data.csv --sample sampl
 
 #### Combine with Exomiser scores
 
-If phenotype terms are present for the sample, one could use Exomiser to rank genes and then prioritize Ditto predictions according to the phenotype.
+If phenotype terms are present for the sample, one could use Exomiser to rank genes and then prioritize Ditto predictions according to the phenotype. Once you have Exomiser scores, please run the following command to combine Exomiser and Ditto scores
 
 ```sh
 python src/Ditto/combine_scores.py  --raw .path/to/parsed_vcf_file.tsv --sample sample_name --ditto path/to/output_directory/ditto_predictions.csv -ep path/to/exomiser_scores/directory -o .path/to/output_directory/predictions_with_exomiser.csv -o100 path/to/output_directory/predictions_with_exomiser_100.csv
