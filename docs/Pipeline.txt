@@ -64,3 +64,4 @@ For testing Ditto -
 
 ```
 python Ditto/ranks.py -id /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/filter_vcf_by_DP6_AB --json /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata_original.json
+python Ditto/Exomiser_ranks.py -id /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/filter_vcf_by_DP6_AB_hpo_removed  --json /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata_original.json -o exomiser_ranks.csv
