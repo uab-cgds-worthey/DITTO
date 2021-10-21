@@ -68,7 +68,8 @@ conda activate testing
 
 ### Steps to run DITTO predictions
 
-Remove variants with `*` in `ALT Allele` column. These are called "Spanning or overlapping deletions" introduced in the VCF v4.3 specification. Current version of VEP that we're using doesn't support these variants. We will work on this in our future release.
+Remove variants with `*` in `ALT Allele` column. These are called "Spanning or overlapping deletions" introduced in the VCF v4.3 specification. More on this [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele-).
+Current version of VEP that we're using doesn't support these variants. We will work on this in our future release.
 
 ```sh
 bcftools annotate  -e'ALT="*" || type!="snp"' path/to/indexed_vcf.gz -Oz -o path/to/indexed_vcf_filtered.vcf.gz
