@@ -37,7 +37,7 @@ for samples in json_file['train'].keys():
                 gene = str(json_file['train'][samples]["solves"][i]["Gene"])
                 #print(gene)
                 #print('Reading Exomiser scores...')
-                all_files = glob.glob(os.path.join(f"/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/exomiser/hpo_nonGeneticHPOsRemoved/train/{samples}", "*.tsv"))
+                all_files = glob.glob(os.path.join(f"/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/exomiser/hpo_original/train/{samples}", "*.tsv"))
                 exo_scores = pd.concat((pd.read_csv(f, sep='\t') for f in all_files), ignore_index=True)
                 exo_scores = exo_scores[['#GENE_SYMBOL', 'ENTREZ_GENE_ID', 'EXOMISER_GENE_PHENO_SCORE']]
                 exo_scores = exo_scores.sort_values('EXOMISER_GENE_PHENO_SCORE', ascending=False)
