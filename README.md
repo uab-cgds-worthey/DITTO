@@ -17,7 +17,7 @@
         - [Cohort level analysis](#cohort-level-analysis)
     - [Contact information](#contact-information)
 
-**Aim:** Diagnosis prediction tool using AI.
+**Aim:** We aim to develop a pipeline for accurate and rapid prioritization of variants using patient’s genotype (VCF) and/or phenotype (HPO) information.
 
 ## Data
 
@@ -35,6 +35,7 @@ To fetch source code, change in to directory of your choice and run:
 
 ```sh
 git clone -b master \
+    --recurse-submodules \
     git@gitlab.rc.uab.edu:center-for-computational-genomics-and-data-science/sciops/ditto.git
 ```
 
@@ -67,11 +68,9 @@ conda activate testing
 
 ### Steps to run DITTO predictions
 
-Remove variants with `*` in `ALT Allele` column. We will work on this in our future release.
+Remove variants with `*` in `ALT Allele` column. These are called "Spanning or overlapping deletions" introduced in the VCF v4.3 specification. Current version of VEP that we're using doesn't support these variants. We will work on this in our future release.
 
 ```sh
-module load BCFtools
-
 bcftools annotate  -e'ALT="*" || type!="snp"' path/to/indexed_vcf.gz -Oz -o path/to/indexed_vcf_filtered.vcf.gz
 ```
 
@@ -122,17 +121,19 @@ python src/Ditto/combine_scores.py  --raw .path/to/parsed_vcf_file.tsv --sample 
 
 ### Cohort level analysis
 
-Please refer to [CAGI6-RGP](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/mana/mini_projects/rgp_cagi6) project for annotation.
+Please refer to [CAGI6-RGP](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/mana/mini_projects/rgp_cagi6) project for filtering and annotation of variants as done above for single sample VCF along with calculating Exomiser scores.
 
 For predictions, make necessary directory edits to the snakemake [workflow](workflow/Snakefile) and run the following command.
 
 ```sh
-sbatch predict_variant_score.sh
+sbatch src/predict_variant_score.sh
 ```
+
+**Note**: The commit used for CAGI6 challenge pipeline is [be97cf5d](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/ditto/-/merge_requests/3/diffs?commit_id=be97cf5dbfcb099ac82ef28d5d8b0919f28aed99). It was used along with annotated VCFs obtained and exomiser scores obtained from [rgp_cagi6](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/mana/mini_projects/rgp_cagi6).
+
 
 ## Contact information
 
 For issues, please send an email with clear description to
 
 Tarun Mamidi    -   tmamidi@uab.edu
-
