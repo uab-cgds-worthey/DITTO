@@ -7,6 +7,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+#env/
 build/
 develop-eggs/
 dist/
@@ -18,9 +19,18 @@ lib64/
 parts/
 sdist/
 var/
+dask-worker-space/
 *.egg-info/
 .installed.cfg
 *.egg
+*.err
+*.out
+*.db
+*.py*.sh
+*.tsv
+*.csv
+*.gz*
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -41,6 +51,7 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
+*.pdf
 
 # Translations
 *.mo
@@ -72,12 +83,13 @@ target/
 .ipynb_checkpoints/
 
 # exclude data from source control by default
-# data/
-variant_annotation/data/
+/data/
+cagi*/
 
 #snakemake
 .snakemake/
-
+# data/
+variant_annotation/data/
 
 # exclude test data used for development
 to_be_deleted/test_data/data/ref
@@ -92,3 +104,4 @@ logs/
 # .java/fonts dir get created when creating fastqc conda env
 .java/
 
+/.vscode/settings.json

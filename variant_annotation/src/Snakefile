@@ -11,7 +11,7 @@ configfile: config["datasets"]
 
 
 #### VEP parameters ####
-VEP_CACHE = 'homo_sapiens_refseq'
+VEP_CACHE = 'homo_sapiens_merged' #'homo_sapiens_refseq'
 SPECIES = 'homo_sapiens'
 REF_BUILD = "GRCh38"
 ENSEMBL_DATASET_VERSION = "102"
@@ -23,12 +23,12 @@ INPUT_VCF = config["vcf"]
 PROCESSED_DIR = Path(config["outdir"])
 EXTERNAL_DIR = Path("data/external")
 
-if not (INPUT_VCF.endswith('vcf') or INPUT_VCF.endswith('vcf.gz')):
-    print (f"Error: Input file extension not in expected format: found {INPUT_VCF}, expecting *.vcf or *.vcf.gz")
+if not (INPUT_VCF.endswith('vcf') or INPUT_VCF.endswith('vcf.gz') or INPUT_VCF.endswith('vcf.bgz')):
+    print (f"Error: Input file extension not in expected format: found {INPUT_VCF}, expecting *.vcf, *.vcf.gz or *.vcf.bgz")
     raise SystemExit(1)
 
 INPUT_VCF = Path(INPUT_VCF)
-OUTPUT_VCF = PROCESSED_DIR / ((INPUT_VCF.name).rstrip(".gz").rstrip(".vcf") + "_vep-annotated.vcf.gz")
+OUTPUT_VCF = PROCESSED_DIR / ((INPUT_VCF.name).rstrip(".bgz").rstrip(".gz").rstrip(".vcf") + "_vep-annotated.vcf.gz")
 
 
 rule all:
@@ -92,14 +92,15 @@ rule annotate_variants:
         release = ENSEMBL_DATASET_VERSION,
         species = SPECIES,
         build = REF_BUILD,
-        refseq_flag = "--refseq" if 'refseq' in VEP_CACHE else "",
+        #refseq_flag = "--refseq" if 'refseq' in VEP_CACHE else "",
+        refseq_flag = "--merged" if 'merged' in VEP_CACHE else "",
         hgvs_flag = "--hgvs" if HGVS else "",
         stats_flag = lambda wildcards, output: f"--stats_file {output.stats}" if STATS else "--no_stats",
         gnomad_fields = "AC,AN,AF,AF_afr,AF_afr_female,AF_afr_male,AF_ami,AF_ami_female,AF_ami_male,AF_amr,AF_amr_female,AF_amr_male,AF_asj,AF_asj_female," \
                         "AF_asj_male,AF_eas,AF_eas_female,AF_eas_male,AF_female,AF_fin,AF_fin_female,AF_fin_male,AF_male,AF_nfe,AF_nfe_female,AF_nfe_male," \
                         "AF_oth,AF_oth_female,AF_oth_male,AF_raw,AF_sas,AF_sas_female,AF_sas_male",
         clinvar_fields = "AF_ESP,AF_EXAC,AF_TGP,ALLELEID,CLNDN,CLNDNINCL,CLNDISDB,CLNDISDBINCL,CLNREVSTAT,CLNSIG,CLNSIGCONF,CLNSIGINCL,CLNVC,GENEINFO,MC,ORIGIN,RS,SSR",
-        dbNSFP_fields = "LRT_score,MutationTaster_score,MutationAssessor_score,FATHMM_score,PROVEAN_score,VEST4_score,MetaSVM_score,MetaLR_score,M-CAP_score," \
+        dbNSFP_fields = "Ensembl_transcriptid,LRT_score,MutationTaster_score,MutationAssessor_score,FATHMM_score,PROVEAN_score,VEST4_score,MetaSVM_score,MetaLR_score,M-CAP_score," \
                         "CADD_phred,DANN_score,fathmm-MKL_coding_score,GenoCanyon_score,integrated_fitCons_score,GERP++_RS,phyloP100way_vertebrate,phyloP30way_mammalian," \
                         "phastCons100way_vertebrate,phastCons30way_mammalian,SiPhy_29way_logOdds,Eigen-raw_coding,Eigen-raw_coding_rankscore,Eigen-phred_coding," \
                         "Eigen-PC-raw_coding,Eigen-PC-raw_coding_rankscore,Eigen-PC-phred_coding",

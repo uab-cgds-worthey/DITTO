@@ -5,7 +5,7 @@
 #SBATCH --mem-per-cpu=4G
 #SBATCH --partition=medium
 
-set -euo pipefail
+set -eo pipefail
 
 usage() {
     echo "usage: $0"
