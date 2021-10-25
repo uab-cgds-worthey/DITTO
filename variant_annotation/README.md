@@ -6,14 +6,21 @@ Script [`src/run_pipeline.sh`](src/run_pipeline.sh) runs the snakemake workflow,
 
 ## Setup
 
-1. Create necessary directories to store log files
+1. Download submodules
+
+```sh
+git submodule update --init
+```
+
+
+2. Create necessary directories to store log files
 
 ```sh
 cd variant_annotation
 mkdir -p logs/rule_logs
 ```
 
-2. Create dataset config YAML and populate with paths
+3. Create dataset config YAML and populate with paths
 
 ```sh
 touch ~/.ditto_datasets.yaml
