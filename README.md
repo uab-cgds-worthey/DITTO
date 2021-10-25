@@ -130,7 +130,7 @@ For predictions, make necessary directory edits to the snakemake [workflow](work
 sbatch src/predict_variant_score.sh
 ```
 
-**Note**: The commit used for CAGI6 challenge pipeline is [be97cf5d](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/ditto/-/merge_requests/3/diffs?commit_id=be97cf5dbfcb099ac82ef28d5d8b0919f28aed99). It was used along with annotated VCFs obtained and exomiser scores obtained from [rgp_cagi6](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/mana/mini_projects/rgp_cagi6).
+**Note**: The commit used for CAGI6 challenge pipeline is [be97cf5d](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/ditto/-/merge_requests/3/diffs?commit_id=be97cf5dbfcb099ac82ef28d5d8b0919f28aed99). It was used along with annotated VCFs  and exomiser scores obtained from [rgp_cagi6 workflow](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/mana/mini_projects/rgp_cagi6).
 
 
 ## Contact information
