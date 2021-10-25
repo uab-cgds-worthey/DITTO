@@ -1,0 +1,140 @@
+from pathlib import Path
+
+WORKFLOW_PATH = Path(workflow.basedir).parent
+
+configfile:  "/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata_original.json"
+PROCESSED_DIR = Path("data/processed/trial/filter_vcf_by_DP8_AB_hpo_removed")
+EXOMISER_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/exomiser/hpo_nonGeneticHPOsRemoved")
+ANNOTATED_VCF_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/filter_vcf_by_DP8_AB")
+
+TRAIN_TEST = list(config.keys())
+SAMPLES = {}
+SAMPLES['train'] = list(config['train'].keys())
+SAMPLES['test'] = list(config['test'].keys())
+
+wildcard_constraints:
+    #sample="|".join(SAMPLE_LIST) #"TRAIN_12|TRAIN_13"
+    train_test = '|'.join(TRAIN_TEST),
+    sample = '|'.join(SAMPLES['train']  + SAMPLES['test']),
+
+
+rule all:
+    input:
+        #TODO: specify all important output files here
+        #[PROCESSED_DIR / dataset_type / f"{sample}_vep-annotated_filtered.vcf.gz" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if config[dataset_type][sample]["affected_status"]=="Affected"],
+        [PROCESSED_DIR / dataset_type / sample / "ditto_predictions.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
+        [PROCESSED_DIR / dataset_type / sample / "ditto_predictions_100.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
+        [PROCESSED_DIR / dataset_type / sample / "combined_predictions.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
+        [PROCESSED_DIR / dataset_type / sample / "combined_predictions_100.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
+        [PROCESSED_DIR / dataset_type / sample / "combined_predictions_1000.csv" for dataset_type in TRAIN_TEST for sample in SAMPLES[dataset_type] if "PROBAND" in sample],
+        #expand(str(PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/predictions.csv"), sample=SAMPLE_LIST),
+
+
+rule filter_variants:
+    input:
+        ANNOTATED_VCF_DIR /  "{train_test}" / "{sample}_vep-annotated.vcf.gz"
+    output:
+        PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.vcf.gz"
+    message:
+        "Filter variants from vcf using BCFTools: {wildcards.sample}"
+    conda:
+        str(WORKFLOW_PATH / "configs/envs/testing.yaml")
+    # threads: 2
+    shell:
+        r"""
+        bcftools annotate \
+            -e'ALT="*"' \
+            {input} \
+            -Oz \
+            -o {output}
+        """
+
+
+rule parse_annotated_vars:
+    input:
+        PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.vcf.gz"
+    output:
+        PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.tsv"
+    message:
+        "Parse variants from annotated vcf to tsv: {wildcards.sample}"
+    conda:
+        str(WORKFLOW_PATH / "configs/envs/testing.yaml")
+    shell:
+        r"""
+        python annotation_parsing/parse_annotated_vars.py \
+            -i {input} \
+            -o {output}
+        """
+
+rule ditto_filter:
+    input:
+        PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.tsv"
+    output:
+        col = PROCESSED_DIR /  "{train_test}" / "{sample}/columns.csv",
+        data = PROCESSED_DIR /  "{train_test}" / "{sample}" / "data.csv",
+        nulls = PROCESSED_DIR /  "{train_test}" / "{sample}/Nulls.csv",
+        stats = PROCESSED_DIR /  "{train_test}" / "{sample}/stats_nssnv.csv",
+        plot = PROCESSED_DIR /  "{train_test}" / "{sample}/correlation_plot.pdf",
+    message:
+        "Filter variants from annotated tsv for predictions: {wildcards.sample}"
+    conda:
+        str(WORKFLOW_PATH / "configs/envs/testing.yaml")
+    params:
+        outdir = lambda wildcards, output: Path(output['data']).parent
+    shell:
+        r"""
+        python src/Ditto/filter.py \
+            -i {input} \
+            -O {params.outdir}
+        """
+
+
+rule ditto_predict:
+    input:
+        data = PROCESSED_DIR /  "{train_test}" / "{sample}/data.csv",
+    output:
+        pred = PROCESSED_DIR /  "{train_test}" / "{sample}" / "ditto_predictions.csv",
+        pred_100 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "ditto_predictions_100.csv"
+    message:
+        "Run Ditto predictions: {wildcards.sample}"
+    params:
+        sample_name = lambda wildcards: f"{wildcards.sample}",
+    conda:
+        str(WORKFLOW_PATH / "configs/envs/testing.yaml")
+    shell:
+        r"""
+        python src/Ditto/predict.py  \
+            -i {input.data} \
+            --sample {params.sample_name} \
+            -o {output.pred} \
+            -o100 {output.pred_100} \
+        """
+
+rule combine_scores:
+    input:
+        raw = PROCESSED_DIR /  "{train_test}" / "{sample}_vep-annotated_filtered.tsv",
+        ditto = PROCESSED_DIR /  "{train_test}" / "{sample}" / "ditto_predictions.csv",
+        exomiser = EXOMISER_DIR /  "{train_test}" / "{sample}",
+    output:
+        pred = PROCESSED_DIR /  "{train_test}" / "{sample}" / "combined_predictions.csv",
+        pred_100 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "combined_predictions_100.csv",
+        pred_1000 = PROCESSED_DIR /  "{train_test}" / "{sample}" / "combined_predictions_1000.csv"
+    message:
+        "Combine Ditto predictions with Exomiser: {wildcards.sample}"
+    params:
+        sample_name = lambda wildcards: f"{wildcards.sample}",
+    conda:
+        str(WORKFLOW_PATH / "configs/envs/testing.yaml")
+    #params:
+    #    variant= lambda wildcards: --variant str('Chr' + str(config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Chrom"]) + ',' + str(config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Pos"]) + ',' + config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Ref"] + ',' + config[f"{wildcards.train_test}"][f"{wildcards.sample}"]["solves"][0]["Alt"]) if 'TRAIN' in {wildcards.sample}
+    shell:
+        r"""
+        python src/Ditto/combine_scores.py  \
+            --raw {input.raw} \
+            --ditto {input.ditto} \
+            -ep {input.exomiser} \
+            --sample {params.sample_name} \
+            -o {output.pred} \
+            -o100 {output.pred_100} \
+            -o1000 {output.pred_1000} \
+        """
