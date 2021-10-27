@@ -73,11 +73,7 @@ columns:
   -  clinvar_CLNREVSTAT
   -  clinvar_CLNSIG
   -  hgmd_class
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> bcf8822dc39ff4415e7d8b84138b7463ca901555
 ClinicalSignificance:
   -  DP
   -  DFP
@@ -115,14 +111,11 @@ CLNREVSTAT: #https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/
   -  criteria_provided,_single_submitter
 
 col_conv:
-<<<<<<< HEAD
-=======
   -  MutationTaster_score
   -  MutationAssessor_score
   -  PROVEAN_score
   -  VEST4_score
   -  FATHMM_score
->>>>>>> bcf8822dc39ff4415e7d8b84138b7463ca901555
   -  GERP
 
 ML_VAR:
@@ -150,11 +143,7 @@ var:
 
 Consequence:
   -  missense_variant
-<<<<<<< HEAD
-  -  missense_variant&splice_region_variant 
-=======
   -  missense_variant&splice_region_variant
->>>>>>> bcf8822dc39ff4415e7d8b84138b7463ca901555
   -  stop_gained
   -  start_lost&NMD_transcript_variant
   -  start_lost
@@ -201,11 +190,7 @@ gnomad_columns:
   -  gnomADv3_AF_sas_female
   -  gnomADv3_AF_sas_male
 
-<<<<<<< HEAD
-nssnv_columns: 
-=======
 nssnv_columns:
->>>>>>> bcf8822dc39ff4415e7d8b84138b7463ca901555
   SIFT: 0.5
   PolyPhen: 0.5
   CADD_PHRED: 20
@@ -258,11 +243,7 @@ nssnv_columns:
   BIOTYPE_IG_C_gene: 0
   BIOTYPE_non_stop_decay: 0
 
-<<<<<<< HEAD
-non_nssnv_columns:  
-=======
 non_nssnv_columns:
->>>>>>> bcf8822dc39ff4415e7d8b84138b7463ca901555
   CADD_PHRED: 20
   GERP: 0
   IMPACT_HIGH: 0
@@ -281,11 +262,7 @@ non_nssnv_columns:
   BIOTYPE_snoRNA: 0
   BIOTYPE_transcribed_pseudogene: 0
 
-<<<<<<< HEAD
-nssnv_median_3_0_1: 
-=======
 nssnv_median_3_0_1:
->>>>>>> bcf8822dc39ff4415e7d8b84138b7463ca901555
   gnomADv3_AF: 0
   SIFT: 0.02
   PolyPhen: 0.757
@@ -315,8 +292,4 @@ nssnv_median_3_0_1:
   BIOTYPE_IG_C_gene: 0
   BIOTYPE_non_stop_decay: 0
   BIOTYPE_polymorphic_pseudogene: 0
-<<<<<<< HEAD
   BIOTYPE_protein_coding: 1
-=======
-  BIOTYPE_protein_coding: 1
->>>>>>> bcf8822dc39ff4415e7d8b84138b7463ca901555
