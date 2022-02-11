@@ -40,7 +40,7 @@ Copy paths to dataset yaml file -
     gerp: "/data/project/worthey_lab/temp_datasets_central/mana/gerp/processed/hg38/v1.6/gerp_score_hg38.bg.gz"
     gnomad_genomes: "/data/project/worthey_lab/temp_datasets_central/mana/gnomad/v3.0/data/gnomad.genomes.r3.0.sites.vcf.bgz"
     clinvar: "/data/project/worthey_lab/temp_datasets_central/mana/clinvar/data/grch38/20210119/clinvar_20210119.vcf.gz"
-    dbNSFP: "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/variant_annotation/formatting/dbNSFP4.1a_variant.complete.gz"
+    dbNSFP: "/data/project/worthey_lab/temp_datasets_central/mana/dbnsfp/processed/v4.1a_20200616/dbNSFP4.1a_variant.complete.bgz"
     ```
 Run variant annotation as shown in ReadMe file -
     `./src/run_pipeline.sh -s -v ../data/interim/merged_sig_norm.vcf.gz -o ../data/interim -d ~/.ditto_datasets.yaml`
@@ -63,8 +63,5 @@ For testing Ditto -
     python src/Ditto/combine_scores.py  --raw ./data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.tsv --sample CAGI6_RGP_TRAIN_12_PROBAND --ditto ./data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/ditto_predictions.csv -ep /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/exomiser/train/CAGI6_RGP_TRAIN_12_PROBAND -o ./data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/predictions_with_exomiser.csv -o100 ./data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/predictions_with_exomiser_100.csv
 
 ```
-<<<<<<< HEAD
 python Ditto/ranks.py -id /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/filter_vcf_by_DP6_AB --json /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata_original.json
 python Ditto/Exomiser_ranks.py -id /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/filter_vcf_by_DP6_AB_hpo_removed  --json /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata_original.json -o exomiser_ranks.csv
-=======
->>>>>>> bcf8822dc39ff4415e7d8b84138b7463ca901555
