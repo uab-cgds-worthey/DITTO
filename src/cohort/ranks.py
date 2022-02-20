@@ -17,7 +17,7 @@ def main(args):
         if "PROBAND" in samples:
             # genes = pd.read_csv(f"/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/filter_vcf_by_DP6_AB/train/{samples}/combined_predictions.csv")#, sep=':')
             genes = pd.read_csv(
-                f"{args.input_dir}/train/{samples}/Hazel_Ditto.csv"
+                f"{args.input_dir}/train/{samples}/Ditto_Hazel.csv"
             )  # , sep=':')
 
             genes = genes.drop_duplicates(
@@ -47,10 +47,9 @@ def main(args):
                 rank_list = [*rank_list, *rank]  # unpack both iterables in a list literal
                 with open(f"{args.input_dir}/{args.output}", "a") as f:
                     f.write(
-                        f"{samples}, {variants}, {genes.loc[rank-1]['SYMBOL'].values}, {genes.loc[rank-1]['Ditto'].values}, {genes.loc[rank-1]['cosine'].values}, {genes.loc[rank-1]['combined_cosine'].values}, {rank.tolist()}\n"
+                        f"{samples}, {variants}, {genes.loc[rank-1]['SYMBOL'].values}, {genes.loc[rank-1]['Ditto'].values[0]}, {genes.loc[rank-1]['cosine'].values[0]}, {genes.loc[rank-1]['combined_cosine'].values[0]}, {rank.tolist()[0]}\n"
                     )
             del genes, rank, variants
-                    # f.write(f"{samples}, {variants}, {genes.loc[rank-1]['SYMBOL'].values}, {genes.loc[rank-1]['Ditto_Deleterious'].values}, {rank.tolist()}\n")
 
     with open(f"{args.input_dir}/{args.output}", "a") as f:
         # f.write(f"\nList,{rank_list}\n")
