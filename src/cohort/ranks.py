@@ -6,24 +6,22 @@ import argparse
 import os
 
 def main(args):
-    # json_file = json.load(open("/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata_original.json", 'r'))
+
     json_file = json.load(open(args.json, "r"))
 
     with open(f"{args.input_dir}/{args.output}", "w") as f:
-        f.write(f"PROBANDID,[CHROM,POS,REF,ALT],SYMBOL,Ditto,cosine,combined_cosine,Rank\n")
 
-    rank_list = []
+        f.write(f"PROBANDID,[CHROM,POS,REF,ALT],SYMBOL,Ditto,cosine,projection,jaccard,combined_cosine,combined_projection,combined_jaccard,Rank['Ditto', 'cosine', 'jaccard', 'projection', 'combined_cosine', 'combined_jaccard', 'combined_projection']\n")
+
+    #rank_list = []
     for samples in json_file["train"].keys():
         if "PROBAND" in samples:
-            # genes = pd.read_csv(f"/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/filter_vcf_by_DP6_AB/train/{samples}/combined_predictions.csv")#, sep=':')
+
+
             genes = pd.read_csv(
                 f"{args.input_dir}/train/{samples}/Ditto_Hazel.csv"
             )  # , sep=':')
 
-            genes = genes.drop_duplicates(
-                subset=["CHROM", "POS", "ALT", "REF"], keep="first"
-            ).reset_index(drop=True)
-            genes = genes.sort_values(by = ['combined_cosine','Ditto'], axis=0, ascending=[False,False]).reset_index(drop=True)
             for i in range(len(json_file["train"][samples]["solves"])):
                 variants = str(
                     "chr"
@@ -35,31 +33,33 @@ def main(args):
                     + ","
                     + json_file["train"][samples]["solves"][i]["Alt"]
                 ).split(",")
-                # rank = ((genes.loc[(genes['Chromosome'] == variants[0]) & (genes['Position'] == int(variants[1])) & (genes['Alternate Allele'] == variants[3]) & (genes['Reference Allele'] == variants[2])].index)+1)
-                rank = (
-                    genes.loc[
-                        (genes["CHROM"] == variants[0])
-                        & (genes["POS"] == int(variants[1]))
-                        & (genes["ALT"] == variants[3])
-                        & (genes["REF"] == variants[2])
-                    ].index
-                ) + 1
-                rank_list = [*rank_list, *rank]  # unpack both iterables in a list literal
+
+
+                var_rank = []
+                for method in ['Ditto', 'cosine', 'jaccard', 'projection', 'combined_cosine', 'combined_jaccard', 'combined_projection']:
+                    if method == 'Ditto':
+                        genes = genes.sort_values(by = 'Ditto', axis=0, ascending=False).reset_index(drop=True)
+                    else:
+                        genes = genes.sort_values(by = [method,'Ditto'], axis=0, ascending=[False,False]).reset_index(drop=True)
+                    genes = genes.drop_duplicates(
+                        subset=["CHROM", "POS", "ALT", "REF"], keep="first"
+                        ).reset_index(drop=True)
+                    rank = (
+                        genes.loc[
+                            (genes["CHROM"] == variants[0])
+                            & (genes["POS"] == int(variants[1]))
+                            & (genes["ALT"] == variants[3])
+                            & (genes["REF"] == variants[2])
+                        ].index
+                    ) + 1
+                    var_rank.append(rank.tolist()[0])
+
+                #rank_list = [*rank_list, *rank]  # unpack both iterables in a list literal
                 with open(f"{args.input_dir}/{args.output}", "a") as f:
                     f.write(
-                        f"{samples}, {variants}, {genes.loc[rank-1]['SYMBOL'].values}, {genes.loc[rank-1]['Ditto'].values[0]}, {genes.loc[rank-1]['cosine'].values[0]}, {genes.loc[rank-1]['combined_cosine'].values[0]}, {rank.tolist()[0]}\n"
+                         f"{samples}, {variants}, {genes.loc[rank-1]['SYMBOL'].values}, {genes.loc[rank-1]['Ditto'].values[0]}, {genes.loc[rank-1]['cosine'].values[0]}, {genes.loc[rank-1]['jaccard'].values[0]}, {genes.loc[rank-1]['projection'].values[0]}, {genes.loc[rank-1]['combined_cosine'].values[0]}, {genes.loc[rank-1]['combined_jaccard'].values[0]}, {genes.loc[rank-1]['combined_projection'].values[0]}, {var_rank}\n"
                     )
             del genes, rank, variants
-
-    with open(f"{args.input_dir}/{args.output}", "a") as f:
-        # f.write(f"\nList,{rank_list}\n")
-        f.write(f"Rank-1,{sum(i < 2 for i in rank_list)}\n")
-        f.write(f"Rank-5,{sum(i < 6 for i in rank_list)}\n")
-        f.write(f"Rank-10,{sum(i < 11 for i in rank_list)}\n")
-        f.write(f"Rank-20,{sum(i < 21 for i in rank_list)}\n")
-        f.write(f"Rank-50,{sum(i < 51 for i in rank_list)}\n")
-        f.write(f"Rank-100,{sum(i < 101 for i in rank_list)}\n")
-        f.write(f"#Predictions,{len(rank_list)}\n")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
