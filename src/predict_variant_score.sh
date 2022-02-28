@@ -3,7 +3,7 @@
 #SBATCH --output=logs/predict_variant_score-%j.log
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=4G
-#SBATCH --partition=express
+#SBATCH --partition=short
 
 set -euo pipefail
 

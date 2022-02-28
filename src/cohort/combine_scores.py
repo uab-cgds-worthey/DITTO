@@ -17,10 +17,37 @@ def main(args):
             )
 
     print("Loading Ditto file....")
-    overall = pd.read_csv(args.ditto)
-
-    #print(overall.columns.values.tolist())
-    #del raw, ditto
+    ditto = pd.read_csv(args.ditto)
+    print("Loading Raw file....")
+    raw = pd.read_csv(
+        args.raw,
+        sep="\t",
+        usecols=[
+            "SYMBOL",
+            "Chromosome",
+            "Position",
+            "Reference Allele",
+            "Alternate Allele",
+            "Gene",
+            "Feature",
+            "HGNC_ID",
+        ],
+    )
+    print("Raw file loaded!")
+    overall = pd.merge(
+        raw,
+        ditto,
+        how="left",
+        on=[
+            "Chromosome",
+            "Position",
+            "Alternate Allele",
+            "Reference Allele",
+            "Feature",
+        ],
+    )
+    # print(overall.columns.values.tolist())
+    del raw, ditto
 
     print("Reading Hazel scores...")
     hazel = pd.read_csv(args.hazel)
@@ -30,7 +57,7 @@ def main(args):
     )
 
     overall = overall.merge(
-        id_map, how="left", left_on="HGNC_ID", right_on="HGNC ID"
+        id_map, how="left", left_on="HGNC_ID_x", right_on="HGNC ID"
     )
 
     #print(overall.columns.values.tolist())
@@ -52,7 +79,7 @@ def main(args):
     ) / 2
     overall = overall[
         [
-            "SYMBOL",
+            "SYMBOL_x",
             "Chromosome",
             "Position",
             "Reference Allele",
@@ -99,6 +126,9 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "--raw", type=str, required=True, help="Input raw annotated file with path."
+    )
+    parser.add_argument(
         "--ditto", type=str, required=True, help="Input Ditto file with path."
     )
     parser.add_argument(
@@ -130,6 +160,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Validate paths exist
+    if not os.path.exists(args.raw):
+        print("Can't process because the raw file ", args.raw, " doesn't exist.")
+        sys.exit(1)
     if not os.path.exists(args.hazel):
         print("Can't process because Hazel file ", args.hazel, " doesn't exist.")
         sys.exit(1)
