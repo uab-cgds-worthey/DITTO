@@ -4,7 +4,7 @@ WORKFLOW_PATH = Path(workflow.basedir).parent
 
 configfile:  "/data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata_original.json"
 PROCESSED_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/annotated_vcf")
-HAZEL_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/tarun/uab-meter/data/processed/CAGI6")
+HAZEL_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/tarun/uab-meter/data/processed/sample1")
 ANNOTATED_VCF_DIR = Path("/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/annotated_vcf")
 
 #TRAIN_TEST = list(config.keys())
@@ -22,18 +22,18 @@ wildcard_constraints:
 
 rule all:
     input:
-        [PROCESSED_DIR / "train" / sample / "Ditto_Hazel.csv"  for sample in SAMPLES['train'] if "PROBAND" in sample],
-        [PROCESSED_DIR / "train" / sample / "Ditto_Hazel_100.csv" for sample in SAMPLES['train'] if "PROBAND" in sample],
+        [PROCESSED_DIR / "train" / sample / "Ditto_Hazel_fixed_no_bias.csv"  for sample in SAMPLES['train'] if "PROBAND" in sample],
+        [PROCESSED_DIR / "train" / sample / "Ditto_Hazel_fixed_no_bias_100.csv" for sample in SAMPLES['train'] if "PROBAND" in sample],
         #expand(str(PROCESSED_DIR / "train/CAGI6_RGP_{sample}_PROBAND/predictions.csv"), sample=SAMPLE_LIST),
 
 rule combine_scores:
     input:
-        raw = PROCESSED_DIR /  "train" / "{sample}_vep-annotated_filtered.tsv",
+        #raw = PROCESSED_DIR /  "train" / "{sample}_vep-annotated_filtered.tsv",
         ditto = PROCESSED_DIR /  "train" / "{sample}" / "ditto_predictions.csv",
-        exomiser = HAZEL_DIR / "{sample}" / "Hazel_{sample}.csv" ,
+        exomiser = HAZEL_DIR / "{sample}" / "Hazel_no_bias_{sample}.csv" ,
     output:
-        pred = PROCESSED_DIR /  "train" / "{sample}" / "Ditto_Hazel.csv",
-        pred_100 = PROCESSED_DIR /  "train" / "{sample}" / "Ditto_Hazel_100.csv",
+        pred = PROCESSED_DIR /  "train" / "{sample}" / "Ditto_Hazel_fixed_no_bias.csv",
+        pred_100 = PROCESSED_DIR /  "train" / "{sample}" / "Ditto_Hazel_fixed_no_bias_100.csv",
     message:
         "Combine Ditto predictions with Hazel: {wildcards.sample}"
     params:
@@ -41,7 +41,6 @@ rule combine_scores:
     shell:
         r"""
         python /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/src/cohort/combine_scores.py  \
-            --raw {input.raw} \
             --ditto {input.ditto} \
             --hazel {input.exomiser} \
             --sample {params.sample_name} \

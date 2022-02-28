@@ -19,7 +19,7 @@ def main(args):
 
 
             genes = pd.read_csv(
-                f"{args.input_dir}/train/{samples}/Ditto_Hazel.csv"
+                f"{args.input_dir}/train/{samples}/Ditto_Hazel_fixed_no_bias.csv"
             )  # , sep=':')
 
             for i in range(len(json_file["train"][samples]["solves"])):

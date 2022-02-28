@@ -3,7 +3,7 @@
 #SBATCH --output=logs/predict_variant_score-%j.log
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=4G
-#SBATCH --partition=short
+#SBATCH --partition=express
 
 set -euo pipefail
 
@@ -14,7 +14,7 @@ conda activate testing
 mkdir -p "logs/rule_logs"
 
 snakemake \
-    --snakefile "../workflow/Snakefile" \
+    --snakefile "../workflow/Snakefile1" \
     --use-conda \
     --profile '../variant_annotation/configs/snakemake_slurm_profile/{{cookiecutter.profile_name}}' \
     --cluster-config '../configs/cluster_config.json' \
