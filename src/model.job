@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-#SBATCH --job-name=parse_gnomad
-#SBATCH --output=parse_gnomad.out
+#SBATCH --job-name=dbNSFP_clinvar_variants_parsed
+#SBATCH --output=dbNSFP_clinvar_variants_parsed.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
-#SBATCH --partition=short
+#SBATCH --partition=express
 #
 # Number of CPUs allocated to each task.
-#SBATCH --cpus-per-task=2
+#SBATCH --cpus-per-task=5
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.
 #SBATCH --mem=2G
@@ -22,4 +22,5 @@ module load Anaconda3/2020.02
 source activate testing
 
 #Run your commands here
-python training/data-prep/extract_gnomad_snv.py
+#python training/data-prep/extract_class.py
+python training/data-prep/parse_dbNSFP.py -i ../data/interim/dbNSFP_clinvar_variants.tsv.gz -o ../data/interim/dbNSFP_clinvar_variants_parsed.tsv.gz

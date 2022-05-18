@@ -6,9 +6,9 @@ import os
 import gzip
 
 def parse_n_print(vcf, outfile):
-    with  gzip.open(outfile, "wt") if outfile.suffix == ".gz" else outfile.open('w')as out:
+    with gzip.open(outfile, "wt") if outfile.suffix == ".gz" else outfile.open('w')as out:
         print("Parsing variants...")
-        with gzip.open(vcf, 'rt') if vcf.suffix == ".bgz" else vcf.open('r') as vcffp:
+        with gzip.open(vcf, 'rt') if (vcf.suffix == ".bgz" or vcf.suffix == ".gz") else vcf.open('r') as vcffp:
             for cnt, line in enumerate(vcffp):
                 if not line.startswith("#"):
                     line = line.rstrip("\n")
@@ -74,6 +74,6 @@ if __name__ == "__main__":
     ARGS = PARSER.parse_args()
 
     inputf = Path(ARGS.input)
-    outputf = Path(ARGS.output) if ARGS.output else inputf.parent / inputf.stem.rstrip(".bgz") + ".tsv"
+    outputf = Path(ARGS.output) if ARGS.output else inputf.parent / inputf.stem.rstrip(".bgz") + ".tsv.gz"
 
     parse_n_print(inputf, outputf)
