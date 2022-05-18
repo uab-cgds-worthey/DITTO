@@ -1,3 +1,5 @@
+# python slurm-launch.py --exp-name Training --command "python training/training/stacking.py" --partition express --mem 50G
+
 # from numpy import mean
 import numpy as np
 import pandas as pd
@@ -23,6 +25,7 @@ from sklearn.metrics import (
     roc_auc_score,
     accuracy_score,
     confusion_matrix,
+    average_precision_score,
     recall_score,
 )
 
@@ -53,31 +56,31 @@ import gc
 import os
 
 os.chdir(
-    "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test"
+    "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/"
 )
 
 TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
-# @ray.remote(num_returns=6)
-def data_parsing(var, config_dict, output):
+def data_parsing(var, config_dict):
     # Load data
     # print(f'\nUsing merged_data-train_{var}..', file=open(output, "a"))
-    X_train = pd.read_csv(f"train_{var}/merged_data-train_{var}.csv")
+    X_train = pd.read_csv(f"train_filtered_95_data-{var}.csv")
     # var = X_train[config_dict['ML_VAR']]
-    X_train = X_train.drop(config_dict["ML_VAR"], axis=1)
+    X_train = X_train.drop(config_dict["var"], axis=1)
     feature_names = X_train.columns.tolist()
+    #X_train = X_train.sample(frac=1).reset_index(drop=True)
     X_train = X_train.values
-    Y_train = pd.read_csv(f"train_{var}/merged_data-y-train_{var}.csv")
+    Y_train = pd.read_csv(f"train_filtered_95_data-y-{var}.csv")
     Y_train = label_binarize(
         Y_train.values, classes=["low_impact", "high_impact"]
     ).ravel()
 
-    X_test = pd.read_csv(f"test_{var}/merged_data-test_{var}.csv")
+    X_test = pd.read_csv(f"test_filtered_95_data-{var}.csv")
     # var = X_test[config_dict['ML_VAR']]
-    X_test = X_test.drop(config_dict["ML_VAR"], axis=1)
+    X_test = X_test.drop(config_dict["var"], axis=1)
     # feature_names = X_test.columns.tolist()
     X_test = X_test.values
-    Y_test = pd.read_csv(f"test_{var}/merged_data-y-test_{var}.csv")
+    Y_test = pd.read_csv(f"test_filtered_95_data-y-{var}.csv")
     print("Data Loaded!")
     # Y = pd.get_dummies(y)
     Y_test = label_binarize(
@@ -103,7 +106,7 @@ def classifier(
     # class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
     clf.fit(X_train, Y_train)  # , class_weight=class_weights)
     clf_name = "StackingClassifier"
-    with open(f"../models/{var}/{clf_name}_{var}.joblib", "wb") as f:
+    with open(f"./models/{var}/{clf_name}_{var}.joblib", "wb") as f:
         dump(clf, f, compress="lz4")
     # del clf
     # with open(f"./models/{var}/{clf_name}_{var}.joblib", 'rb') as f:
@@ -113,6 +116,7 @@ def classifier(
     prc = precision_score(Y_test, y_score, average="weighted")
     recall = recall_score(Y_test, y_score, average="weighted")
     roc_auc = roc_auc_score(Y_test, y_score)
+    prc_auc = average_precision_score(Y_test, y_score, average="weighted")
     # roc_auc = roc_auc_score(Y_test, np.argmax(y_score, axis=1))
     accuracy = accuracy_score(Y_test, y_score)
     # score = clf.score(X_train, Y_train)
@@ -128,13 +132,13 @@ def classifier(
     # background = shap.kmeans(X_train, 6)
     explainer = shap.KernelExplainer(clf.predict, background)
     del clf, X_train
-    background = X_test[np.random.choice(X_test.shape[0], 10000, replace=False)]
+    background = X_test[np.random.choice(X_test.shape[0], 5000, replace=False)]
     shap_values = explainer.shap_values(background)
     plt.figure()
-    shap.summary_plot(shap_values, background, feature_names, show=False)
+    shap.summary_plot(shap_values, background, feature_names, max_display = 30, show=False)
     # shap.plots.waterfall(shap_values[0], max_display=15)
     plt.savefig(
-        f"../models/{var}/{clf_name}_{var}_features.pdf",
+        f"./models/{var}/{clf_name}_{var}_features.pdf",
         format="pdf",
         dpi=1000,
         bbox_inches="tight",
@@ -148,9 +152,9 @@ if __name__ == "__main__":
         "--var-tag",
         "-v",
         type=str,
-        required=True,
-        default="nssnv",
-        help="The tag used when generating train/test data. Default:'nssnv'",
+        #required=True,
+        default="dbnsfp",
+        help="The tag used when generating train/test data. Default:'dbnsfp'",
     )
 
     args = parser.parse_args()
@@ -165,11 +169,11 @@ if __name__ == "__main__":
             ),
             ("BalancedRF", BalancedRandomForestClassifier()),
             ("AdaBoost", AdaBoostClassifier()),
-            # ("ExtraTrees", ExtraTreesClassifier(class_weight='balanced', n_jobs=-1)),
+             ("ExtraTrees", ExtraTreesClassifier(class_weight='balanced', n_jobs=-1)),
             ("GaussianNB", GaussianNB()),
-            # ("LDA", LinearDiscriminantAnalysis()),
+             ("LDA", LinearDiscriminantAnalysis()),
             ("GradientBoost", GradientBoostingClassifier()),
-            # ("MLP", MLPClassifier())
+             ("MLP", MLPClassifier())
         ],
         cv=5,
         stack_method="predict_proba",
@@ -179,17 +183,17 @@ if __name__ == "__main__":
         verbose=1,
     )
 
-    with open("../../../configs/columns_config.yaml") as fh:
+    with open("../../configs/dbnsfp_column_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
     var = args.var_tag
-    if not os.path.exists("../models/" + var):
-        os.makedirs("../models/" + var)
-    output = "../models/" + var + "/ML_results_" + var + "_.csv"
+    if not os.path.exists("./models/" + var):
+        os.makedirs("./models/" + var)
+    output = "./models/" + var + "/ML_results_" + var + "_.csv"
     # print('Working with '+var+' dataset...', file=open(output, "a"))
     print("Working with " + var + " dataset...")
     X_train, X_test, Y_train, Y_test, background, feature_names = data_parsing(
-        var, config_dict, output
+        var, config_dict
     )
     with open(output, "a") as f:
         f.write(
