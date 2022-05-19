@@ -48,10 +48,6 @@ import yaml
 import functools
 
 print = functools.partial(print, flush=True)
-import matplotlib.pyplot as plt
-import warnings
-
-warnings.simplefilter("ignore")
 import gc
 import os
 
@@ -64,23 +60,23 @@ TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 def data_parsing(var, config_dict):
     # Load data
     # print(f'\nUsing merged_data-train_{var}..', file=open(output, "a"))
-    X_train = pd.read_csv(f"train_filtered_95_data-{var}.csv")
+    X_train = pd.read_csv(f"train_custom_data-{var}.csv")
     # var = X_train[config_dict['ML_VAR']]
     X_train = X_train.drop(config_dict["var"], axis=1)
     feature_names = X_train.columns.tolist()
     #X_train = X_train.sample(frac=1).reset_index(drop=True)
     X_train = X_train.values
-    Y_train = pd.read_csv(f"train_filtered_95_data-y-{var}.csv")
+    Y_train = pd.read_csv(f"train_custom_data-y-{var}.csv")
     Y_train = label_binarize(
         Y_train.values, classes=["low_impact", "high_impact"]
     ).ravel()
 
-    X_test = pd.read_csv(f"test_filtered_95_data-{var}.csv")
+    X_test = pd.read_csv(f"test_custom_data-{var}.csv")
     # var = X_test[config_dict['ML_VAR']]
     X_test = X_test.drop(config_dict["var"], axis=1)
     # feature_names = X_test.columns.tolist()
     X_test = X_test.values
-    Y_test = pd.read_csv(f"test_filtered_95_data-y-{var}.csv")
+    Y_test = pd.read_csv(f"test_custom_data-y-{var}.csv")
     print("Data Loaded!")
     # Y = pd.get_dummies(y)
     Y_test = label_binarize(
@@ -106,10 +102,10 @@ def classifier(
     # class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
     clf.fit(X_train, Y_train)  # , class_weight=class_weights)
     clf_name = "StackingClassifier"
-    with open(f"./models/{var}/{clf_name}_{var}.joblib", "wb") as f:
+    with open(f"./models_custom/{var}/{clf_name}_{var}.joblib", "wb") as f:
         dump(clf, f, compress="lz4")
     # del clf
-    # with open(f"./models/{var}/{clf_name}_{var}.joblib", 'rb') as f:
+    # with open(f"./models_custom/{var}/{clf_name}_{var}.joblib", 'rb') as f:
     # clf = load(f)
     train_score = clf.score(X_train, Y_train)
     y_score = clf.predict(X_test)
@@ -132,13 +128,13 @@ def classifier(
     # background = shap.kmeans(X_train, 6)
     explainer = shap.KernelExplainer(clf.predict, background)
     del clf, X_train
-    background = X_test[np.random.choice(X_test.shape[0], 5000, replace=False)]
+    background = X_test[np.random.choice(X_test.shape[0], 10000, replace=False)]
     shap_values = explainer.shap_values(background)
     plt.figure()
-    shap.summary_plot(shap_values, background, feature_names, max_display = 30, show=False)
+    shap.summary_plot(shap_values, background, feature_names, max_display = 50, show=False)
     # shap.plots.waterfall(shap_values[0], max_display=15)
     plt.savefig(
-        f"./models/{var}/{clf_name}_{var}_features.pdf",
+        f"./models_custom/{var}/{clf_name}_{var}_features.pdf",
         format="pdf",
         dpi=1000,
         bbox_inches="tight",
@@ -162,15 +158,15 @@ if __name__ == "__main__":
     # Classifiers I wish to use
     classifiers = StackingClassifier(
         estimators=[
-            ("DecisionTree", DecisionTreeClassifier(class_weight="balanced")),
-            (
-                "RandomForest",
-                RandomForestClassifier(class_weight="balanced", n_jobs=-1),
-            ),
+            #("DecisionTree", DecisionTreeClassifier(class_weight="balanced")),
+            #(
+            #    "RandomForest",
+            #    RandomForestClassifier(class_weight="balanced", n_jobs=-1),
+            #),
             ("BalancedRF", BalancedRandomForestClassifier()),
-            ("AdaBoost", AdaBoostClassifier()),
-             ("ExtraTrees", ExtraTreesClassifier(class_weight='balanced', n_jobs=-1)),
-            ("GaussianNB", GaussianNB()),
+            #("AdaBoost", AdaBoostClassifier()),
+            ("ExtraTrees", ExtraTreesClassifier(class_weight='balanced', n_jobs=-1)),
+            #("GaussianNB", GaussianNB()),
              ("LDA", LinearDiscriminantAnalysis()),
             ("GradientBoost", GradientBoostingClassifier()),
              ("MLP", MLPClassifier())
@@ -183,13 +179,13 @@ if __name__ == "__main__":
         verbose=1,
     )
 
-    with open("../../configs/dbnsfp_column_config.yaml") as fh:
+    with open("../../configs/col_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
     var = args.var_tag
-    if not os.path.exists("./models/" + var):
-        os.makedirs("./models/" + var)
-    output = "./models/" + var + "/ML_results_" + var + "_.csv"
+    if not os.path.exists("./models_custom/" + var):
+        os.makedirs("./models_custom/" + var)
+    output = "./models_custom/" + var + "/ML_results_" + var + ".csv"
     # print('Working with '+var+' dataset...', file=open(output, "a"))
     print("Working with " + var + " dataset...")
     X_train, X_test, Y_train, Y_test, background, feature_names = data_parsing(

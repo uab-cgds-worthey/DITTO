@@ -1,469 +1,262 @@
 # columns to be needed in dataset
 columns:
-    - AAChange.refGene
-    - ID
-    #- AF_ESP
-    #- AF_EXAC
-    #- AF_TGP
-    - CLNREVSTAT
-    - CLNSIG
-    - CLNVC
-    - MC
-    - Func.refGene
-    - ExonicFunc.refGene
-    - SIFT_score
-    - Polyphen2_HDIV_score
-    - Polyphen2_HVAR_score
-    - LRT_score
-    - MutationTaster_score
-    - MutationAssessor_score
-    - FATHMM_score
-    - PROVEAN_score
-    - VEST3_score
-    - MetaSVM_score
-    - MetaLR_score
-    - M-CAP_score
-    - CADD_phred
-    - DANN_score
-    - fathmm-MKL_coding_score
-    - Eigen_coding_or_noncoding
-    - Eigen-PC-raw
-    - GenoCanyon_score
-    - integrated_fitCons_score
-    - GERP++_RS
-    - phyloP100way_vertebrate
-    - phyloP20way_mammalian
-    - phastCons100way_vertebrate
-    - phastCons20way_mammalian
-    - SiPhy_29way_logOdds
-    - dbscSNV_ADA_SCORE
-    - dbscSNV_RF_SCORE
-    - AF_1
-    - AF_popmax
-    - AF_male
-    - AF_female
-    - AF_raw
-    - AF_afr
-    - AF_amr
-    - AF_eas
-    - AF_nfe
-    - AF_fin
-    - AF_asj
-    - AF_oth
-    - non_topmed_AF_popmax
-    - non_neuro_AF_popmax
-    - controls_AF_popmax
-    - MCAP13
-    - REVEL
-    - gerp++gt2
-    - CADD13_PHRED
-    - is_snp
-    - InterVar_automated
-    - PVS1
-    - PS1
-    - PS2
-    - PS3
-    - PS4
-    - PM1
-    - PM2
-    - PM3
-    - PM4
-    - PM5
-    - PM6
-    - PP1
-    - PP2
-    - PP3
-    - PP4
-    - PP5
-    - BA1
-    - BS1
-    - BS2
-    - BS3
-    - BS4
-    - BP1
-    - BP2
-    - BP3
-    - BP4
-    - BP5
-    - BP6
-    - BP7
-
-ClinicalSignificance:
-    2-class:
-      - Benign
-      - Pathogenic
-    3-class:
-      - Benign
-      - Uncertain_significance
-      - Pathogenic
-    4-class:
-      - Benign
-      - Benign/Likely_benign
-      - Pathogenic/Likely_pathogenic
-      - Pathogenic
-    5-class:
-      - Benign
-      - Uncertain_significance
-      - Pathogenic
-      - Likely_pathogenic
-      - Likely_benign
-    6-class:
-      - Benign
-      - Benign/Likely_benign
-      - Pathogenic/Likely_pathogenic
-      - Pathogenic
-      - Likely_pathogenic
-      - Likely_benign
-    optional:
-      - not provided
-      - Benign/Likely_benign
-      - Pathogenic/Likely_pathogenic
-      - Conflicting interpretations of pathogenicity
-      - drug response
-      - association
-      - risk factor
-      - protective
-      - Affects
-      - conflicting data from submitters
-      - other
-      - no interpretation for the single variant  # concerns compound hets
-      - "-"
-      - association not found   # not certain what this exactly refers to. Need to investigate
-
-Fill_NAs:
+ - '#chr'
+ - pos(1-based)
+ - ref
+ - alt
+ - aaref
+ - aaalt
+ - genename
+ - Ensembl_geneid
+ - Ensembl_transcriptid
+ - Ensembl_proteinid
+ - Uniprot_acc
+ - cds_strand
  - SIFT_score
+ - SIFT4G_score
  - Polyphen2_HDIV_score
  - Polyphen2_HVAR_score
  - LRT_score
- - MutationTaster_score
+ - LRT_Omega
+ - MutationTaster_converted_rankscore
  - MutationAssessor_score
  - FATHMM_score
  - PROVEAN_score
- - VEST3_score
+ - PROVEAN_converted_rankscore
+ - VEST4_score
  - MetaSVM_score
  - MetaLR_score
+ - Reliability_index
+ - MetaRNN_score
  - M-CAP_score
+ - REVEL_score
+ - MutPred_score
+ - MVP_score
+ - MPC_score
+ - PrimateAI_score
+ - DEOGEN2_score
+ - BayesDel_addAF_score
+ - BayesDel_noAF_score
+ - ClinPred_score
+ - LIST-S2_score
+ - CADD_raw
  - CADD_phred
  - DANN_score
  - fathmm-MKL_coding_score
- - Eigen-PC-raw
+ - fathmm-XF_coding_score
+ - Eigen-raw_coding
+ - Eigen-phred_coding
+ - Eigen-PC-raw_coding
+ - Eigen-PC-phred_coding
  - GenoCanyon_score
  - integrated_fitCons_score
+ - integrated_confidence_value
+ - GM12878_fitCons_score
+ - H1-hESC_fitCons_score
+ - HUVEC_fitCons_score
+ - LINSIGHT
+ - GERP++_NR
  - GERP++_RS
  - phyloP100way_vertebrate
- - phyloP20way_mammalian
+ - phyloP30way_mammalian
+ - phyloP17way_primate
  - phastCons100way_vertebrate
- - phastCons20way_mammalian
+ - phastCons30way_mammalian
+ - phastCons17way_primate
  - SiPhy_29way_logOdds
- - dbscSNV_ADA_SCORE
- - dbscSNV_RF_SCORE
- - AF_1
- - AF_popmax
- - AF_male
- - AF_female
- - AF_raw
- - AF_afr
- - AF_amr
- - AF_eas
- - AF_nfe
- - AF_fin
- - AF_asj
- - AF_oth
- - non_topmed_AF_popmax
- - non_neuro_AF_popmax
- - controls_AF_popmax
- - MCAP13
- - REVEL
- - gerp++gt2
- - CADD13_PHRED
- - is_snp
- - PVS1
- - PS1
- - PS2
- - PS3
- - PS4
- - PM1
- - PM2
- - PM3
- - PM4
- - PM5
- - PM6
- - PP1
- - PP2
- - PP3
- - PP4
- - PP5
- - BA1
- - BS1
- - BS2
- - BS3
- - BS4
- - BP1
- - BP2
- - BP3
- - BP4
- - BP5
- - BP6
- - BP7
- - CLNREVSTAT_criteria_provided
- - CLNREVSTAT_no_assertion_criteria_provided
- - CLNREVSTAT_practice_guideline
- - CLNREVSTAT_reviewed_by_expert_panel
- - Func.refGene_UTR3
- - Func.refGene_UTR5
- - Func.refGene_UTR5\x3bUTR3
- - Func.refGene_downstream
- - Func.refGene_exonic
- - Func.refGene_exonic\x3bsplicing
- - Func.refGene_intergenic
- - Func.refGene_intronic
- - Func.refGene_ncRNA_UTR5
- - Func.refGene_ncRNA_exonic
- - Func.refGene_ncRNA_exonic\x3bsplicing
- - Func.refGene_ncRNA_intronic
- - Func.refGene_ncRNA_splicing
- - Func.refGene_splicing
- - Func.refGene_upstream
- - Func.refGene_upstream\x3bdownstream
- - ExonicFunc.refGene_frameshift_deletion
- - ExonicFunc.refGene_frameshift_insertion
- - ExonicFunc.refGene_frameshift_substitution
- - ExonicFunc.refGene_nonframeshift_deletion
- - ExonicFunc.refGene_nonframeshift_insertion
- - ExonicFunc.refGene_nonframeshift_substitution
- - ExonicFunc.refGene_nonsynonymous_SNV
- - ExonicFunc.refGene_stopgain
- - ExonicFunc.refGene_stoploss
- - ExonicFunc.refGene_synonymous_SNV
- - ExonicFunc.refGene_unknown
- - Eigen_coding_or_noncoding_c
- - Eigen_coding_or_noncoding_n
- - InterVar_automated_Benign
- - InterVar_automated_Likely_benign
- - InterVar_automated_Likely_pathogenic
- - InterVar_automated_Pathogenic
- - InterVar_automated_Uncertain_significance
+ - bStatistic
+ - gnomAD_genomes_AF
+ - gnomAD_genomes_AFR_AF
+ - gnomAD_genomes_AMI_AF
+ - gnomAD_genomes_AMR_AF
+ - gnomAD_genomes_ASJ_AF
+ - gnomAD_genomes_EAS_AF
+ - gnomAD_genomes_FIN_AF
+ - gnomAD_genomes_MID_AF
+ - gnomAD_genomes_NFE_AF
+ - gnomAD_genomes_SAS_AF
+ - clinvar_clnsig
+ - clinvar_review
+ - Interpro_domain
 
-Fill_1_NAs:
-  SIFT_score:
-    0.5
-  Polyphen2_HDIV_score:
-    0.5
-  Polyphen2_HVAR_score:
-    0.5
-  LRT_score:
-    0.5     #The score ranges from 0 to 1 and a larger score signifies that the codon is more constrained or a NS is more likely to be deleterious.
-  MutationTaster_score:
-    0.5
-  MutationAssessor_score:
-    0   #MutationAssessor functional impact combined score (MAori). The score ranges from -5.135 to 6.49 in dbNSFP.
-  FATHMM_score:
-    -3.5         #weighted for human inherited- disease mutations with Disease Ontology (FATHMMori). Scores range from -18.09 to 11.0. This is for coding and MKL for non-coding variants
-  PROVEAN_score:
-    0           # range - -14 to 13.57
-  VEST3_score:
-    0.5           # range - 0 to 1
-  MetaSVM_score:
-    0.5         # range - -2 to 3
-  MetaLR_score:
-    0.5          # range - 0 to 1
-  M-CAP_score:
-    0.5           # range - 0 to 1
-  CADD_phred:
-    20
-  DANN_score:
-    0.5            # range - 0 to 1. deep neural network (DNN) to recognize pathogenic variants
-  fathmm-MKL_coding_score:
-    0.5 # range - 0 to 1. This is for non-coding variants - functional prediction tool
-  Eigen-PC-raw:
-    -20          #functional annotations. input range - -3.252 to 8.426.
-  GenoCanyon_score:
-    0.5      # range - 0 to 1
-  integrated_fitCons_score:
-    0.5 # range - 0 to 1
-  GERP++_RS:
-    -20
-  phyloP100way_vertebrate:
-    20
-  phyloP20way_mammalian:
-    20
-  phastCons100way_vertebrate:
-    0.5
-  phastCons20way_mammalian:
-    0.5
-  SiPhy_29way_logOdds:
-    15    # input range - 0 to 33.272. SiPhy score based on 29 mammals genomes. The larger the score, the more conserved the site.
-  dbscSNV_ADA_SCORE:
-    0
-  dbscSNV_RF_SCORE:
-    0
-  AF_1:
-    0.05
-  AF_popmax:
-    0.05
-  AF_male:
-    0.05
-  AF_female:
-    0.05
-  AF_raw:
-    0.05
-  AF_afr:
-    0.05
-  AF_amr:
-    0.05
-  AF_eas:
-    0.05
-  AF_nfe:
-    0.05
-  AF_fin:
-    0.05
-  AF_asj:
-    0.05
-  AF_oth:
-    0.05
-  non_topmed_AF_popmax:
-    0.05
-  non_neuro_AF_popmax:
-    0.05
-  controls_AF_popmax:
-    0.05
-  MCAP13:
-    0.5
-  REVEL:
-    0.5             # predicting the pathogenicity of missense variants. It integrates scores from MutPred, FATHMM v2.3, VEST 3.0, PolyPhen-2, SIFT, PROVEAN, MutationAssessor, MutationTaster, LRT, GERP++, SiPhy, phyloP, and phastCons. Score range from 0 to 1 and variants with higher scores are predicted to be more likely to be pathogenic.
-  gerp++gt2:
-    -20
-  CADD13_PHRED:
-    20
-  is_snp:
-    0
-  PVS1:
-    0
-  PS1:
-    0
-  PS2:
-    0
-  PS3:
-    0
-  PS4:
-    0
-  PM1:
-    0
-  PM2:
-    0
-  PM3:
-    0
-  PM4:
-    0
-  PM5:
-    0
-  PM6:
-    0
-  PP1:
-    0
-  PP2:
-    0
-  PP3:
-    0
-  PP4:
-    0
-  PP5:
-    0
-  BA1:
-    0
-  BS1:
-    0
-  BS2:
-    0
-  BS3:
-    0
-  BS4:
-    0
-  BP1:
-    0
-  BP2:
-    0
-  BP3:
-    0
-  BP4:
-    0
-  BP5:
-    0
-  BP6:
-    0
-  BP7:
-    0
-  CLNREVSTAT_criteria_provided:
-    0
-  CLNREVSTAT_no_assertion_criteria_provided:
-    0
-  CLNREVSTAT_practice_guideline:
-    0
-  CLNREVSTAT_reviewed_by_expert_panel:
-    0
-  Func.refGene_UTR3:
-    0
-  Func.refGene_UTR5:
-    0
-  Func.refGene_UTR5\x3bUTR3:
-    0
-  Func.refGene_downstream:
-    0
-  Func.refGene_exonic:
-    0
-  Func.refGene_exonic\x3bsplicing:
-    0
-  Func.refGene_intergenic:
-    0
-  Func.refGene_intronic:
-    0
-  Func.refGene_ncRNA_exonic:
-    0
-  Func.refGene_ncRNA_exonic\x3bsplicing:
-    0
-  Func.refGene_ncRNA_intronic:
-    0
-  Func.refGene_ncRNA_splicing:
-    0
-  Func.refGene_splicing:
-    0
-  Func.refGene_upstream:
-    0
-  Func.refGene_upstream\x3bdownstream:
-    0
-  ExonicFunc.refGene_frameshift_deletion:
-    0
-  ExonicFunc.refGene_frameshift_insertion:
-    0
-  ExonicFunc.refGene_frameshift_substitution:
-    0
-  ExonicFunc.refGene_nonframeshift_deletion:
-    0
-  ExonicFunc.refGene_nonframeshift_insertion:
-    0
-  ExonicFunc.refGene_nonframeshift_substitution:
-    0
-  ExonicFunc.refGene_nonsynonymous_SNV:
-    0
-  ExonicFunc.refGene_stopgain:
-    0
-  ExonicFunc.refGene_stoploss:
-    0
-  ExonicFunc.refGene_synonymous_SNV:
-    0
-  ExonicFunc.refGene_unknown:
-    0
-  Eigen_coding_or_noncoding_c:
-    0
-  Eigen_coding_or_noncoding_n:
-    0
-  InterVar_automated_Benign:
-    0
-  InterVar_automated_Likely_benign:
-    0
-  InterVar_automated_Likely_pathogenic:
-    0
-  InterVar_automated_Pathogenic:
-    0
-  InterVar_automated_Uncertain_significance:
-    0
+ClinicalSignificance:
+ - Uncertain_significance
+ - Pathogenic
+ - Likely_pathogenic
+ - Benign
+ - Likely_benign
+ - Benign/Likely_benign
+ - Pathogenic/Likely_pathogenic
+
+BenchmarkSignificance:
+ - Pathogenic
+ - Likely_pathogenic
+ - Likely_benign
+ - Benign
+ - Benign/Likely_benign
+ - Pathogenic/Likely_pathogenic
+ - Pathogenic,_other
+ - Pathogenic/Likely_pathogenic,_other
+ - Pathogenic,_drug_response
+
+Clinsig_train:
+  -  Benign
+  -  Pathogenic
+  -  Likely_benign
+
+Clinsig_test:
+  -  Pathogenic/Likely_pathogenic
+  -  Likely_pathogenic
+  -  Benign/Likely_benign
+
+
+CLNREVSTAT: #https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/
+  -  practice_guideline
+  -  reviewed_by_expert_panel
+  -  criteria_provided,_multiple_submitters,_no_conflicts
+  -  criteria_provided,_single_submitter
+
+var:
+    -   '#chr'
+    -   pos(1-based)
+    -   ref
+    -   alt
+    -   cds_strand
+    -   genename
+    -   Ensembl_geneid
+    -   Ensembl_transcriptid
+    -   Ensembl_proteinid
+    -   Uniprot_acc
+    -   clinvar_clnsig
+    -   clinvar_review
+    -   Interpro_domain
+
+allele_freq_columns:
+ - gnomAD_genomes_AF
+ - gnomAD_genomes_AFR_AF
+ - gnomAD_genomes_AMI_AF
+ - gnomAD_genomes_AMR_AF
+ - gnomAD_genomes_ASJ_AF
+ - gnomAD_genomes_EAS_AF
+ - gnomAD_genomes_FIN_AF
+ - gnomAD_genomes_MID_AF
+ - gnomAD_genomes_NFE_AF
+ - gnomAD_genomes_SAS_AF
+
+nssnv_columns:
+  SIFT: 0.5
+  PolyPhen: 0.5
+  CADD_PHRED: 20
+  MetaSVM_score: 0.5   # range - -2 to 3
+  FATHMM_score: 0         #weighted for human inherited- disease mutations with Disease Ontology (FATHMMori). Scores range from -18.09 to 11.0. This is for coding and MKL for non-coding variants
+  MutationAssessor_score: 0   #MutationAssessor functional impact combined score (MAori). The score ranges from -5.135 to 6.49 in dbNSFP.
+  PROVEAN_score: 0           # range - -14 to 13.57
+  VEST4_score: 0.5           # range - 0 to 1
+  GERP: 0 #ranges from -12.36 to 6.18
+  MutationTaster_score: 0.5
+  DANN_score: 0.5
+  Eigen-PC-phred_coding: 20
+  Eigen-PC-raw_coding: 0   #functional annotations. input range - -3.252 to 8.426.
+  Eigen-PC-raw_coding_rankscore: 0
+  Eigen-phred_coding: 20
+  Eigen-raw_coding: 0
+  Eigen-raw_coding_rankscore: 0
+  GERP++_RS: 0
+  GenoCanyon_score: 0.5
+  LRT_score: 0.5  #The score ranges from 0 to 1 and a larger score signifies that the codon is more constrained or a NS is more likely to be deleterious.
+  M-CAP_score: 0.5   # range - 0 to 1
+  MetaLR_score: 0.5  # range - 0 to 1
+  SiPhy_29way_logOdds: 15 # input range - 0 to 33.272. SiPhy score based on 29 mammals genomes. The larger the score the more conserved the site.
+  fathmm-MKL_coding_score: 0.5  # range - 0 to 1. This is for non-coding variants - functional prediction tool
+  integrated_fitCons_score: 0.5 # range - 0 to 1
+  phastCons100way_vertebrate: 0.5
+  phastCons30way_mammalian: 0.5
+  phyloP100way_vertebrate: 20
+  phyloP30way_mammalian: 20
+  IMPACT_HIGH: 0
+  IMPACT_LOW: 0
+  IMPACT_MODERATE: 0
+  IMPACT_MODIFIER: 0
+  BIOTYPE_RNase_MRP_RNA: 0
+  BIOTYPE_RNase_P_RNA: 0
+  BIOTYPE_antisense_RNA: 0
+  BIOTYPE_guide_RNA: 0
+  BIOTYPE_lncRNA: 0
+  BIOTYPE_miRNA: 0
+  BIOTYPE_misc_RNA: 0
+  BIOTYPE_ncRNA_pseudogene: 0
+  BIOTYPE_protein_coding: 0
+  BIOTYPE_scRNA: 0
+  BIOTYPE_snRNA: 0
+  BIOTYPE_snoRNA: 0
+  BIOTYPE_telomerase_RNA: 0
+  BIOTYPE_transcribed_pseudogene: 0
+  BIOTYPE_nonsense_mediated_decay: 0
+  BIOTYPE_polymorphic_pseudogene: 0
+  BIOTYPE_IG_C_gene: 0
+  BIOTYPE_non_stop_decay: 0
+
+nssnv_median:
+ SIFT_score: 0.06199999898672104
+ SIFT4G_score: 0.1080000028014183
+ Polyphen2_HDIV_score: 0.48500001430511475
+ Polyphen2_HVAR_score: 0.16699999570846558
+ LRT_score: 0.00011200000153621659
+ LRT_Omega: 0.1196729987859726
+ MutationTaster_converted_rankscore: 0.8100100159645081
+ MutationAssessor_score: 1.6100000143051147
+ FATHMM_score: -0.2199999988079071
+ PROVEAN_score: -1.5800000429153442
+ PROVEAN_converted_rankscore: 0.4390600025653839
+ VEST4_score: 0.5450000166893005
+ MetaSVM_score: -0.7731999754905701
+ MetaLR_score: 0.19979999959468842
+ Reliability_index: 10.0
+ MetaRNN_score: 0.02568286657333374
+ MCAP_score': 0.08201000094413757
+ REVEL_score: 0.21199999749660492
+ MutPred_score: 0.5960000157356262
+ MVP_score: 0.6482067108154297
+ MPC_score: 0.36203378438949585
+ PrimateAI_score: 0.5189425349235535
+ DEOGEN2_score: 0.1603820025920868
+ BayesDel_addAF_score: 0.1817370057106018
+ BayesDel_noAF_score: 0.1416580080986023
+ ClinPred_score: 0.07361292839050293
+ LISTS2_score': 0.8526149988174438
+ CADD_raw: 3.801330089569092
+ CADD_phred: 25.799999237060547
+ DANN_score: 0.9942993521690369
+ fathmmMKL_coding_score': 0.9268699884414673
+ fathmmXF_coding_score': 0.2985199987888336
+ Eigenraw_coding': 0.4470433294773102
+ Eigenphred_coding': 4.64929723739624
+ EigenPC-raw_coding': 0.3914338946342468
+ EigenPC-phred_coding': 4.298270225524902
+ GenoCanyon_score: 0.9999961853027344
+ integrated_fitCons_score: 0.6717699766159058
+ integrated_confidence_value: 0.0
+ GM12878_fitCons_score: 0.6159480214118958
+ H1hESC_fitCons_score': 0.6589829921722412
+ HUVEC_fitCons_score: 0.6355509757995605
+ LINSIGHT: 0.9758660197257996
+ GERP+_NR': 5.340000152587891
+ GERP+_RS': 4.579999923706055
+ phyloP100way_vertebrate: 3.869999885559082
+ phyloP30way_mammalian: 1.0260000228881836
+ phyloP17way_primate: 0.5989999771118164
+ phastCons100way_vertebrate: 1.0
+ phastCons30way_mammalian: 0.9879999756813049
+ phastCons17way_primate: 0.9629999995231628
+ SiPhy_29way_logOdds: 13.411700248718262
+ bStatistic: 707.0
+ gnomAD_genomes_AF: 0.0
+ gnomAD_genomes_AFR_AF: 0.0
+ gnomAD_genomes_AMI_AF: 0.0
+ gnomAD_genomes_AMR_AF: 0.0
+ gnomAD_genomes_ASJ_AF: 0.0
+ gnomAD_genomes_EAS_AF: 0.0
+ gnomAD_genomes_FIN_AF: 0.0
+ gnomAD_genomes_MID_AF: 0.0
+ gnomAD_genomes_NFE_AF: 0.0
+ gnomAD_genomes_SAS_AF: 0.0
