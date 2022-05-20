@@ -1,5 +1,4 @@
 import streamlit as st
-st.set_page_config(layout="wide")
 import pandas as pd
 import yaml
 import warnings
@@ -11,6 +10,21 @@ import matplotlib.pyplot as plt
 import gzip
 from PIL import Image
 #import re
+
+# Config the whole app
+st.set_page_config(
+    page_title="DITTO", page_icon="🧊", layout="wide", #initial_sidebar_state="expanded",
+)
+
+st.write(
+    "<style>div.row-widget.stRadio > div{flex-direction:row;justify-content: center;} </style>",
+    unsafe_allow_html=True,
+)
+st.write(
+    "<style>div.st-bf{flex-direction:column;} div.st-ag{font-weight:bold;padding-right:50px;}</style>",
+    unsafe_allow_html=True,
+)
+
 
 @st.cache(allow_output_mutation=True)
 def load_data():
@@ -67,24 +81,41 @@ def main():
         ditto = pred[(pred.Gene==gene) & (pred.Transcript==trans) & (pred.position==pos) & (pred.ref_allele==ref) & (pred.alt_allele==alt)]
 
     row_idx = ditto.index.values[0]
+    col2.subheader(f"Ditto damage predictions")#\n{row_idx}")
     col2.subheader(f"Ditto score = {ditto['Ditto'].values[0]}")#\n{row_idx}")
 
-    annots = pd.read_csv('./data/processed/all_data_custom-dbnsfp.csv.gz',skiprows=range(1,row_idx), nrows=1)
-    col2.write(f"Chromosome = {annots['#chr'].values[0]}")
-    col2.write(f"Pos(1-based) = {annots['pos(1-based)'].values[0]}")
-    col2.write(f"Reference allele = {annots['ref'].values[0]}")
-    col2.write(f"Alternate allele = {annots['alt'].values[0]}")
-    col2.write(f"Strand = {annots['cds_strand'].values[0]}")
-    col2.write(f"Gene name = {annots['genename'].values[0]}")
-    col2.write(f"Transcript = {annots['Ensembl_transcriptid'].values[0]}")
+    annots = pd.read_csv('./data/processed/all_data_custom-dbnsfp.csv.gz',skiprows=range(1,row_idx+1), nrows=1)
+    original = pd.read_csv('./data/processed/dbNSFP_clinvar_variants_parsed.tsv.gz', sep='\t',skiprows=range(1,row_idx+1), nrows=1)
+    #col2.write(f"Chromosome = {annots['#chr'].values[0]}")
+    #col2.write(f"Pos(1-based) = {annots['pos(1-based)'].values[0]}")
+    #col2.write(f"Reference allele = {annots['ref'].values[0]}")
+    #col2.write(f"Alternate allele = {annots['alt'].values[0]}")
+    #col2.write(f"Strand = {annots['cds_strand'].values[0]}")
+    #col2.write(f"Gene name = {annots['genename'].values[0]}")
+    #col2.write(f"Transcript = {annots['Ensembl_transcriptid'].values[0]}")
     col2.write(f"Clinvar significance = {annots['clinvar_clnsig'].values[0]}")
     annots = annots.drop(['#chr','pos(1-based)','ref','alt','cds_strand','genename','Ensembl_transcriptid','clinvar_clnsig','Ensembl_geneid','Ensembl_proteinid','Uniprot_acc','clinvar_review','Interpro_domain'], axis=1)
-    #col2.write(annots)
+    col1.subheader("All dbNSFP annotations:")
+    col1.write(original)
     shap_values1 = explainer.shap_values(annots.iloc[0,:])
-    plt.figure()
-    shap.force_plot(explainer.expected_value[1], shap_values1[1], annots.iloc[0,:], matplotlib = True, show = True)
-    col2.pyplot(plt)
 
+
+    # NOW CHANGED: SET UP THE WORKAROUND
+    class helper_object():
+        """
+        This wraps the shap object.
+        It takes as input i, which indicates the index of the observation to be explained.
+        """
+        def __init__(self, i):
+            self.base_values = explainer.expected_value[1]
+            self.data = annots.iloc[0,:]
+            self.feature_names = list(annots.columns)
+            self.values = shap_values1[1]
+
+    plt.figure()
+    shap.waterfall_plot(helper_object(1), 20)
+    #shap.force_plot(explainer.expected_value[1], shap_values1[1], annots.iloc[0,:], matplotlib = True, show = True)
+    col2.pyplot(plt)
 
 if __name__ == "__main__":
     main()
