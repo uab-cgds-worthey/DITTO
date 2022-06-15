@@ -62,6 +62,6 @@ if __name__ == "__main__":
     pred = pd.DataFrame(y_score, columns=["Ditto_Benign", "Ditto_Deleterious"])
 
     overall = pd.concat([var, pred], axis=1)
-    overall.to_csv(args.out_dir, index=False,
+    overall.to_csv(args.output, index=False,
            compression="gzip")
     del y_score, overall
