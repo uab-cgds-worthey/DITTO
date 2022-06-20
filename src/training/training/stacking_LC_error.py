@@ -1,10 +1,14 @@
-# python slurm-launch.py --exp-name Training --command "python training/training/stacking_LC.py" --partition short --mem 50G
+# python slurm-launch.py --exp-name Learning_curve --command "python training/training/stacking_LC_error.py" --partition short --mem 50G
 
 # from numpy import mean
 import numpy as np
 import pandas as pd
 import time
 import argparse
+import ray
+
+# Start Ray.
+ray.init(ignore_reinit_error=True)
 import warnings
 
 warnings.simplefilter("ignore")
@@ -37,6 +41,7 @@ os.chdir(
     "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/"
 )
 
+TUNE_STATE_REFRESH_PERIOD = 10  # Refresh resources every 10 s
 
 def data_parsing(var, config_dict):
     # Load data
@@ -50,9 +55,13 @@ def data_parsing(var, config_dict):
     Y_train = label_binarize(
         Y_train.values, classes=["low_impact", "high_impact"]
     ).ravel()
+
+
     return X_train, Y_train
 
 
+
+# @ray.remote #(num_cpus=9)
 def classifier(
     clf, var, X, y
 ):
@@ -72,8 +81,6 @@ def classifier(
         return_times=True,
         train_sizes=np.linspace(0.001, 1.0, 10),
     )
-    train_scores_mean = np.mean(train_scores, axis=1)
-    train_scores_std = np.std(train_scores, axis=1)
     test_scores_mean = np.mean(test_scores, axis=1)
     test_scores_std = np.std(test_scores, axis=1)
     fit_times_mean = np.mean(fit_times, axis=1)
@@ -81,26 +88,11 @@ def classifier(
 
     # Plot learning curve
     axes[0].grid()
-    axes[0].fill_between(
-        train_sizes,
-        train_scores_mean - train_scores_std,
-        train_scores_mean + train_scores_std,
-        alpha=0.1,
-        color="r",
-    )
-    axes[0].fill_between(
-        train_sizes,
-        test_scores_mean - test_scores_std,
-        test_scores_mean + test_scores_std,
-        alpha=0.1,
-        color="g",
-    )
-    axes[0].plot(
-        train_sizes, train_scores_mean, "o-", color="r", label="Training score"
-    )
-    axes[0].plot(
-        train_sizes, test_scores_mean, "o-", color="g", label="Cross-validation score"
-    )
+    axes[0].plot(train_sizes, -train_scores.mean(1), "o--", color="r", label="Training score")
+    axes[0].plot(train_sizes, -test_scores.mean(1), "o--", color="g", label="Cross-validation score")
+    axes[0].set_xlabel("Train size")
+    axes[0].set_ylabel("Neg Mean Squared Error")
+    axes[0].set_title("Learning curves")
     axes[0].legend(loc="best")
 
     # Plot n_samples vs fit_times
@@ -130,9 +122,9 @@ def classifier(
         alpha=0.1,
     )
     axes[2].set_xlabel("fit_times")
-    axes[2].set_ylabel("Score")
+    axes[2].set_ylabel("Neg Mean Squared Error")
     axes[2].set_title("Performance of the model")
-    plt.savefig( "./models_custom/" + var + "/Stacking_LC_" + var +".png")
+    plt.savefig( "./models_custom/" + var + "/Stacking_LC_error_" + var +".png")
     plt.close()
 
     return None
