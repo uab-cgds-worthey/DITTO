@@ -40,7 +40,7 @@ Copy paths to dataset yaml file -
     gerp: "/data/project/worthey_lab/temp_datasets_central/mana/gerp/processed/hg38/v1.6/gerp_score_hg38.bg.gz"
     gnomad_genomes: "/data/project/worthey_lab/temp_datasets_central/mana/gnomad/v3.0/data/gnomad.genomes.r3.0.sites.vcf.bgz"
     clinvar: "/data/project/worthey_lab/temp_datasets_central/mana/clinvar/data/grch38/20210119/clinvar_20210119.vcf.gz"
-    dbNSFP: "/data/project/worthey_lab/temp_datasets_central/mana/dbnsfp/processed/v4.1a_20200616/dbNSFP4.1a_variant.complete.bgz"
+    dbNSFP: "/data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.tsv.gz"
     ```
 Run variant annotation as shown in ReadMe file -
     `./src/run_pipeline.sh -s -v ../data/interim/merged_sig_norm.vcf.gz -o ../data/interim -d ~/.ditto_datasets.yaml`
