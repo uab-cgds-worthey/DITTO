@@ -19,6 +19,10 @@ def main(args):
     print("Loading Ditto predictions....")
 
     ditto = pd.read_csv('../Ditto/ditto_predictions.csv.gz')
+    ditto['#chr'] = ditto['#chr'].astype(str)
+    ditto['pos(1-based)'] = ditto['pos(1-based)'].astype(int)
+    ditto['ref'] = ditto['ref'].astype(str)
+    ditto['alt'] = ditto['alt'].astype(str)
     print('Ditto Loaded!\nRunning predictions.....')
 
     overall = pd.concat([read_vcf('./splits/'+f+'/'+ args.input) for f in os.listdir("./splits/")])
@@ -58,7 +62,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
     main(args)
 
-    #dfs = pd.concat([read_vcf('./splits/'+f+'/'+args.input) for f in os.listdir("./splits/")])
-    #print([filedir+'/'+args.input for filedir in os.listdir("./splits/")])
-    #print(dfs.head())
-    #print(psutil.Process().memory_info().rss / (1024 * 1024))
