@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#python slurm-launch.py --exp-name Training --command "python Ditto/dittodb.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/all_data_custom-dbnsfp.csv -O /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto" --partition largemem --mem 150G
+#python slurm-launch.py --exp-name Training --command "python Ditto/dbnsfp_predictions.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/all_data_custom-dbnsfp.csv -O /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/ditto_predictions.csv.gz" --partition express --mem 10G
 
 import pandas as pd
 import yaml
