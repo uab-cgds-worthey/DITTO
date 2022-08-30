@@ -144,57 +144,125 @@ allele_freq_columns:
  - gnomAD_genomes_SAS_AF
 
 nssnv_columns:
-  SIFT: 0.5
-  PolyPhen: 0.5
-  CADD_PHRED: 20
-  MetaSVM_score: 0.5   # range - -2 to 3
-  FATHMM_score: 0         #weighted for human inherited- disease mutations with Disease Ontology (FATHMMori). Scores range from -18.09 to 11.0. This is for coding and MKL for non-coding variants
-  MutationAssessor_score: 0   #MutationAssessor functional impact combined score (MAori). The score ranges from -5.135 to 6.49 in dbNSFP.
-  PROVEAN_score: 0           # range - -14 to 13.57
-  VEST4_score: 0.5           # range - 0 to 1
-  GERP: 0 #ranges from -12.36 to 6.18
-  MutationTaster_score: 0.5
-  DANN_score: 0.5
-  Eigen-PC-phred_coding: 20
-  Eigen-PC-raw_coding: 0   #functional annotations. input range - -3.252 to 8.426.
-  Eigen-PC-raw_coding_rankscore: 0
-  Eigen-phred_coding: 20
-  Eigen-raw_coding: 0
-  Eigen-raw_coding_rankscore: 0
-  GERP++_RS: 0
-  GenoCanyon_score: 0.5
-  LRT_score: 0.5  #The score ranges from 0 to 1 and a larger score signifies that the codon is more constrained or a NS is more likely to be deleterious.
-  M-CAP_score: 0.5   # range - 0 to 1
-  MetaLR_score: 0.5  # range - 0 to 1
-  SiPhy_29way_logOdds: 15 # input range - 0 to 33.272. SiPhy score based on 29 mammals genomes. The larger the score the more conserved the site.
-  fathmm-MKL_coding_score: 0.5  # range - 0 to 1. This is for non-coding variants - functional prediction tool
-  integrated_fitCons_score: 0.5 # range - 0 to 1
-  phastCons100way_vertebrate: 0.5
-  phastCons30way_mammalian: 0.5
-  phyloP100way_vertebrate: 20
-  phyloP30way_mammalian: 20
-  IMPACT_HIGH: 0
-  IMPACT_LOW: 0
-  IMPACT_MODERATE: 0
-  IMPACT_MODIFIER: 0
-  BIOTYPE_RNase_MRP_RNA: 0
-  BIOTYPE_RNase_P_RNA: 0
-  BIOTYPE_antisense_RNA: 0
-  BIOTYPE_guide_RNA: 0
-  BIOTYPE_lncRNA: 0
-  BIOTYPE_miRNA: 0
-  BIOTYPE_misc_RNA: 0
-  BIOTYPE_ncRNA_pseudogene: 0
-  BIOTYPE_protein_coding: 0
-  BIOTYPE_scRNA: 0
-  BIOTYPE_snRNA: 0
-  BIOTYPE_snoRNA: 0
-  BIOTYPE_telomerase_RNA: 0
-  BIOTYPE_transcribed_pseudogene: 0
-  BIOTYPE_nonsense_mediated_decay: 0
-  BIOTYPE_polymorphic_pseudogene: 0
-  BIOTYPE_IG_C_gene: 0
-  BIOTYPE_non_stop_decay: 0
+  - '#chr'
+	-	pos(1-based)
+	-	ref
+	-	alt
+	-	cds_strand
+	-	genename
+	-	Ensembl_geneid
+	-	Ensembl_transcriptid
+	-	Ensembl_proteinid
+	-	Uniprot_acc
+	-	clinvar_clnsig
+	-	clinvar_review
+	-	Interpro_domain
+	-	SIFT_score
+	-	SIFT4G_score
+	-	Polyphen2_HDIV_score
+	-	Polyphen2_HVAR_score
+	-	LRT_score
+	-	LRT_Omega
+	-	MutationTaster_converted_rankscore
+	-	MutationAssessor_score
+	-	FATHMM_score
+	-	PROVEAN_score
+	-	PROVEAN_converted_rankscore
+	-	VEST4_score
+	-	MetaSVM_score
+	-	MetaLR_score
+	-	Reliability_index
+	-	MetaRNN_score
+	-	M-CAP_score
+	-	REVEL_score
+	-	MutPred_score
+	-	MVP_score
+	-	MPC_score
+	-	PrimateAI_score
+	-	DEOGEN2_score
+	-	BayesDel_addAF_score
+	-	BayesDel_noAF_score
+	-	ClinPred_score
+	-	LIST-S2_score
+	-	CADD_raw
+	-	CADD_phred
+	-	DANN_score
+	-	fathmm-MKL_coding_score
+	-	fathmm-XF_coding_score
+	-	Eigen-raw_coding
+	-	Eigen-phred_coding
+	-	Eigen-PC-raw_coding
+	-	Eigen-PC-phred_coding
+	-	GenoCanyon_score
+	-	integrated_fitCons_score
+	-	integrated_confidence_value
+	-	GM12878_fitCons_score
+	-	H1-hESC_fitCons_score
+	-	HUVEC_fitCons_score
+	-	LINSIGHT
+	-	GERP++_NR
+	-	GERP++_RS
+	-	phyloP100way_vertebrate
+	-	phyloP30way_mammalian
+	-	phyloP17way_primate
+	-	phastCons100way_vertebrate
+	-	phastCons30way_mammalian
+	-	phastCons17way_primate
+	-	SiPhy_29way_logOdds
+	-	bStatistic
+	-	gnomAD_genomes_AF
+	-	gnomAD_genomes_AFR_AF
+	-	gnomAD_genomes_AMI_AF
+	-	gnomAD_genomes_AMR_AF
+	-	gnomAD_genomes_ASJ_AF
+	-	gnomAD_genomes_EAS_AF
+	-	gnomAD_genomes_FIN_AF
+	-	gnomAD_genomes_MID_AF
+	-	gnomAD_genomes_NFE_AF
+	-	gnomAD_genomes_SAS_AF
+	-	aaref_A
+	-	aaref_C
+	-	aaref_D
+	-	aaref_E
+	-	aaref_F
+	-	aaref_G
+	-	aaref_H
+	-	aaref_I
+	-	aaref_K
+	-	aaref_L
+	-	aaref_M
+	-	aaref_N
+	-	aaref_P
+	-	aaref_Q
+	-	aaref_R
+	-	aaref_S
+	-	aaref_T
+	-	aaref_U
+	-	aaref_V
+	-	aaref_W
+	-	aaref_X
+	-	aaref_Y
+	-	aaalt_A
+	-	aaalt_C
+	-	aaalt_D
+	-	aaalt_E
+	-	aaalt_F
+	-	aaalt_G
+	-	aaalt_H
+	-	aaalt_I
+	-	aaalt_K
+	-	aaalt_L
+	-	aaalt_M
+	-	aaalt_N
+	-	aaalt_P
+	-	aaalt_Q
+	-	aaalt_R
+	-	aaalt_S
+	-	aaalt_T
+	-	aaalt_V
+	-	aaalt_W
+	-	aaalt_X
+	-	aaalt_Y
 
 nssnv_median:
  SIFT_score: 0.06199999898672104
@@ -213,7 +281,7 @@ nssnv_median:
  MetaLR_score: 0.19979999959468842
  Reliability_index: 10.0
  MetaRNN_score: 0.02568286657333374
- MCAP_score': 0.08201000094413757
+ M-CAP_score: 0.08201000094413757
  REVEL_score: 0.21199999749660492
  MutPred_score: 0.5960000157356262
  MVP_score: 0.6482067108154297
@@ -223,25 +291,25 @@ nssnv_median:
  BayesDel_addAF_score: 0.1817370057106018
  BayesDel_noAF_score: 0.1416580080986023
  ClinPred_score: 0.07361292839050293
- LISTS2_score': 0.8526149988174438
+ LIST-S2_score: 0.8526149988174438
  CADD_raw: 3.801330089569092
  CADD_phred: 25.799999237060547
  DANN_score: 0.9942993521690369
- fathmmMKL_coding_score': 0.9268699884414673
- fathmmXF_coding_score': 0.2985199987888336
- Eigenraw_coding': 0.4470433294773102
- Eigenphred_coding': 4.64929723739624
- EigenPC-raw_coding': 0.3914338946342468
- EigenPC-phred_coding': 4.298270225524902
+ fathmm-MKL_coding_score: 0.9268699884414673
+ fathmm-XF_coding_score: 0.2985199987888336
+ Eigen-raw_coding: 0.4470433294773102
+ Eigen-phred_coding: 4.64929723739624
+ Eigen-PC-raw_coding: 0.3914338946342468
+ Eigen-PC-phred_coding: 4.298270225524902
  GenoCanyon_score: 0.9999961853027344
  integrated_fitCons_score: 0.6717699766159058
  integrated_confidence_value: 0.0
  GM12878_fitCons_score: 0.6159480214118958
- H1hESC_fitCons_score': 0.6589829921722412
+ H1-hESC_fitCons_score: 0.6589829921722412
  HUVEC_fitCons_score: 0.6355509757995605
  LINSIGHT: 0.9758660197257996
- GERP+_NR': 5.340000152587891
- GERP+_RS': 4.579999923706055
+ GERP++_NR: 5.340000152587891
+ GERP++_RS: 4.579999923706055
  phyloP100way_vertebrate: 3.869999885559082
  phyloP30way_mammalian: 1.0260000228881836
  phyloP17way_primate: 0.5989999771118164
@@ -250,13 +318,13 @@ nssnv_median:
  phastCons17way_primate: 0.9629999995231628
  SiPhy_29way_logOdds: 13.411700248718262
  bStatistic: 707.0
- gnomAD_genomes_AF: 0.0
- gnomAD_genomes_AFR_AF: 0.0
+ gnomAD_genomes_AF: 0.0005719619803130627
+ gnomAD_genomes_AFR_AF: 0.00024128900258801877
  gnomAD_genomes_AMI_AF: 0.0
- gnomAD_genomes_AMR_AF: 0.0
+ gnomAD_genomes_AMR_AF: 0.0002617459977045655
  gnomAD_genomes_ASJ_AF: 0.0
  gnomAD_genomes_EAS_AF: 0.0
  gnomAD_genomes_FIN_AF: 0.0
  gnomAD_genomes_MID_AF: 0.0
- gnomAD_genomes_NFE_AF: 0.0
+ gnomAD_genomes_NFE_AF: 5.6453049182891846e-05
  gnomAD_genomes_SAS_AF: 0.0

@@ -1,27 +1,5 @@
 # DITTO
 
-<<<<<<< HEAD
-Diagnosis prediction tool using AI.
-
-
-Install packages and dependencies
--------------------------------------
-
-srun --ntasks=1 --cpus-per-task=1 --mem-per-cpu=200G --time=01:59:00 --partition=pascalnodes --job-name=classify --pty /bin/bash
-
-Create an environment to work on - 
-
-    `module load Anaconda3/2020.02`
-
-For first time users only - 
-
-    `conda env create --name training --file configs/environment.yaml`
-
-Activate your environment-
-
-    `source activate training`
-
-=======
 ***!!! For research purposes only !!!***
 
 - [DITTO](#ditto)
@@ -160,4 +138,3 @@ sbatch src/predict_variant_score.sh
 For issues, please send an email with clear description to
 
 Tarun Mamidi    -   tmamidi@uab.edu
->>>>>>> bcf8822dc39ff4415e7d8b84138b7463ca901555
