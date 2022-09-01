@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#python slurm-launch.py --exp-name predictions --command "python Ditto/dbnsfp_predictions.py -i /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.tsv.gz --filter /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/all_data_custom-dbnsfp.csv.gz --ditto /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_ditto_predictions.csv.gz --shapley /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/shapley.csv.gz" --partition short --mem 50G
+#python slurm-launch.py --exp-name predictions --command "python Ditto/dbnsfp_prediction.py -i /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.tsv.gz --filter /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/all_data_filter-dbnsfp.csv.gz --ditto /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_only_ditto_predictions.csv.gz" --partition short --mem 50G
 
 import pandas as pd
 import yaml
@@ -10,7 +10,6 @@ warnings.simplefilter("ignore")
 from joblib import load
 from tqdm import tqdm
 import argparse
-import shap
 import numpy as np
 import functools
 print = functools.partial(print, flush=True)
@@ -36,12 +35,7 @@ if __name__ == "__main__":
         default="ditto_predictions.csv.gz",
         help="Output file with path (default:ditto_predictions.csv.gz)",
     )
-    parser.add_argument(
-        "--shapley",
-        type=str,
-        default="shapley.csv.gz",
-        help="Output file with path (default:shapley.csv.gz)",
-    )
+
 
     args = parser.parse_args()
 
@@ -53,7 +47,10 @@ if __name__ == "__main__":
         config_dict = yaml.safe_load(fh)
 
 
-    def parse_and_predict(dataframe, config_dict, explainer):
+    def parse_and_predict(dataframe, config_dict):
+
+        dataframe.columns = config_dict["raw_cols"]
+        dataframe = dataframe[config_dict["columns"]]
         # Drop variant info columns so we can perform one-hot encoding
         var = dataframe[config_dict['var']]
         dataframe = dataframe.drop(config_dict['var'], axis=1)
@@ -91,7 +88,6 @@ if __name__ == "__main__":
 
 
         df2 = df2.drop(config_dict['var'], axis=1)
-        shapley_values = explainer.shap_values(df2)
         X_test = df2.values
         y_score = clf.predict_proba(X_test)
         del X_test
@@ -100,7 +96,7 @@ if __name__ == "__main__":
         ditto_scores = pd.concat([var, pred], axis=1)
         df2 = pd.concat([var.reset_index(drop=True), df2.reset_index(drop=True)], axis=1)
 
-        return df2, ditto_scores, shapley_values
+        return df2, ditto_scores
 
 
     with open(
@@ -109,19 +105,13 @@ if __name__ == "__main__":
     ) as f:
         clf = load(f)
 
-    X_train = pd.read_csv('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_custom_data-dbnsfp.csv')
-    X_train = X_train.drop(config_dict['var'], axis=1)
-    X_train = X_train.values
-    background = shap.kmeans(X_train, 10)
-    explainer = shap.KernelExplainer(clf.predict_proba, background)
-    del background, X_train
-
-
     print('Processing data...')
-    df = pd.read_csv(args.input, sep='\t', usecols=config_dict["columns"], chunksize=1000000)
+
+
+    df = pd.read_csv(args.input, sep='\t', header=None, chunksize=1000000)
 
     for i, df_chunk in enumerate(df):
-        df2, ditto_scores, shapley_values = parse_and_predict(df_chunk, config_dict, explainer)
+        df2, ditto_scores  = parse_and_predict(df_chunk, config_dict)
         # Set writing mode to append after first chunk
         mode = 'w' if i == 0 else 'a'
 
@@ -137,8 +127,4 @@ if __name__ == "__main__":
         header=header,
             mode=mode,
                compression="gzip")
-        shapley_values.to_csv(args.shapley, index=False,
-            mode=mode,
-               compression="gzip")
 
-        del df2, ditto_scores, shapley_values
