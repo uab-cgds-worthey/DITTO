@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#python slurm-launch.py --exp-name predictions --command "python Ditto/dbnsfp_prediction.py -i /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.tsv.gz --filter /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/all_data_filter-dbnsfp.csv.gz --ditto /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_only_ditto_predictions.csv.gz" --partition long --mem 10G
+#python slurm-launch.py --exp-name pkd-predictions --command "python pkd/predictions.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbNSFP_PKD_variants.tsv.gz --filter /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/PKD-procesed-dbnsfp.csv.gz --ditto /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_PKD_ditto_predictions.csv.gz --shapley /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/PKD_shapley.joblib" --partition short --mem 5G
 
 import pandas as pd
 import yaml
 import warnings
 warnings.simplefilter("ignore")
-from joblib import load
+from joblib import load, dump
 from tqdm import tqdm
 import argparse
+import shap
 import numpy as np
 import functools
 print = functools.partial(print, flush=True)
@@ -35,7 +36,12 @@ if __name__ == "__main__":
         default="ditto_predictions.csv.gz",
         help="Output file with path (default:ditto_predictions.csv.gz)",
     )
-
+    parser.add_argument(
+        "--shapley",
+        type=str,
+        default="shapley.csv.gz",
+        help="Output file with path (default:shapley.csv.gz)",
+    )
 
     args = parser.parse_args()
 
@@ -47,8 +53,7 @@ if __name__ == "__main__":
         config_dict = yaml.safe_load(fh)
 
 
-    def parse_and_predict(dataframe, config_dict):
-
+    def parse_and_predict(dataframe, config_dict, explainer):
         dataframe.columns = config_dict["raw_cols"]
         dataframe = dataframe[config_dict["columns"]]
         # Drop variant info columns so we can perform one-hot encoding
@@ -94,9 +99,18 @@ if __name__ == "__main__":
         pred = pd.DataFrame(y_score, columns=["Ditto_Benign", "Ditto_Deleterious"])
 
         ditto_scores = pd.concat([var, pred], axis=1)
-        df2 = pd.concat([var.reset_index(drop=True), df2.reset_index(drop=True)], axis=1)
+        ditto_scores.to_csv(args.ditto, index=False,
+               compression="gzip")
+        df3 = pd.concat([var.reset_index(drop=True), df2.reset_index(drop=True)], axis=1)
+        df3.to_csv(args.filter, index=False,
+        compression='gzip')
+        del df3
+        shapley_values = explainer.shap_values(df2)
+        with open(args.shapley, "wb") as f:
+            dump([explainer.expected_value,shapley_values], f, compress="lz4")
+        del df2
 
-        return df2, ditto_scores
+        return None
 
 
     with open(
@@ -105,27 +119,17 @@ if __name__ == "__main__":
     ) as f:
         clf = load(f)
 
+    X_train = pd.read_csv('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_custom_data-dbnsfp.csv')
+    X_train = X_train.drop(config_dict['var'], axis=1)
+    X_train = X_train.values
+    background = shap.kmeans(X_train, 10)
+    explainer = shap.KernelExplainer(clf.predict_proba, background)
+    del background, X_train
+
+
     print('Processing data...')
+    df = pd.read_csv(args.input, sep='\t', header=None)
 
+    parse_and_predict(df, config_dict, explainer)
 
-    df = pd.read_csv(args.input, sep='\t', header=None, chunksize=1000000)
-
-    for i, df_chunk in enumerate(df):
-        df2, ditto_scores  = parse_and_predict(df_chunk, config_dict)
-        # Set writing mode to append after first chunk
-        mode = 'w' if i == 0 else 'a'
-
-        # Add header if it is the first chunk
-        header = i == 0
-        #print('\nData shape (nsSNV) =', df2.shape)
-        # Write it to a file
-        df2.to_csv(args.filter, index=False,
-            header=header,
-            mode=mode,
-            compression='gzip')
-        ditto_scores.to_csv(args.ditto, index=False,
-        header=header,
-            mode=mode,
-               compression="gzip")
-        del df2, ditto_scores
 
