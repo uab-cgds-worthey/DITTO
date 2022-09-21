@@ -10,7 +10,8 @@ import argparse
 import os
 import io
 import gzip
-import psutil
+import functools
+print = functools.partial(print, flush=True)
 
 os.chdir('/data/project/worthey_lab/temp_datasets_central/tarun/UDN')
 
@@ -18,7 +19,10 @@ def main(args):
 
     print("Loading Ditto predictions....")
 
-    ditto = pd.read_csv('../Ditto/ditto_predictions.csv.gz')
+    ditto = pd.read_csv('../Ditto/dbnsfp_only_ditto_predictions.csv.gz')
+    ditto = ditto.dropna(subset=['pos(1-based)', 'Ditto_Deleterious'])
+    ditto = ditto.sort_values("Ditto_Deleterious", ascending=False)
+    ditto = ditto.drop_duplicates(subset=['#chr','pos(1-based)','ref','alt'], keep='first')
     ditto['#chr'] = ditto['#chr'].astype(str)
     ditto['pos(1-based)'] = ditto['pos(1-based)'].astype(int)
     ditto['ref'] = ditto['ref'].astype(str)

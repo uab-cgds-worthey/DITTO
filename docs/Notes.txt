@@ -668,3 +668,11 @@ Creating Ditto db using test vcf data -
     python src/Ditto/filter.py -i annotation_parsing/.test/testing_variants_hg38_vep-annotated.tsv -O ./data/processed/ditto_db
 
 ```
+
+################### 9/21/22 ######################################################################
+
+Running VEP for PKD variants from dbNSFP
+
+```sh
+./src/run_pipeline.sh -s -v /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_pkd_for_VEP.vcf -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/  -d ~/.ditto_datasets.yaml
+```
