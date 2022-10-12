@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#python slurm-launch.py --exp-name predictions --command "python Ditto/dbnsfp_prediction.py -i /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.tsv.gz --filter /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/all_data_filter-dbnsfp.csv.gz --ditto /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_only_ditto_predictions.csv.gz" --partition long --mem 10G
+#python slurm-launch.py --exp-name predictions --command "python Ditto/dbnsfp_prediction.py -i /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.tsv.gz --filter /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/all_data_filter-dbnsfp.tsv.gz --ditto /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_only_ditto_predictions.tsv.gz" --partition long --mem 10G
 
 import pandas as pd
 import yaml
@@ -120,11 +120,11 @@ if __name__ == "__main__":
         #print('\nData shape (nsSNV) =', df2.shape)
         # Write it to a file
         df2.to_csv(args.filter, index=False,
-            header=header,
+            header=header, sep='\t',
             mode=mode,
             compression='gzip')
         ditto_scores.to_csv(args.ditto, index=False,
-        header=header,
+        header=header,sep='\t',
             mode=mode,
                compression="gzip")
         del df2, ditto_scores

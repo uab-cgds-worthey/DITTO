@@ -77,12 +77,12 @@ rule annotate_variants:
         calls = INPUT_VCF,
         cache = EXTERNAL_DIR / "vep" / "cache" / VEP_CACHE,
         plugins = EXTERNAL_DIR / "vep" / "plugins",
-        #cadd_snv = config['cadd_snv'],
-        #cadd_indel = config['cadd_indel'],
-        #gerp = config['gerp'],
-        #gnomad_genomes = config['gnomad_genomes'],
+        cadd_snv = config['cadd_snv'],
+        cadd_indel = config['cadd_indel'],
+        gerp = config['gerp'],
+        gnomad_genomes = config['gnomad_genomes'],
         clinvar = config['clinvar'],
-        #dbNSFP = config['dbNSFP'],
+        dbNSFP = config['dbNSFP'],
     output:
         calls = OUTPUT_VCF,
     message:
@@ -97,14 +97,14 @@ rule annotate_variants:
         refseq_flag = "--gencode_basic" if 'gencode_basic' in VEP_CACHE else "",
         hgvs_flag = "--hgvs" if HGVS else "",
         stats_flag = lambda wildcards, output: f"--stats_file {output.stats}" if STATS else "--no_stats",
-        #gnomad_fields = "AC,AN,AF,AF_afr,AF_afr_female,AF_afr_male,AF_ami,AF_ami_female,AF_ami_male,AF_amr,AF_amr_female,AF_amr_male,AF_asj,AF_asj_female," \
-        #                "AF_asj_male,AF_eas,AF_eas_female,AF_eas_male,AF_female,AF_fin,AF_fin_female,AF_fin_male,AF_male,AF_nfe,AF_nfe_female,AF_nfe_male," \
-        #                "AF_oth,AF_oth_female,AF_oth_male,AF_raw,AF_sas,AF_sas_female,AF_sas_male",
+        gnomad_fields = "AF,AF_afr,AF_afr_female,AF_afr_male,AF_ami,AF_ami_female,AF_ami_male,AF_amr,AF_amr_female,AF_amr_male,AF_asj,AF_asj_female," \
+                        "AF_asj_male,AF_eas,AF_eas_female,AF_eas_male,AF_female,AF_fin,AF_fin_female,AF_fin_male,AF_male,AF_nfe,AF_nfe_female,AF_nfe_male," \
+                        "AF_oth,AF_oth_female,AF_oth_male,AF_raw,AF_sas,AF_sas_female,AF_sas_male",
         clinvar_fields = "AF_ESP,AF_EXAC,AF_TGP,ALLELEID,CLNDN,CLNDNINCL,CLNDISDB,CLNDISDBINCL,CLNREVSTAT,CLNSIG,CLNSIGCONF,CLNSIGINCL,CLNVC,GENEINFO,MC,ORIGIN,RS,SSR",
-        #dbNSFP_fields = "Ensembl_transcriptid,LRT_score,MutationTaster_score,MutationAssessor_score,FATHMM_score,PROVEAN_score,VEST4_score,MetaSVM_score,MetaLR_score,M-CAP_score," \
-        #                "CADD_phred,DANN_score,fathmm-MKL_coding_score,GenoCanyon_score,integrated_fitCons_score,GERP++_RS,phyloP100way_vertebrate,phyloP30way_mammalian," \
-        #                "phastCons100way_vertebrate,phastCons30way_mammalian,SiPhy_29way_logOdds,Eigen-raw_coding,Eigen-raw_coding_rankscore,Eigen-phred_coding," \
-        #                "Eigen-PC-raw_coding,Eigen-PC-raw_coding_rankscore,Eigen-PC-phred_coding",
+        dbNSFP_fields = "Ensembl_transcriptid,LRT_score,MutationTaster_score,MutationAssessor_score,FATHMM_score,PROVEAN_score,VEST4_score,MetaSVM_score,MetaLR_score,M-CAP_score," \
+                        "CADD_phred,DANN_score,fathmm-MKL_coding_score,GenoCanyon_score,integrated_fitCons_score,GERP++_RS,phyloP100way_vertebrate,phyloP30way_mammalian," \
+                        "phastCons100way_vertebrate,phastCons30way_mammalian,SiPhy_29way_logOdds,Eigen-raw_coding,Eigen-raw_coding_rankscore,Eigen-phred_coding," \
+                        "Eigen-PC-raw_coding,Eigen-PC-raw_coding_rankscore,Eigen-PC-phred_coding",
         #dbNSFP_fields = "ALL",
         warnings_file = lambda wildcards, output: str(output.calls).replace('.vcf.gz', '_STDOUT_warnings.txt'),
     threads: 8
@@ -127,7 +127,6 @@ rule annotate_variants:
                 --dir_cache {input.cache} \
                 --dir_plugins {input.plugins} \
                 --plugin CADD,{input.cadd_snv},{input.cadd_indel} \
-                --plugin dbNSFP,{input.dbNSFP},{params.dbNSFP_fields} \
                 --custom {input.gerp},GERP,bed \
                 --custom {input.gnomad_genomes},gnomADv3,vcf,exact,0,{params.gnomad_fields} \
                 --custom {input.clinvar},clinvar,vcf,exact,0,{params.clinvar_fields} \

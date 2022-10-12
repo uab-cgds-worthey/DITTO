@@ -8,16 +8,17 @@
 #SBATCH --partition=short
 #
 # Number of CPUs allocated to each task.
-#SBATCH --cpus-per-task=5
+#SBATCH --cpus-per-task=1
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.
-#SBATCH --mem=4G
+#SBATCH --mem=1G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=tmamidi@uab.edu
 
 #Set your environment here
+module load BCFtools
 module load tabix
 #module load Anaconda3/2020.02
 #source activate testing
@@ -25,6 +26,7 @@ module load tabix
 #Run your commands here
 #python training/data-prep/extract_class.py
 #python training/data-prep/parse_dbNSFP.py -i ../data/interim/dbNSFP_clinvar_variants.tsv.gz -o ../data/interim/dbNSFP_clinvar_variants_parsed.tsv.gz
-zcat /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.tsv.gz | grep -v ^"#" | sort -T /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/tmp -k1,1 -k2,2n | bgzip -c > /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.tsv.gz
+#zcat /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.tsv.gz | grep -v ^"#" | sort -T /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/tmp -k1,1 -k2,2n | bgzip -c > /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.tsv.gz
 
-#tabix -s 1 -b 2 -e 2 /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.tsv.gz
+
+tabix -s 1 -b 2 -e 2 /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.header.tsv.gz
