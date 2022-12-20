@@ -28,5 +28,9 @@ module load tabix
 #python training/data-prep/parse_dbNSFP.py -i ../data/interim/dbNSFP_clinvar_variants.tsv.gz -o ../data/interim/dbNSFP_clinvar_variants_parsed.tsv.gz
 #zcat /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.tsv.gz | grep -v ^"#" | sort -T /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/tmp -k1,1 -k2,2n | bgzip -c > /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.tsv.gz
 
+zcat /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_only_ditto_predictions.tsv.gz | grep -v ^"#" | sort -T /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/tmp -k1,1 -k2,2n | bgzip -c > /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_only_ditto_predictions.tsv.bgz
 
-tabix -s 1 -b 2 -e 2 /data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.header.tsv.gz
+##chr    pos(1-based)    ref     alt     cds_strand      genename        Ensembl_geneid Ensembl_transcriptid     Ensembl_proteinid       Uniprot_acc     clinvar_clnsig  clinvar_review Interpro_domain Ditto_Benign    Ditto_Deleterious
+
+#1       65565   A       C       +       OR4F5   ENSG00000186092 ENST00000641515 ENSP00000493376        A0A2U3U0J3      .       .       .       0.9490702580176865      0.05092974198231349
+#tabix -s 1 -b 2 -e 2 /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_only_ditto_predictions.tsv.gz

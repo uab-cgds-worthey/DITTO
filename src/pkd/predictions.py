@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#python slurm-launch.py --exp-name pkd-predictions --command "python pkd/predictions.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbNSFP_PKD_variants.tsv.gz --filter /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/PKD-procesed-dbnsfp.csv.gz --ditto /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_PKD_ditto_predictions.csv.gz --shapley /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/PKD_shapley.joblib" --partition short --mem 5G
+#python slurm-launch.py --exp-name SDCCAG8-predictions --command "python pkd/predictions.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/SDCCAG8/dbNSFP_SDCCAG8_variants.tsv.gz --filter /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/SDCCAG8/SDCCAG8-procesed-dbnsfp.csv.gz --ditto /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/SDCCAG8/dbnsfp_SDCCAG8_ditto_predictions.csv.gz --shapley /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/SDCCAG8/SDCCAG8_shapley.joblib" --partition short --mem 5G
 
 import pandas as pd
 import yaml
