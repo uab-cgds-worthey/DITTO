@@ -1,17 +1,17 @@
 #!/bin/bash
 #
-#SBATCH --job-name=extract_pkd
-#SBATCH --output=extract_pkd.out
+#SBATCH --job-name=extract_vars
+#SBATCH --output=extract_vars.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
-#SBATCH --partition=short
+#SBATCH --partition=long
 #
 # Number of CPUs allocated to each task.
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=10
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.
-#SBATCH --mem=1G
+#SBATCH --mem=20G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
@@ -19,8 +19,10 @@
 
 #Set your environment here
 module load Anaconda3/2020.02
-source activate testing
+source activate training
 
 #Run your commands here
-python extract_pkd.py
+#python extract_pkd.py
+python merge.py
+
 
