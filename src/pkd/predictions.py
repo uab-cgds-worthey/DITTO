@@ -55,9 +55,9 @@ if __name__ == "__main__":
 
     def parse_and_predict(dataframe, config_dict, explainer):
         dataframe.columns = config_dict["raw_cols"]
+        var = dataframe[config_dict['ditto_info']]
         dataframe = dataframe[config_dict["columns"]]
         # Drop variant info columns so we can perform one-hot encoding
-        var = dataframe[config_dict['var']]
         dataframe = dataframe.drop(config_dict['var'], axis=1)
         dataframe = dataframe.replace(['.','-'], np.nan)
 

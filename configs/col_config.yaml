@@ -131,6 +131,28 @@ var:
     -   clinvar_review
     -   Interpro_domain
 
+ditto_info:
+  - '#chr'
+  - pos(1-based)
+  - ref
+  - alt
+  - cds_strand
+  - genename
+  - Ensembl_geneid
+  - Ensembl_transcriptid
+  - Ensembl_proteinid
+  - Uniprot_acc
+  - clinvar_clnsig
+  - clinvar_review
+  - Interpro_domain
+  - aapos
+  - aaref
+  - aaalt
+  - CADD_phred
+  - gnomAD_genomes_AF
+  - HGVSc_VEP
+  - HGVSp_VEP
+
 allele_freq_columns:
  - gnomAD_genomes_AF
  - gnomAD_genomes_AFR_AF
