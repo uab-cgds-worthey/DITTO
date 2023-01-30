@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#for gene in ../data/processed/dbnsfp_genes/* ; do python slurm-launch.py --exp-name ${gene##*/}-predictions --command "python pkd/predictions.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/dbnsfp_genes/${gene##*/}/dbNSFP_${gene##*/}_variants.tsv.gz --filter /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/dbnsfp_genes/${gene##*/}/${gene##*/}-procesed-dbnsfp.csv.gz --ditto /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/dbnsfp_predictions/${gene##*/}_ditto_predictions.csv.gz --shapley /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/dbnsfp_genes/${gene##*/}/${gene##*/}_shapley.joblib" --partition short --mem 5G ; done
+#python predictions.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/dbnsfp_genes/${gene##*/}/dbNSFP_${gene##*/}_variants.tsv.gz  --ditto /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/dbnsfp_predictions/${gene##*/}_ditto_predictions.csv.gz
 
 import pandas as pd
 import yaml
@@ -25,23 +25,12 @@ if __name__ == "__main__":
         help="Input csv file with path for filtering and predictions",
     )
     parser.add_argument(
-        "--filter",
-        type=str,
-        default="filter.csv.gz",
-        help="Output file with path (default:filter.csv.gz)",
-    )
-    parser.add_argument(
         "--ditto",
         type=str,
         default="ditto_predictions.csv.gz",
         help="Output file with path (default:ditto_predictions.csv.gz)",
     )
-    parser.add_argument(
-        "--shapley",
-        type=str,
-        default="shapley.csv.gz",
-        help="Output file with path (default:shapley.csv.gz)",
-    )
+
 
     args = parser.parse_args()
 
@@ -101,13 +90,7 @@ if __name__ == "__main__":
         ditto_scores = pd.concat([var, pred], axis=1)
         ditto_scores.to_csv(args.ditto, index=False,
                compression="gzip")
-        df3 = pd.concat([var.reset_index(drop=True), df2.reset_index(drop=True)], axis=1)
-        df3.to_csv(args.filter, index=False,
-        compression='gzip')
-        del df3
-        shapley_values = explainer.shap_values(df2)
-        with open(args.shapley, "wb") as f:
-            dump([explainer.expected_value,shapley_values], f, compress="lz4")
+
         del df2
 
         return None
