@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+#python src/Ditto/predict.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/annotated_vcf/train/CAGI6_RGP_TRAIN_34_PROBAND/data.csv --sample CAGI6_RGP_TRAIN_34_PROBAND -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/annotated_vcf/train/CAGI6_RGP_TRAIN_34_PROBAND/ditto_predictions.csv -o100 /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/annotated_vcf/train/CAGI6_RGP_TRAIN_34_PROBAND/ditto_predictions_100.csv
+
 import pandas as pd
 import yaml
 import warnings

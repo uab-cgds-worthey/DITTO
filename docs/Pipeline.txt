@@ -33,14 +33,14 @@ Filter variants by size (<30kb) and class -
 bgzip and Tabix index the file -
     `bgzip -c merged_sig_norm.vcf > merged_sig_norm.vcf.gz
     tabix -fp vcf ../interim/merged_sig_norm.vcf.gz`
-Copy paths to dataset yaml file -
+Copy paths to dataset yaml file (~/.ditto_datasets.yaml) -
     ```
-    cadd_snv: "/data/project/worthey_lab/temp_datasets_central/mana/cadd/raw/hg38/v1.6/whole_genome_SNVs.tsv.gz"
-    cadd_indel: "/data/project/worthey_lab/temp_datasets_central/mana/cadd/raw/hg38/v1.6/gnomad.genomes.r3.0.indel.tsv.gz"
+    cadd_snv: "/data/project/worthey_lab/temp_datasets_central/tarun/cadd/raw/GRCh38/v1.6_rel20220331/whole_genome_SNVs_inclAnno.tsv.gz"
+    cadd_indel: "/data/project/worthey_lab/temp_datasets_central/tarun/cadd/raw/GRCh38/v1.6_rel20220331/gnomad.genomes.r3.0.indel_inclAnno.tsv.gz"
     gerp: "/data/project/worthey_lab/temp_datasets_central/mana/gerp/processed/hg38/v1.6/gerp_score_hg38.bg.gz"
     gnomad_genomes: "/data/project/worthey_lab/temp_datasets_central/mana/gnomad/v3.0/data/gnomad.genomes.r3.0.sites.vcf.bgz"
-    clinvar: "/data/project/worthey_lab/temp_datasets_central/mana/clinvar/data/grch38/20210119/clinvar_20210119.vcf.gz"
-    dbNSFP: "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/variant_annotation/formatting/dbNSFP4.1a_variant.complete.gz"
+    clinvar: "/data/project/worthey_lab/temp_datasets_central/tarun/clinvar/grch38/20221001/clinvar_20221001.vcf.gz"
+    dbNSFP: "/data/project/worthey_lab/temp_datasets_central/tarun/dbNSFP/v4.3_20220319/dbNSFP4.3a_variant.complete.parsed.sorted.header.tsv.gz"
     ```
 Run variant annotation as shown in ReadMe file -
     `./src/run_pipeline.sh -s -v ../data/interim/merged_sig_norm.vcf.gz -o ../data/interim -d ~/.ditto_datasets.yaml`
@@ -63,3 +63,5 @@ For testing Ditto -
     python src/Ditto/combine_scores.py  --raw ./data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND_vep-annotated_filtered.tsv --sample CAGI6_RGP_TRAIN_12_PROBAND --ditto ./data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/ditto_predictions.csv -ep /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/exomiser/train/CAGI6_RGP_TRAIN_12_PROBAND -o ./data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/predictions_with_exomiser.csv -o100 ./data/processed/testing/CAGI6_RGP_TRAIN_12_PROBAND/predictions_with_exomiser_100.csv
 
 ```
+python Ditto/ranks.py -id /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/filter_vcf_by_DP6_AB --json /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata_original.json
+python Ditto/Exomiser_ranks.py -id /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/debugged/filter_vcf_by_DP6_AB_hpo_removed  --json /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/processed/metadata/train_test_metadata_original.json -o exomiser_ranks.csv
