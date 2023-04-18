@@ -4,6 +4,17 @@ import os
 import gzip
 
 
+# Example fields for parsing and normalizing:
+# 'all_mappings': 'ENST00000253952.9:THOC6:Q86W42:missense_variant:p.Val234Leu:c.700G>C; ENST00000326266.13:THOC6:Q86W42:missense_variant:p.Val234Leu:c.700G>C; ENST00000389347.4:BICDL2:A1A5D9:2kb_downstream_variant::c.*936C>G; ENST00000572449.6:BICDL2:A1A5D9:2kb_downstream_variant::c.*936C>G; ENST00000573514.5:BICDL2:A1A5D9:2kb_downstream_variant::c.*936C>G; ENST00000574549.5:THOC6:Q86W42:missense_variant:p.Val210Leu:c.628G>C; ENST00000575576.5:THOC6:Q86W42:missense_variant:p.Val210Leu:c.628G>C; ENST00000642419.1:BICDL2::2kb_downstream_variant::c.*936C>G'
+# 'chasmplus.all': '[["ENST00000574549.5", 0.064, 0.314], ["ENST00000575576.5", 0.064, 0.314], ["NM_001142350.1", 0.055, 0.358], ["NM_024339.3", 0.047, 0.405]]'
+# 'biogrid.acts': 'EFTUD2;PPP2R1A;RRP9;SNRNP200;THOC1;THOC7;TPR;TRIM55;U2AF1;U2AF2;UTRN;VDAC2;ZC3H15;ZCCHC8;ZNF326'
+# 'clinvar.sig_conf': 'Pathogenic(1)|Likely pathogenic(2)|Uncertain significance(3)'
+# 'clinvar.disease_refs': 'MONDO:MONDO:0013362,MedGen:C3150939,OMIM:613680,Orphanet:ORPHA363444|MeSH:D030342,MedGen:C0950123|MedGen:CN517202'
+# 'funseq2.all': '[["", "", "", "", "", "", "4"]]'
+# 'intact.intact': 'GABARAPL2[20562859]|NUDC[25036637]|JUN[25609649]|THOC1[19165146;26496610]|THOC2[19165146;26496610]|DDX41[25920683]|THOC5[26496610]|ESR2[21182203]|GABARAP[20562859]|THOC7[26496610]|PLEKHA7[28877994]|BCLAF1[26496610]|MAP1LC3A[20562859]|ID1[26496610]|ABI1[26496610]|NCBP3[26496610;26382858]|'
+
+# TODO create config for field mappings and parsing logic needed for various field types from examples above
+
 def parse_n_print(vcf, outfile):
     # collect header information for the annotated information as well as the sample itself
     print("Collecting header info...")
