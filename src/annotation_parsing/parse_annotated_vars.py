@@ -80,13 +80,21 @@ def parse_annotations(annot_csv, data_config_file, outfile):
         # parse and filter for column configs that needing parsing
         data_config = [filter(lambda colconf: colconf["parse"], json.load(dcfp))]
 
+    # the column "all_mappings" is the key split-by column to separate results on a per variant + transcript
     with open(outfile, "w", newline="") as paserdcsv:
         csvwriter = csv.DictWriter(paserdcsv, fieldnames=[colconf["col_id"] for colconf in data_config])
         csvwriter.writeheader()
         with open(annot_csv, "r", newline="") as csvfile:
             reader = csv.DictReader(filter(lambda row: row[0]!='#', csvfile))
             for row in reader:
-                # TODO add parsing logic with the mix of config info and data column
+                for column in data_config:
+                    # TODO rewrite parsing and configs to focus on "all_mappings" column
+                    if column["parse_type"] == "list-o-dicts":
+                        parse_list_of_dicts(row[column["col_id"]])
+                    elif column["parse_type"] == "list":
+                        row[column["col_id"]].split(column["separator"])
+                    else:
+                        row[column["col_id"]]
 
 
 def is_valid_output_file(p, arg):
