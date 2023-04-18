@@ -109,26 +109,26 @@ def fill_na(df, config_dict, column_info, stats):  # (config_dict,df):
 
     df1 = pd.DataFrame()
 
-    if "non_nssnv" in stats:
-        for key in tqdm(config_dict["non_nssnv_columns"]):
+    for key in tqdm(config_dict["nssnv_median_3_0_1"]):
             if key in df.columns:
-                df1[key] = (
-                    df[key]
-                    .fillna(config_dict["non_nssnv_columns"][key])
-                    .astype("float64")
-                )
+                df1[key] = df[key].astype("float64")
             else:
-                df1[key] = config_dict["non_nssnv_columns"][key]
-    else:
-        for key in tqdm(config_dict["nssnv_median_3_0_1"]):
-            if key in df.columns:
-                df1[key] = (
-                    df[key]
+                df1[key] = config_dict["nssnv_median_3_0_1"][key]
+
+    #save data for SHAP
+    #df = df[config_dict["nssnv_median_3_0_1"]]
+    df1 = pd.concat([var.reset_index(drop=True), df1], axis=1)
+    df1.to_csv("pre_processed_data.csv", index=False)
+    df1 = df1.drop(config_dict["var"], axis=1)
+
+
+    for key in tqdm(config_dict["nssnv_median_3_0_1"]):
+        df1[key] = (
+                    df1[key]
                     .fillna(config_dict["nssnv_median_3_0_1"][key])
                     .astype("float64")
                 )
-            else:
-                df1[key] = config_dict["nssnv_median_3_0_1"][key]
+
     df = df1
     # df = df.drop(df.std()[(df.std() == 0)].index, axis=1)
     del df1
@@ -190,5 +190,5 @@ if __name__ == "__main__":
 
     print("\nData shape (After filtering) =", df.shape, file=open(stats, "a"))
     print("writing to csv...")
-    df.to_csv("data.csv", index=False)
+    df.to_csv("processed_data.csv", index=False)
     del df

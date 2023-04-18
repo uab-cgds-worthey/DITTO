@@ -1,7 +1,7 @@
 {
     "__default__": {
         "ntasks": 1,
-        "partition": "short",
+        "partition": "long",
         "cpus-per-task": "{threads}",
         "mem": "20G",
         "output": "logs/rule_logs/{rule}-%j.log",

@@ -1,0 +1,245 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Oct  1 01:11:09 2020
+
+@author: tarunmamidi
+"""
+import time
+import os
+import numpy as np; np.random.seed(5)  
+import argparse
+import yaml
+import optuna
+#from optuna.integration import TFKerasPruningCallback
+#from optuna.integration.tensorboard import TensorBoardCallback
+from optuna.samplers import TPESampler
+import logging
+import sys
+#import tensorflow as tf
+#import tensorflow.keras as keras
+#try:
+#    tf.get_logger().setLevel('INFO')
+#except Exception as exc:
+#    print(exc)
+import warnings
+warnings.simplefilter("ignore")
+#import ray
+#from tensorflow.keras.models import Sequential
+#from tensorflow.keras.layers import Dense, Dropout, Activation
+#from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import label_binarize
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression   #SGDClassifier, 
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, StackingClassifier
+from sklearn.naive_bayes import GaussianNB
+from imblearn.ensemble import BalancedRandomForestClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.neighbors import KNeighborsClassifier
+import pandas as pd
+import yaml
+import functools
+print = functools.partial(print, flush=True)
+#from joblib import dump, load
+
+
+#EPOCHS = 150
+class Objective(object):
+    def __init__(self, train_x,test_x, train_y, test_y):
+        
+        self.train_x = train_x
+        self.test_x = test_x
+        self.train_y = train_y
+        self.test_y = test_y
+        #self.var = var
+        #self.x = x
+        #self.n_columns = 112
+        #self.CLASS = 2
+        
+    def __call__(self, config):
+        param = {    
+        #RandomForest - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html?highlight=randomforestclassifier#sklearn.ensemble.RandomForestClassifier
+            "rf_n_estimators" : config.suggest_int('rf_n_estimators', 1, 200),
+            "rf_criterion" : config.suggest_categorical('rf_criterion', ["gini", "entropy"]),
+            "rf_max_depth" : config.suggest_int('rf_max_depth', 2, 200),
+            "rf_min_samples_split" : config.suggest_int('rf_min_samples_split', 2, 10),
+            "rf_min_samples_leaf" : config.suggest_int('rf_min_samples_leaf', 1, 10),
+            "rf_max_features" : config.suggest_categorical('rf_max_features', ["sqrt", "log2"]),
+            "rf_oob_score" : config.suggest_categorical('rf_oob_score', [True, False]),
+            "rf_class_weight" : config.suggest_categorical('rf_class_weight', [None, "balanced", "balanced_subsample"]),
+        #KNeighborsClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html?highlight=kn#sklearn.neighbors.KNeighborsClassifier
+            "knn_n_neighbors" : config.suggest_int('knn_n_neighbors', 1, 10),
+            "knn_weights" : config.suggest_categorical('knn_weights', ['uniform', 'distance']),
+            "knn_algorithm" : config.suggest_categorical('knn_algorithm', ['auto', 'ball_tree', 'kd_tree', 'brute']),
+            "knn_p" : config.suggest_int('knn_p', 1, 5),
+            "knn_metric" : config.suggest_categorical('knn_metric', ['minkowski', 'chebyshev']),
+        #GradientBoostingClassifier - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier
+            "gbc_loss" : config.suggest_categorical('gbc_loss', ["deviance", "exponential"]),
+            "gbc_learning_rate": config.suggest_float('gbc_learning_rate', 0.01, 1.0, log = True),
+            "gbc_n_estimators" : config.suggest_int('gbc_n_estimators', 1, 200),
+            "gbc_subsample" : config. suggest_float('gbc_subsample', 0.1, 1.0),
+            "gbc_criterion" : config.suggest_categorical('gbc_criterion', ["friedman_mse", "mse"]),
+            "gbc_min_samples_split" : config.suggest_int('gbc_min_samples_split', 2, 100),
+            "gbc_min_samples_leaf" : config.suggest_int('gbc_min_samples_leaf', 1, 100),
+            "gbc_max_depth" : config.suggest_int('gbc_max_depth', 2, 200),
+            "gbc_max_features" : config.suggest_categorical('gbc_max_features', ["sqrt", "log2"]),
+        #DecisionTree - https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html#sklearn.tree.DecisionTreeClassifier
+            "dt_criterion" : config.suggest_categorical('dt_criterion', ["gini", "entropy"]),
+            "dt_splitter" : config.suggest_categorical('dt_splitter', ["best", "random"]),
+            "dt_max_depth" : config.suggest_int('dt_max_depth', 2, 200),
+            "dt_min_samples_split" : config.suggest_int('dt_min_samples_split', 2, 100),
+            "dt_min_samples_leaf" : config.suggest_int('dt_min_samples_leaf', 1, 100),
+            "dt_max_features" : config.suggest_categorical('dt_max_features', ["sqrt", "log2"]),
+            "dt_class_weight" : config.suggest_categorical('dt_class_weight', [None, "balanced"]),
+        #GaussianNB - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html#sklearn.naive_bayes.GaussianNB
+            "var_smoothing" : config.suggest_float('var_smoothing', 1e-11, 1e-1, log = True),
+        #BalancedRandomForest - https://imbalanced-learn.org/dev/references/generated/imblearn.ensemble.BalancedRandomForestClassifier.html
+            "brf_n_estimators" : config.suggest_int('brf_n_estimators', 1, 200),
+            "brf_criterion" : config.suggest_categorical('brf_criterion', ["gini", "entropy"]),
+            "brf_max_depth" : config.suggest_int('brf_max_depth', 2, 200),
+            "brf_min_samples_split" : config.suggest_int('brf_min_samples_split', 2, 10),
+            "brf_min_samples_leaf" : config.suggest_int('brf_min_samples_leaf', 1, 10),
+            "brf_max_features" : config.suggest_categorical('brf_max_features', ["sqrt", "log2"]),
+            "brf_oob_score" : config.suggest_categorical('brf_oob_score', [True, False]),
+            "brf_class_weight" : config.suggest_categorical('brf_class_weight', ["balanced", "balanced_subsample"]),
+        #LinearDiscriminantAnalysis - https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis
+            'lda_solver': config.suggest_categorical('lda_solver', ['svd', 'lsqr', 'eigen']),
+                                 
+        #LogisticRegression - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?highlight=logistic#sklearn.linear_model.LogisticRegression; https://github.com/hyperopt/hyperopt/issues/304
+            "lr_C" : config. suggest_float('lr_C', 0.0, 10.0),
+            "lr_solver":  config.suggest_categorical('lr__solver',['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']),
+            "lr_tol": config.suggest_float('lr_tol',1e-11,1e-1, log = True),
+            "lr_l1_ratio": config.suggest_float('lr_l1_ratio',0,1),
+            "lr_max_iter" : config.suggest_int('lr_max_iter', 2, 100),
+        }
+        
+        if param["lr_solver"] == 'newton-cg': 
+            param["lr_penalty"] = config.suggest_categorical('p_newton',['none','l2'])
+        elif param["lr_solver"]  == 'lbfgs': 
+            param["lr_penalty"] = config.suggest_categorical('p_lbfgs',['none','l2'])
+        elif param["lr_solver"]  ==  'liblinear': 
+            param["lr_penalty"] =config.suggest_categorical('p_lib',['l1','l2'])
+        elif param["lr_solver"]  ==  'sag': 
+            param["lr_penalty"] = config.suggest_categorical('p_sag',['l2','none'])
+        elif param["lr_solver"]  == 'saga': 
+            param["lr_penalty"] ='elasticnet'
+        if param['lda_solver'] =='lsqr':
+            param['lda_shrinkage']= config.suggest_categorical('shrinkage_type_lsqr', ['auto', 'float'])
+            if param['lda_shrinkage'] == 'float':
+                param['lda_shrinkage']=config.suggest_float('shrinkage_value_lsqr', 0, 1)
+        elif param['lda_solver'] =='eigen':
+            param['lda_shrinkage']= config.suggest_categorical('shrinkage_type_eigen', ['auto', 'float'])
+            if param['lda_shrinkage'] == 'float':
+                param['lda_shrinkage']=config.suggest_float('shrinkage_value_lsqr', 0, 1)
+        else:
+            param['lda_shrinkage']= None
+                               
+   
+        model = StackingClassifier(estimators = [
+            ('rf', RandomForestClassifier(random_state=42, n_estimators=param["rf_n_estimators"], criterion=param["rf_criterion"], max_depth=param["rf_max_depth"], min_samples_split=param["rf_min_samples_split"], min_samples_leaf=param["rf_min_samples_leaf"], max_features=param["rf_max_features"], oob_score=param["rf_oob_score"], class_weight=param["rf_class_weight"], n_jobs = -1)),
+            ('knn', KNeighborsClassifier(n_neighbors=param["knn_n_neighbors"], weights=param["knn_weights"], algorithm=param["knn_algorithm"], p=param["knn_p"], metric=param["knn_metric"], n_jobs = -1)),    #leaf_size=leaf_size", 30), 
+            ('gbc', GradientBoostingClassifier(random_state=42, loss=param["gbc_loss"], learning_rate = param["gbc_learning_rate"], n_estimators=param["gbc_n_estimators"], subsample=param["gbc_subsample"], criterion=param["gbc_criterion"], min_samples_split=param["gbc_min_samples_split"], min_samples_leaf=param["gbc_min_samples_leaf"], max_depth=param["gbc_max_depth"], max_features=param["gbc_max_features"])),
+            ('dt', DecisionTreeClassifier(random_state=42, criterion=param["dt_criterion"], splitter=param["dt_splitter"], max_depth=param["dt_max_depth"], min_samples_split=param["dt_min_samples_split"], min_samples_leaf=param["dt_min_samples_leaf"], max_features=param["dt_max_features"], class_weight=param["dt_class_weight"])),
+            ('gnb', GaussianNB(var_smoothing=param["var_smoothing"])),
+            ('brf', BalancedRandomForestClassifier(random_state=42, n_estimators=param["brf_n_estimators"], criterion=param["brf_criterion"], max_depth=param["brf_max_depth"], min_samples_split=param["brf_min_samples_split"], min_samples_leaf=param["brf_min_samples_leaf"], max_features=param["brf_max_features"], oob_score=param["brf_oob_score"], class_weight=param["brf_class_weight"], n_jobs = -1)),
+            ('lda', LinearDiscriminantAnalysis(solver=param["lda_solver"], shrinkage=param["lda_shrinkage"]))
+            ],
+                cv = 3,
+                stack_method = "predict_proba",
+                n_jobs=-1,
+                passthrough=False,
+                final_estimator= LogisticRegression(C=param["lr_C"], penalty=param["lr_penalty"], solver=param["lr_solver"], max_iter=param["lr_max_iter"], l1_ratio=param["lr_l1_ratio"], tol=param["lr_tol"], n_jobs = -1),
+                verbose=0).fit(self.train_x, self.train_y)
+
+        # Evaluate the model accuracy on the validation set.
+        score = model.score(self.train_x, self.train_y)
+        return score
+        
+
+def data_parsing(var,config_dict,output):
+    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+    #Load data
+    print(f'\nUsing merged_data-train_{var}..', file=open(output, "a"))
+    X_train = pd.read_csv(f'train_{var}/merged_data-train_{var}.csv')
+    #var = X_train[config_dict['ML_VAR']]
+    X_train = X_train.drop(config_dict['ML_VAR'], axis=1)
+    X_train.replace([np.inf, -np.inf], np.nan, inplace=True)
+    X_train.fillna(0, inplace=True)
+    feature_names = X_train.columns.tolist()
+    X_train = X_train.values
+    Y_train = pd.read_csv(f'train_{var}/merged_data-y-train_{var}.csv')
+    Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']).ravel() 
+
+    X_test = pd.read_csv(f'test_{var}/merged_data-test_{var}.csv')
+    #var = X_test[config_dict['ML_VAR']]
+    X_test = X_test.drop(config_dict['ML_VAR'], axis=1)
+    #feature_names = X_test.columns.tolist()
+    X_test = X_test.values
+    Y_test = pd.read_csv(f'test_{var}/merged_data-y-test_{var}.csv')
+    print('Data Loaded!')
+    #Y = pd.get_dummies(y)
+    Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']).ravel() 
+    
+    #scaler = StandardScaler().fit(X_train)
+    #X_train = scaler.transform(X_train)
+    #X_test = scaler.transform(X_test)
+    # explain all the predictions in the test set
+    return X_train, X_test, Y_train, Y_test,feature_names
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--vtype",
+        type=str,
+        default="non_snv",
+        help="Type of variation/s (without spaces between) to hp the classifier (like: snv,non_snv,snv_protein_coding). (Default: non_snv)")
+    parser.add_argument(
+        "--cpus",
+        type=int,
+        default=10,
+        help="Number of CPUs needed. (Default: 10)")
+    parser.add_argument(
+        "--gpus",
+        type=int,
+        default=0,
+        help="Number of GPUs needed. (Default: 0)")
+    parser.add_argument(
+        "--mem",
+        type=int,
+        default=100*1024*1024*1024,
+        help="Memory needed in bytes. (Default: 100*1024*1024*1024 (100GB))")
+
+    args = parser.parse_args()
+
+    variants = args.vtype.split(',')
+      
+    os.chdir('/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/')
+    with open("../../configs/columns_config.yaml") as fh:
+            config_dict = yaml.safe_load(fh)
+        
+    #variants = ['non_snv','snv','snv_protein_coding']
+    for var in variants:
+        start = time.perf_counter()
+        if not os.path.exists('tuning/'+var):
+            os.makedirs('./tuning/'+var)
+        output = "tuning/"+var+"/ML_results_"+var+".csv"
+        print('Working with '+var+' dataset...')
+        X_train, X_test, Y_train, Y_test, feature_names = data_parsing(var,config_dict,output)
+        
+        print('Starting Objective...')
+        objective = Objective(X_train, X_test, Y_train, Y_test)
+        # Add stream handler of stdout to show the messages
+        optuna.logging.get_logger("optuna").addHandler(logging.StreamHandler(sys.stdout))
+        #options = {'pool_size': my_pool_size, 'max_overflow': my_max_overflow}
+        #storage = optuna.storages.RDBStorage(f'postgresql+pg8000://tmamidi@localhost/StackingClassifier_{var}')
+        study = optuna.create_study(sampler=TPESampler(**TPESampler.hyperopt_parameters()), study_name= f"StackingClassifier_{var}", storage = f"sqlite:///tuning/{var}/StackingClassifier_{var}.db", #study_name= "Ditto3",
+            direction="maximize", pruner=optuna.pruners.HyperbandPruner(), load_if_exists=True #, pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
+        )
+        #study = optuna.load_study(study_name= f"StackingClassifier_{var}", storage =f"mysql:///tuning/{var}/Stacking_Classifier_{var}.db", pruner=optuna.pruners.HyperbandPruner(), sampler=TPESampler(**TPESampler.hyperopt_parameters())) 
+        study.optimize(objective, n_trials=500, n_jobs = -1, gc_after_trial=True) #, n_jobs = -1 timeout=600,callbacks=[tensorboard_callback],
+        finish = (time.perf_counter()- start)/120
+        #ttime = (finish- start)/120
+        print(f'Total time in hrs: {finish}')
+        #objective.show_result(study, var, output, feature_names)
+        del X_train, X_test, Y_train, Y_test, feature_names
+        #print('Training done!', file=open(f"tuning/"+var+"/.done_"+var+".csv", "a"))
