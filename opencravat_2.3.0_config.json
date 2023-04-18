@@ -1,0 +1,4335 @@
+[
+    {
+        "col_num": "0",
+        "col_id": "uid",
+        "description": "UID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "1",
+        "col_id": "chrom",
+        "description": "Chrom",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "2",
+        "col_id": "pos",
+        "description": "Position",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "3",
+        "col_id": "ref_base",
+        "description": "Ref",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "4",
+        "col_id": "alt_base",
+        "description": "Alt",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "5",
+        "col_id": "note",
+        "description": "Note",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "6",
+        "col_id": "coding",
+        "description": "Coding",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "7",
+        "col_id": "hugo",
+        "description": "Gene",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "8",
+        "col_id": "transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "9",
+        "col_id": "so",
+        "description": "Sequence",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "10",
+        "col_id": "cchange",
+        "description": "cDNA",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "11",
+        "col_id": "achange",
+        "description": "Protein",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "12",
+        "col_id": "all_mappings",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "13",
+        "col_id": "numsample",
+        "description": "Sample",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "14",
+        "col_id": "samples",
+        "description": "Samples",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "15",
+        "col_id": "tags",
+        "description": "Tags",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "16",
+        "col_id": "hg19.chrom",
+        "description": "Chrom",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "17",
+        "col_id": "hg19.pos",
+        "description": "Position",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "18",
+        "col_id": "thousandgenomes.af",
+        "description": "AF",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "19",
+        "col_id": "thousandgenomes.afr_af",
+        "description": "AFR",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "20",
+        "col_id": "thousandgenomes.amr_af",
+        "description": "AMR",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "21",
+        "col_id": "thousandgenomes.eas_af",
+        "description": "EAS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "22",
+        "col_id": "thousandgenomes.eur_af",
+        "description": "EUR",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "23",
+        "col_id": "thousandgenomes.sas_af",
+        "description": "SAS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "24",
+        "col_id": "thousandgenomes_ad_mixed_american.mxl_af",
+        "description": "MXL",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "25",
+        "col_id": "thousandgenomes_ad_mixed_american.pur_af",
+        "description": "PUR",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "26",
+        "col_id": "thousandgenomes_ad_mixed_american.clm_af",
+        "description": "CLM",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "27",
+        "col_id": "thousandgenomes_ad_mixed_american.pel_af",
+        "description": "PEL",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "28",
+        "col_id": "thousandgenomes_african.yri_af",
+        "description": "YRI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "29",
+        "col_id": "thousandgenomes_african.lwk_af",
+        "description": "LWK",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "30",
+        "col_id": "thousandgenomes_african.gwd_af",
+        "description": "GWD",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "31",
+        "col_id": "thousandgenomes_african.msl_af",
+        "description": "MSL",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "32",
+        "col_id": "thousandgenomes_african.esn_af",
+        "description": "ESN",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "33",
+        "col_id": "thousandgenomes_african.asw_af",
+        "description": "ASW",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "34",
+        "col_id": "thousandgenomes_african.acb_af",
+        "description": "ACB",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "35",
+        "col_id": "thousandgenomes_east_asian.chb_af",
+        "description": "CHB",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "36",
+        "col_id": "thousandgenomes_east_asian.jpt_af",
+        "description": "JPT",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "37",
+        "col_id": "thousandgenomes_east_asian.chs_af",
+        "description": "CHS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "38",
+        "col_id": "thousandgenomes_east_asian.cdx_af",
+        "description": "CDX",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "39",
+        "col_id": "thousandgenomes_east_asian.khv_af",
+        "description": "KHV",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "40",
+        "col_id": "thousandgenomes_european.ceu_af",
+        "description": "CEU",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "41",
+        "col_id": "thousandgenomes_european.tsi_af",
+        "description": "TSI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "42",
+        "col_id": "thousandgenomes_european.fin_af",
+        "description": "FIN",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "43",
+        "col_id": "thousandgenomes_european.gbr_af",
+        "description": "GBR",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "44",
+        "col_id": "thousandgenomes_european.ibs_af",
+        "description": "IBS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "45",
+        "col_id": "thousandgenomes_south_asian.gih_af",
+        "description": "GIH",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "46",
+        "col_id": "thousandgenomes_south_asian.pjl_af",
+        "description": "PJL",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "47",
+        "col_id": "thousandgenomes_south_asian.beb_af",
+        "description": "BEB",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "48",
+        "col_id": "thousandgenomes_south_asian.stu_af",
+        "description": "STU",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "49",
+        "col_id": "thousandgenomes_south_asian.itu_af",
+        "description": "ITU",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "50",
+        "col_id": "abraom.allele_freq",
+        "description": "AF",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "51",
+        "col_id": "aloft.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "52",
+        "col_id": "aloft.affect",
+        "description": "Transcripts",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "53",
+        "col_id": "aloft.tolerant",
+        "description": "Tolerant",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "54",
+        "col_id": "aloft.recessive",
+        "description": "Recessive",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "55",
+        "col_id": "aloft.dominant",
+        "description": "Dominant",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "56",
+        "col_id": "aloft.pred",
+        "description": "Classification",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "57",
+        "col_id": "aloft.conf",
+        "description": "Confidence",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "58",
+        "col_id": "aloft.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "59",
+        "col_id": "arrvars.lqt",
+        "description": "LQT",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "60",
+        "col_id": "arrvars.brs",
+        "description": "BrS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "61",
+        "col_id": "arrvars.unaff",
+        "description": "unaffected",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "62",
+        "col_id": "arrvars.other",
+        "description": "other",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "63",
+        "col_id": "arrvars.brs_penetrance",
+        "description": "BrS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "64",
+        "col_id": "arrvars.lqt_penetrance",
+        "description": "LQT",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "65",
+        "col_id": "arrvars.function",
+        "description": "Function",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "66",
+        "col_id": "arrvars.brs_structure",
+        "description": "BrS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "67",
+        "col_id": "arrvars.lqt_structure",
+        "description": "LQT",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "68",
+        "col_id": "arrvars.link",
+        "description": "More",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "69",
+        "col_id": "biogrid.acts",
+        "description": "Interactors",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "70",
+        "col_id": "biogrid.id",
+        "description": "ID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "71",
+        "col_id": "biogrid.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "72",
+        "col_id": "cadd_exome.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "73",
+        "col_id": "cadd_exome.phred",
+        "description": "Phred",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "74",
+        "col_id": "cgd.condition",
+        "description": "Condition",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "75",
+        "col_id": "cgd.inheritance",
+        "description": "Inheritance",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "76",
+        "col_id": "cgd.age_group",
+        "description": "Age",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "77",
+        "col_id": "cgd.allelic_conditions",
+        "description": "Allelic",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "78",
+        "col_id": "cgd.manifestation",
+        "description": "Manifestation",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "79",
+        "col_id": "cgd.intervention",
+        "description": "Intervention",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "80",
+        "col_id": "cgd.link",
+        "description": "More",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "81",
+        "col_id": "cgd.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "82",
+        "col_id": "chasmplus.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "83",
+        "col_id": "chasmplus.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "84",
+        "col_id": "chasmplus.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "85",
+        "col_id": "chasmplus.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "86",
+        "col_id": "chasmplus_ACC.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "87",
+        "col_id": "chasmplus_ACC.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "88",
+        "col_id": "chasmplus_ACC.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "89",
+        "col_id": "chasmplus_ACC.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "90",
+        "col_id": "chasmplus_BLCA.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "91",
+        "col_id": "chasmplus_BLCA.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "92",
+        "col_id": "chasmplus_BLCA.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "93",
+        "col_id": "chasmplus_BLCA.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "94",
+        "col_id": "chasmplus_BRCA.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "95",
+        "col_id": "chasmplus_BRCA.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "96",
+        "col_id": "chasmplus_BRCA.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "97",
+        "col_id": "chasmplus_BRCA.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "98",
+        "col_id": "chasmplus_CESC.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "99",
+        "col_id": "chasmplus_CESC.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "100",
+        "col_id": "chasmplus_CESC.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "101",
+        "col_id": "chasmplus_CESC.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "102",
+        "col_id": "chasmplus_CHOL.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "103",
+        "col_id": "chasmplus_CHOL.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "104",
+        "col_id": "chasmplus_CHOL.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "105",
+        "col_id": "chasmplus_CHOL.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "106",
+        "col_id": "chasmplus_COAD.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "107",
+        "col_id": "chasmplus_COAD.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "108",
+        "col_id": "chasmplus_COAD.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "109",
+        "col_id": "chasmplus_COAD.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "110",
+        "col_id": "chasmplus_DLBC.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "111",
+        "col_id": "chasmplus_DLBC.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "112",
+        "col_id": "chasmplus_DLBC.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "113",
+        "col_id": "chasmplus_DLBC.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "114",
+        "col_id": "chasmplus_ESCA.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "115",
+        "col_id": "chasmplus_ESCA.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "116",
+        "col_id": "chasmplus_ESCA.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "117",
+        "col_id": "chasmplus_ESCA.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "118",
+        "col_id": "chasmplus_GBM.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "119",
+        "col_id": "chasmplus_GBM.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "120",
+        "col_id": "chasmplus_GBM.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "121",
+        "col_id": "chasmplus_GBM.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "122",
+        "col_id": "chasmplus_HNSC.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "123",
+        "col_id": "chasmplus_HNSC.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "124",
+        "col_id": "chasmplus_HNSC.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "125",
+        "col_id": "chasmplus_HNSC.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "126",
+        "col_id": "chasmplus_KICH.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "127",
+        "col_id": "chasmplus_KICH.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "128",
+        "col_id": "chasmplus_KICH.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "129",
+        "col_id": "chasmplus_KICH.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "130",
+        "col_id": "chasmplus_KIRC.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "131",
+        "col_id": "chasmplus_KIRC.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "132",
+        "col_id": "chasmplus_KIRC.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "133",
+        "col_id": "chasmplus_KIRC.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "134",
+        "col_id": "chasmplus_KIRP.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "135",
+        "col_id": "chasmplus_KIRP.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "136",
+        "col_id": "chasmplus_KIRP.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "137",
+        "col_id": "chasmplus_KIRP.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "138",
+        "col_id": "chasmplus_LAML.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "139",
+        "col_id": "chasmplus_LAML.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "140",
+        "col_id": "chasmplus_LAML.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "141",
+        "col_id": "chasmplus_LAML.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "142",
+        "col_id": "chasmplus_LGG.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "143",
+        "col_id": "chasmplus_LGG.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "144",
+        "col_id": "chasmplus_LGG.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "145",
+        "col_id": "chasmplus_LGG.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "146",
+        "col_id": "chasmplus_LIHC.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "147",
+        "col_id": "chasmplus_LIHC.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "148",
+        "col_id": "chasmplus_LIHC.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "149",
+        "col_id": "chasmplus_LIHC.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "150",
+        "col_id": "chasmplus_LUAD.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "151",
+        "col_id": "chasmplus_LUAD.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "152",
+        "col_id": "chasmplus_LUAD.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "153",
+        "col_id": "chasmplus_LUAD.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "154",
+        "col_id": "chasmplus_LUSC.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "155",
+        "col_id": "chasmplus_LUSC.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "156",
+        "col_id": "chasmplus_LUSC.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "157",
+        "col_id": "chasmplus_LUSC.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "158",
+        "col_id": "chasmplus_MESO.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "159",
+        "col_id": "chasmplus_MESO.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "160",
+        "col_id": "chasmplus_MESO.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "161",
+        "col_id": "chasmplus_MESO.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "162",
+        "col_id": "chasmplus_OV.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "163",
+        "col_id": "chasmplus_OV.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "164",
+        "col_id": "chasmplus_OV.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "165",
+        "col_id": "chasmplus_OV.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "166",
+        "col_id": "chasmplus_PAAD.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "167",
+        "col_id": "chasmplus_PAAD.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "168",
+        "col_id": "chasmplus_PAAD.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "169",
+        "col_id": "chasmplus_PAAD.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "170",
+        "col_id": "chasmplus_PCPG.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "171",
+        "col_id": "chasmplus_PCPG.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "172",
+        "col_id": "chasmplus_PCPG.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "173",
+        "col_id": "chasmplus_PCPG.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "174",
+        "col_id": "chasmplus_PRAD.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "175",
+        "col_id": "chasmplus_PRAD.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "176",
+        "col_id": "chasmplus_PRAD.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "177",
+        "col_id": "chasmplus_PRAD.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "178",
+        "col_id": "chasmplus_READ.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "179",
+        "col_id": "chasmplus_READ.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "180",
+        "col_id": "chasmplus_READ.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "181",
+        "col_id": "chasmplus_READ.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "182",
+        "col_id": "chasmplus_SARC.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "183",
+        "col_id": "chasmplus_SARC.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "184",
+        "col_id": "chasmplus_SARC.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "185",
+        "col_id": "chasmplus_SARC.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "186",
+        "col_id": "chasmplus_SKCM.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "187",
+        "col_id": "chasmplus_SKCM.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "188",
+        "col_id": "chasmplus_SKCM.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "189",
+        "col_id": "chasmplus_SKCM.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "190",
+        "col_id": "chasmplus_STAD.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "191",
+        "col_id": "chasmplus_STAD.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "192",
+        "col_id": "chasmplus_STAD.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "193",
+        "col_id": "chasmplus_STAD.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "194",
+        "col_id": "chasmplus_TGCT.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "195",
+        "col_id": "chasmplus_TGCT.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "196",
+        "col_id": "chasmplus_TGCT.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "197",
+        "col_id": "chasmplus_TGCT.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "198",
+        "col_id": "chasmplus_THCA.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "199",
+        "col_id": "chasmplus_THCA.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "200",
+        "col_id": "chasmplus_THCA.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "201",
+        "col_id": "chasmplus_THCA.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "202",
+        "col_id": "chasmplus_THYM.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "203",
+        "col_id": "chasmplus_THYM.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "204",
+        "col_id": "chasmplus_THYM.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "205",
+        "col_id": "chasmplus_THYM.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "206",
+        "col_id": "chasmplus_UCEC.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "207",
+        "col_id": "chasmplus_UCEC.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "208",
+        "col_id": "chasmplus_UCEC.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "209",
+        "col_id": "chasmplus_UCEC.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "210",
+        "col_id": "chasmplus_UCS.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "211",
+        "col_id": "chasmplus_UCS.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "212",
+        "col_id": "chasmplus_UCS.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "213",
+        "col_id": "chasmplus_UCS.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "214",
+        "col_id": "chasmplus_UVM.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "215",
+        "col_id": "chasmplus_UVM.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "216",
+        "col_id": "chasmplus_UVM.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "217",
+        "col_id": "chasmplus_UVM.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "218",
+        "col_id": "civic.description",
+        "description": "Description",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "219",
+        "col_id": "civic.clinical_a_score",
+        "description": "Variant",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "220",
+        "col_id": "civic.diseases",
+        "description": "Diseases",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "221",
+        "col_id": "civic.id",
+        "description": "ID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "222",
+        "col_id": "civic_gene.description",
+        "description": "Description",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "223",
+        "col_id": "civic_gene.id",
+        "description": "ID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "224",
+        "col_id": "cosmic.cosmic_id",
+        "description": "ID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "225",
+        "col_id": "cosmic.variant_count_tissue",
+        "description": "Variant",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "226",
+        "col_id": "cosmic.variant_count",
+        "description": "Variant",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "227",
+        "col_id": "cosmic.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "228",
+        "col_id": "cosmic.protein_change",
+        "description": "Protein",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "229",
+        "col_id": "cosmic.match",
+        "description": "Match",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "230",
+        "col_id": "cosmic_gene.occurrences",
+        "description": "Occurrences",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "231",
+        "col_id": "cosmic_gene.gene_count",
+        "description": "Tissue",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "232",
+        "col_id": "cscape.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "233",
+        "col_id": "cscape_coding.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "234",
+        "col_id": "cscape_coding.rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "235",
+        "col_id": "cgc.class",
+        "description": "Driver",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "236",
+        "col_id": "cgc.inheritance",
+        "description": "Inheritance",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "237",
+        "col_id": "cgc.tts",
+        "description": "Tumor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "238",
+        "col_id": "cgc.ttg",
+        "description": "Tumor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "239",
+        "col_id": "cgc.link",
+        "description": "Link",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "240",
+        "col_id": "cgl.class",
+        "description": "Class",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "241",
+        "col_id": "cancer_genome_interpreter.resistant",
+        "description": "Number",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "242",
+        "col_id": "cancer_genome_interpreter.responsive",
+        "description": "Number",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "243",
+        "col_id": "cancer_genome_interpreter.other",
+        "description": "Number",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "244",
+        "col_id": "cancer_genome_interpreter.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "245",
+        "col_id": "cancer_hotspots.samples",
+        "description": "Cancer",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "246",
+        "col_id": "ccre_screen.acc_d",
+        "description": "ENCODE",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "247",
+        "col_id": "ccre_screen.acc_e",
+        "description": "cCRE",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "248",
+        "col_id": "ccre_screen._group",
+        "description": "Classification",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "249",
+        "col_id": "ccre_screen.bound",
+        "description": "CTCF",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "250",
+        "col_id": "cardioboost.cardiomyopathy",
+        "description": "Cardiomyopathy",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "251",
+        "col_id": "cardioboost.cardiomyopathy1",
+        "description": "Cardiomyopathy",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "252",
+        "col_id": "cardioboost.arrhythmias",
+        "description": "Arrhythmia",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "253",
+        "col_id": "cardioboost.arrhythmias1",
+        "description": "Arrhythmia",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "254",
+        "col_id": "cvdkp.ibs",
+        "description": "IBS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "255",
+        "col_id": "cvdkp.cad",
+        "description": "CAD",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "256",
+        "col_id": "cvdkp.bmi",
+        "description": "BMI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "257",
+        "col_id": "cvdkp.afib",
+        "description": "Atrial",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "258",
+        "col_id": "cvdkp.diabetes",
+        "description": "Type",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "259",
+        "col_id": "clingen.disease",
+        "description": "Disease",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "260",
+        "col_id": "clingen.mondo",
+        "description": "ID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "261",
+        "col_id": "clingen.classification",
+        "description": "Classification",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "262",
+        "col_id": "clingen.link",
+        "description": "Link",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "263",
+        "col_id": "clinpred.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "264",
+        "col_id": "clinpred.rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "265",
+        "col_id": "clinvar.sig",
+        "description": "Clinical",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "266",
+        "col_id": "clinvar.disease_refs",
+        "description": "Disease",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "267",
+        "col_id": "clinvar.disease_names",
+        "description": "Disease",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "268",
+        "col_id": "clinvar.rev_stat",
+        "description": "Review",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "269",
+        "col_id": "clinvar.id",
+        "description": "ClinVar",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "270",
+        "col_id": "clinvar.sig_conf",
+        "description": "Significance",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "271",
+        "col_id": "clinvar_acmg.ps1_id",
+        "description": "PS1",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "272",
+        "col_id": "clinvar_acmg.pm5_id",
+        "description": "PM5",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "273",
+        "col_id": "dann.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "274",
+        "col_id": "dann_coding.dann_coding_score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "275",
+        "col_id": "dann_coding.dann_rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "276",
+        "col_id": "dgi.category",
+        "description": "Gene",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "277",
+        "col_id": "dgi.interaction",
+        "description": "Interaction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "278",
+        "col_id": "dgi.name",
+        "description": "Drug",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "279",
+        "col_id": "dgi.score",
+        "description": "Interaction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "280",
+        "col_id": "dgi.chembl",
+        "description": "ChEMBL",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "281",
+        "col_id": "dgi.pmid",
+        "description": "PubMed",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "282",
+        "col_id": "dgi.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "283",
+        "col_id": "dida.id",
+        "description": "ID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "284",
+        "col_id": "dida.name",
+        "description": "Disease",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "285",
+        "col_id": "dida.effect",
+        "description": "Oligogenic",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "286",
+        "col_id": "dida.relation",
+        "description": "Gene",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "287",
+        "col_id": "dida.fam",
+        "description": "Familial",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "288",
+        "col_id": "dida.funct",
+        "description": "Functional",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "289",
+        "col_id": "dida.dist",
+        "description": "Biological",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "290",
+        "col_id": "dida.pub",
+        "description": "PubMed",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "291",
+        "col_id": "dida.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "292",
+        "col_id": "denovo.PubmedId",
+        "description": "PMID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "293",
+        "col_id": "denovo.PrimaryPhenotype",
+        "description": "Phenotype",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "294",
+        "col_id": "denovo.Validation",
+        "description": "Validation",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "295",
+        "col_id": "encode_tfbs.factor",
+        "description": "Factor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "296",
+        "col_id": "encode_tfbs.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "297",
+        "col_id": "esp6500.ea_pop_af",
+        "description": "European",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "298",
+        "col_id": "esp6500.aa_pop_af",
+        "description": "African",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "299",
+        "col_id": "ensembl_regulatory_build.region",
+        "description": "Regulatory",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "300",
+        "col_id": "ensembl_regulatory_build.ensr",
+        "description": "Ensembl",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "301",
+        "col_id": "ess_gene.ess_gene",
+        "description": "Essential",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "302",
+        "col_id": "ess_gene.ess_gene_crispr",
+        "description": "CRISPR",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "303",
+        "col_id": "ess_gene.ess_gene_crispr2",
+        "description": "CRISPR2",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "304",
+        "col_id": "ess_gene.ess_gene_gene_trap",
+        "description": "Gene",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "305",
+        "col_id": "ess_gene.indispensability_score",
+        "description": "Indispensability",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "306",
+        "col_id": "ess_gene.indispensability_pred",
+        "description": "Indispensability",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "307",
+        "col_id": "exac_gene.exac_pli",
+        "description": "pLI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "308",
+        "col_id": "exac_gene.exac_prec",
+        "description": "pLI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "309",
+        "col_id": "exac_gene.exac_pnull",
+        "description": "pLT",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "310",
+        "col_id": "exac_gene.exac_nontcga_pli",
+        "description": "pLI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "311",
+        "col_id": "exac_gene.exac_nontcga_prec",
+        "description": "pLI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "312",
+        "col_id": "exac_gene.exac_nontcga_pnull",
+        "description": "pLT",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "313",
+        "col_id": "exac_gene.exac_nonpsych_pli",
+        "description": "pLI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "314",
+        "col_id": "exac_gene.exac_nonpsych_prec",
+        "description": "pLI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "315",
+        "col_id": "exac_gene.exac_nonpsych_pnull",
+        "description": "pLT",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "316",
+        "col_id": "exac_gene.exac_del_score",
+        "description": "Del",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "317",
+        "col_id": "exac_gene.exac_dup_score",
+        "description": "Dup",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "318",
+        "col_id": "exac_gene.exac_cnv_score",
+        "description": "CNV",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "319",
+        "col_id": "exac_gene.exac_cnv_flag",
+        "description": "CNV",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "320",
+        "col_id": "fathmm.ens_tid",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "321",
+        "col_id": "fathmm.ens_pid",
+        "description": "Protein",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "322",
+        "col_id": "fathmm.fathmm_score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "323",
+        "col_id": "fathmm.fathmm_rscore",
+        "description": "Converted",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "324",
+        "col_id": "fathmm.fathmm_pred",
+        "description": "Prediction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "325",
+        "col_id": "fathmm_mkl.fathmm_mkl_coding_score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "326",
+        "col_id": "fathmm_mkl.fathmm_mkl_coding_rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "327",
+        "col_id": "fathmm_mkl.fathmm_mkl_coding_pred",
+        "description": "Prediction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "328",
+        "col_id": "fathmm_mkl.fathmm_mkl_group",
+        "description": "Feature",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "329",
+        "col_id": "fathmm_xf_coding.fathmm_xf_coding_score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "330",
+        "col_id": "fathmm_xf_coding.fathmm_xf_coding_rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "331",
+        "col_id": "fathmm_xf_coding.fathmm_xf_coding_pred",
+        "description": "Prediction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "332",
+        "col_id": "flank_seq.ref_seq",
+        "description": "Ref",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "333",
+        "col_id": "flank_seq.alt_seq",
+        "description": "Alt",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "334",
+        "col_id": "funseq2.hot",
+        "description": "HOT",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "335",
+        "col_id": "funseq2.motif",
+        "description": "Motif",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "336",
+        "col_id": "funseq2.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "337",
+        "col_id": "funseq2.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "338",
+        "col_id": "gerp.gerp_nr",
+        "description": "Neutral",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "339",
+        "col_id": "gerp.gerp_rs",
+        "description": "RS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "340",
+        "col_id": "gerp.gerp_rs_rank",
+        "description": "RS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "341",
+        "col_id": "ghis.ghis",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "342",
+        "col_id": "grasp.nhlbi",
+        "description": "NHLBI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "343",
+        "col_id": "grasp.pmid",
+        "description": "PMID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "344",
+        "col_id": "grasp.phenotype",
+        "description": "Phenotype",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "345",
+        "col_id": "grasp.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "346",
+        "col_id": "gtex.gtex_gene",
+        "description": "Target",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "347",
+        "col_id": "gtex.gtex_tissue",
+        "description": "Tissue",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "348",
+        "col_id": "gwas_catalog.disease",
+        "description": "Disease/Trait",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "349",
+        "col_id": "gwas_catalog.or_beta",
+        "description": "Odds",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "350",
+        "col_id": "gwas_catalog.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "351",
+        "col_id": "gwas_catalog.pmid",
+        "description": "PMID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "352",
+        "col_id": "gwas_catalog.init_samp",
+        "description": "Initial",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "353",
+        "col_id": "gwas_catalog.rep_samp",
+        "description": "Replication",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "354",
+        "col_id": "gwas_catalog.risk_allele",
+        "description": "Risk",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "355",
+        "col_id": "gwas_catalog.ci",
+        "description": "Confidence",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "356",
+        "col_id": "go.bpo_name",
+        "description": "Biological",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "357",
+        "col_id": "go.bpo_id",
+        "description": "Biological",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "358",
+        "col_id": "go.cco_name",
+        "description": "Cellular",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "359",
+        "col_id": "go.cco_id",
+        "description": "Cellular",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "360",
+        "col_id": "go.mfo_name",
+        "description": "Molecular",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "361",
+        "col_id": "go.mfo_id",
+        "description": "Molecular",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "362",
+        "col_id": "genehancer.feature_name",
+        "description": "GeneHancer",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "363",
+        "col_id": "genehancer.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "364",
+        "col_id": "genehancer.ident",
+        "description": "GeneHancer",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "365",
+        "col_id": "genehancer.target_genes",
+        "description": "Gene",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "366",
+        "col_id": "geuvadis.gene",
+        "description": "Target",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "367",
+        "col_id": "hgdp.european_allele_freq",
+        "description": "European",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "368",
+        "col_id": "hgdp.african_allele_freq",
+        "description": "African",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "369",
+        "col_id": "hgdp.middle_eastern_allele_freq",
+        "description": "Middle",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "370",
+        "col_id": "hgdp.east_asian_allele_freq",
+        "description": "East",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "371",
+        "col_id": "hgdp.cs_asian_allele_freq",
+        "description": "CS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "372",
+        "col_id": "hgdp.oceanian_allele_freq",
+        "description": "Oceanian",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "373",
+        "col_id": "hgdp.native_american_allele_freq",
+        "description": "Native",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "374",
+        "col_id": "haploreg_afr.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "375",
+        "col_id": "haploreg_amr.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "376",
+        "col_id": "haploreg_asn.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "377",
+        "col_id": "haploreg_eur.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "378",
+        "col_id": "hpo.id",
+        "description": "HPO",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "379",
+        "col_id": "hpo.term",
+        "description": "HPO",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "380",
+        "col_id": "hpo.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "381",
+        "col_id": "intact.intact",
+        "description": "Raw",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "382",
+        "col_id": "intact.acts",
+        "description": "Interactors",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "383",
+        "col_id": "interpro.domain",
+        "description": "Domain",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "384",
+        "col_id": "interpro.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "385",
+        "col_id": "linsight.value",
+        "description": "Value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "386",
+        "col_id": "lrt.lrt_score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "387",
+        "col_id": "lrt.lrt_converted_rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "388",
+        "col_id": "lrt.lrt_pred",
+        "description": "Prediction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "389",
+        "col_id": "lrt.lrt_omega",
+        "description": "Omega",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "390",
+        "col_id": "litvar.rsid",
+        "description": "rsID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "391",
+        "col_id": "loftool.loftool_score",
+        "description": "LoF",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "392",
+        "col_id": "mitomap.disease",
+        "description": "Disease",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "393",
+        "col_id": "mitomap.score",
+        "description": "MitoTip",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "394",
+        "col_id": "mitomap.quartile",
+        "description": "Quartile",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "395",
+        "col_id": "mitomap.status",
+        "description": "Status",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "396",
+        "col_id": "mitomap.pubmed",
+        "description": "PubMed",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "397",
+        "col_id": "mavedb.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "398",
+        "col_id": "mavedb.vis",
+        "description": "MaveVis",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "399",
+        "col_id": "mavedb.accession",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "400",
+        "col_id": "metalr.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "401",
+        "col_id": "metalr.rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "402",
+        "col_id": "metalr.pred",
+        "description": "Prediction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "403",
+        "col_id": "metasvm.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "404",
+        "col_id": "metasvm.rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "405",
+        "col_id": "metasvm.pred",
+        "description": "Prediction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "406",
+        "col_id": "mupit.link",
+        "description": "Link",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "407",
+        "col_id": "mupit.hugo",
+        "description": "Hugo",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "408",
+        "col_id": "mutpred1.transcript",
+        "description": "Transcripts",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "409",
+        "col_id": "mutpred1.external_protein_id",
+        "description": "Uniprot",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "410",
+        "col_id": "mutpred1.amino_acid_substitution",
+        "description": "Variant",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "411",
+        "col_id": "mutpred1.mutpred_general_score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "412",
+        "col_id": "mutpred1.mutpred_rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "413",
+        "col_id": "mutpred1.mutpred_top5_mechanisms",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "414",
+        "col_id": "mutpred_indel.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "415",
+        "col_id": "mutpred_indel.rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "416",
+        "col_id": "mutpred_indel.property",
+        "description": "Property",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "417",
+        "col_id": "mutation_assessor.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "418",
+        "col_id": "mutation_assessor.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "419",
+        "col_id": "mutation_assessor.rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "420",
+        "col_id": "mutation_assessor.impact",
+        "description": "Functional",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "421",
+        "col_id": "mutation_assessor.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "422",
+        "col_id": "mutationtaster.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "423",
+        "col_id": "mutationtaster.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "424",
+        "col_id": "mutationtaster.rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "425",
+        "col_id": "mutationtaster.prediction",
+        "description": "Prediction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "426",
+        "col_id": "mutationtaster.model",
+        "description": "Model",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "427",
+        "col_id": "mutationtaster.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "428",
+        "col_id": "mutpanning.No_Cancer_Types",
+        "description": "No.",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "429",
+        "col_id": "mutpanning.Max_Frequency",
+        "description": "Mutation",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "430",
+        "col_id": "mutpanning.Best_Q_Value",
+        "description": "Best",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "431",
+        "col_id": "mutpanning.Supporting_Literature",
+        "description": "Supporting",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "432",
+        "col_id": "mutpanning.TCGA_Marker_Papers",
+        "description": "TCGA",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "433",
+        "col_id": "mutpanning.dNdS_Study",
+        "description": "dNdS",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "434",
+        "col_id": "mutpanning.Tumorportal",
+        "description": "Tumor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "435",
+        "col_id": "mutpanning.Bailey_Database",
+        "description": "Bailey",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "436",
+        "col_id": "mutpanning.Cancer_Type",
+        "description": "Cancer",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "437",
+        "col_id": "ncbigene.ncbi_desc",
+        "description": "Description",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "438",
+        "col_id": "ncbigene.entrez",
+        "description": "Entrez",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "439",
+        "col_id": "ndex_chd.numhit",
+        "description": "Number",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "440",
+        "col_id": "ndex_chd.networkid",
+        "description": "Network",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "441",
+        "col_id": "ndex_chd.networkname",
+        "description": "Network",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "442",
+        "col_id": "ndex_chd.numhit",
+        "description": "Number",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "443",
+        "col_id": "ndex_chd.networkid",
+        "description": "Network",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "444",
+        "col_id": "ndex_chd.networkname",
+        "description": "Network",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "445",
+        "col_id": "ndex.numhit",
+        "description": "Number",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "446",
+        "col_id": "ndex.networkid",
+        "description": "Network",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "447",
+        "col_id": "ndex.networkname",
+        "description": "Network",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "448",
+        "col_id": "ndex_signor.numhit",
+        "description": "Number",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "449",
+        "col_id": "ndex_signor.networkid",
+        "description": "Network",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "450",
+        "col_id": "ndex_signor.networkname",
+        "description": "Network",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "451",
+        "col_id": "ndex_signor.numhit",
+        "description": "Number",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "452",
+        "col_id": "ndex_signor.networkid",
+        "description": "Network",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "453",
+        "col_id": "ndex_signor.networkname",
+        "description": "Network",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "454",
+        "col_id": "omim.omim_id",
+        "description": "Entry",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "455",
+        "col_id": "oncokb.oncogenic",
+        "description": "Oncogenic",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "456",
+        "col_id": "oncokb.knownEffect",
+        "description": "Known",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "457",
+        "col_id": "oncokb.hotspot",
+        "description": "Hotspot",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "458",
+        "col_id": "oncokb.highestSensitiveLevel",
+        "description": "Highest",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "459",
+        "col_id": "oncokb.highestResistanceLevel",
+        "description": "Highest",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "460",
+        "col_id": "oncokb.highestDiagnosticImplicationLevel",
+        "description": "Highest",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "461",
+        "col_id": "oncokb.highestPrognosticImplicationLevel",
+        "description": "Highest",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "462",
+        "col_id": "oncokb.pmids",
+        "description": "PubMed",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "463",
+        "col_id": "oncokb.geneSummary",
+        "description": "Gene",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "464",
+        "col_id": "oncokb.variantSummary",
+        "description": "Variant",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "465",
+        "col_id": "oncokb.tumorSummary",
+        "description": "Tumor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "466",
+        "col_id": "oncokb.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "467",
+        "col_id": "original_input.chrom",
+        "description": "Chrom",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "468",
+        "col_id": "original_input.pos",
+        "description": "Pos",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "469",
+        "col_id": "original_input.ref_base",
+        "description": "Reference",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "470",
+        "col_id": "original_input.alt_base",
+        "description": "Alternate",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "471",
+        "col_id": "prec.prec",
+        "description": "P(rec)",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "472",
+        "col_id": "prec.stat",
+        "description": "Known",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "473",
+        "col_id": "provean.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "474",
+        "col_id": "provean.uniprot",
+        "description": "UniProt",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "475",
+        "col_id": "provean.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "476",
+        "col_id": "provean.rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "477",
+        "col_id": "provean.prediction",
+        "description": "Prediction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "478",
+        "col_id": "provean.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "479",
+        "col_id": "pangalodb.cell_type",
+        "description": "Cell",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "480",
+        "col_id": "pangalodb.ui",
+        "description": "Ubiquitousness",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "481",
+        "col_id": "pangalodb.desc",
+        "description": "Description",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "482",
+        "col_id": "pangalodb.germlayer",
+        "description": "Germ",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "483",
+        "col_id": "pangalodb.organ",
+        "description": "Organ",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "484",
+        "col_id": "pangalodb.sensitivity",
+        "description": "Sensitivity",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "485",
+        "col_id": "pangalodb.specificity",
+        "description": "Specificity",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "486",
+        "col_id": "pangalodb.hits",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "487",
+        "col_id": "phdsnpg.prediction",
+        "description": "Prediction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "488",
+        "col_id": "phdsnpg.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "489",
+        "col_id": "phdsnpg.fdr",
+        "description": "FDR",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "490",
+        "col_id": "pharmgkb.id",
+        "description": "ID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "491",
+        "col_id": "pharmgkb.chemicals",
+        "description": "Chemicals",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "492",
+        "col_id": "pharmgkb.pheno_cat",
+        "description": "Phenotype",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "493",
+        "col_id": "pharmgkb.drug_assoc",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "494",
+        "col_id": "phastcons.phastcons100_vert",
+        "description": "Vert",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "495",
+        "col_id": "phastcons.phastcons100_vert_r",
+        "description": "Vert",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "496",
+        "col_id": "phastcons.phastcons30_mamm",
+        "description": "Mamm",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "497",
+        "col_id": "phastcons.phastcons30_mamm_r",
+        "description": "Mamm",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "498",
+        "col_id": "phastcons.phastcons17way_primate",
+        "description": "Primate",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "499",
+        "col_id": "phastcons.phastcons17way_primate_r",
+        "description": "Primate",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "500",
+        "col_id": "phylop.phylop100_vert",
+        "description": "Vert",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "501",
+        "col_id": "phylop.phylop100_vert_r",
+        "description": "Vert",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "502",
+        "col_id": "phylop.phylop30_mamm",
+        "description": "Mamm",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "503",
+        "col_id": "phylop.phylop30_mamm_r",
+        "description": "Mamm",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "504",
+        "col_id": "phylop.phylop17_primate",
+        "description": "Primate",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "505",
+        "col_id": "phylop.phylop17_primate_r",
+        "description": "Primate",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "506",
+        "col_id": "polyphen2.hdiv_pred",
+        "description": "HDIV",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "507",
+        "col_id": "polyphen2.hvar_pred",
+        "description": "HVAR",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "508",
+        "col_id": "polyphen2.hdiv_rank",
+        "description": "HDIV",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "509",
+        "col_id": "polyphen2.hvar_rank",
+        "description": "HVAR",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "510",
+        "col_id": "polyphen2.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "511",
+        "col_id": "javierre_promoters.regions",
+        "description": "Regions",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "512",
+        "col_id": "pseudogene.hugo",
+        "description": "Hugo",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "513",
+        "col_id": "pseudogene.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "514",
+        "col_id": "pubmed.n",
+        "description": "Article",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "515",
+        "col_id": "pubmed.term",
+        "description": "Search",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "516",
+        "col_id": "revel.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "517",
+        "col_id": "revel.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "518",
+        "col_id": "revel.rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "519",
+        "col_id": "revel.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "520",
+        "col_id": "rvis.rvis_evs",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "521",
+        "col_id": "rvis.rvis_perc_evs",
+        "description": "Percentile",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "522",
+        "col_id": "rvis.rvis_fdr_exac",
+        "description": "FDR",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "523",
+        "col_id": "rvis.rvis_exac",
+        "description": "ExAC-based",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "524",
+        "col_id": "rvis.rvis_perc_exac",
+        "description": "ExAC-based",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "525",
+        "col_id": "repeat.repeatclass",
+        "description": "Repeat",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "526",
+        "col_id": "repeat.repeatfamily",
+        "description": "Repeat",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "527",
+        "col_id": "repeat.repeatname",
+        "description": "Repeat",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "528",
+        "col_id": "sift.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "529",
+        "col_id": "sift.prediction",
+        "description": "Prediction",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "530",
+        "col_id": "sift.confidence",
+        "description": "Confidence",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "531",
+        "col_id": "sift.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "532",
+        "col_id": "sift.rankscore",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "533",
+        "col_id": "sift.med",
+        "description": "Median",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "534",
+        "col_id": "sift.seqs",
+        "description": "Seqs",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "535",
+        "col_id": "sift.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "536",
+        "col_id": "sift.multsite",
+        "description": "Mult.",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "537",
+        "col_id": "segway.sum_score",
+        "description": "Sum",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "538",
+        "col_id": "segway.mean_score",
+        "description": "Mean",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "539",
+        "col_id": "siphy.pi",
+        "description": "Stationary",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "540",
+        "col_id": "siphy.logodds",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "541",
+        "col_id": "siphy.logodds_rank",
+        "description": "Rank",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "542",
+        "col_id": "spliceai.ds_ag",
+        "description": "Acceptor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "543",
+        "col_id": "spliceai.ds_al",
+        "description": "Acceptor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "544",
+        "col_id": "spliceai.ds_dg",
+        "description": "Donor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "545",
+        "col_id": "spliceai.ds_dl",
+        "description": "Donor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "546",
+        "col_id": "spliceai.dp_ag",
+        "description": "Acceptor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "547",
+        "col_id": "spliceai.dp_al",
+        "description": "Acceptor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "548",
+        "col_id": "spliceai.dp_dg",
+        "description": "Donor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "549",
+        "col_id": "spliceai.dp_dl",
+        "description": "Donor",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "550",
+        "col_id": "swissprot_ptm.uniprotkb",
+        "description": "UniProtKB",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "551",
+        "col_id": "swissprot_ptm.crosslnk",
+        "description": "Crosslink",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "552",
+        "col_id": "swissprot_ptm.disulfid",
+        "description": "Disulfid",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "553",
+        "col_id": "swissprot_ptm.carbohyd",
+        "description": "Glycosylation",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "554",
+        "col_id": "swissprot_ptm.init",
+        "description": "Initiator",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "555",
+        "col_id": "swissprot_ptm.lipid",
+        "description": "Lipidation",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "556",
+        "col_id": "swissprot_ptm.mod",
+        "description": "Modified",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "557",
+        "col_id": "swissprot_ptm.propep",
+        "description": "Polypeptide",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "558",
+        "col_id": "swissprot_ptm.signal",
+        "description": "Signal",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "559",
+        "col_id": "swissprot_ptm.transit",
+        "description": "Transit",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "560",
+        "col_id": "swissprot_ptm.pubmed",
+        "description": "Pubmed",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "561",
+        "col_id": "swissprot_ptm.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "562",
+        "col_id": "target.therapy",
+        "description": "Recommended",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "563",
+        "col_id": "target.rationale",
+        "description": "Rationale",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "564",
+        "col_id": "trinity.Rnaedit",
+        "description": "RNA",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "565",
+        "col_id": "uk10k_cohort.uk10k_twins_ac",
+        "description": "Twins",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "566",
+        "col_id": "uk10k_cohort.uk10k_twins_af",
+        "description": "Twins",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "567",
+        "col_id": "uk10k_cohort.uk10k_alspac_ac",
+        "description": "ALSPAC",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "568",
+        "col_id": "uk10k_cohort.uk10k_alspac_af",
+        "description": "ALSPAC",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "569",
+        "col_id": "uk10k_cohort.uk10k_ac",
+        "description": "UK10K",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "570",
+        "col_id": "uk10k_cohort.uk10k_af",
+        "description": "UK10K",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "571",
+        "col_id": "uniprot.acc",
+        "description": "Accession",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "572",
+        "col_id": "vest.transcript",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "573",
+        "col_id": "vest.score",
+        "description": "Score",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "574",
+        "col_id": "vest.pval",
+        "description": "P-value",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "575",
+        "col_id": "vest.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "576",
+        "col_id": "vista_enhancer.element",
+        "description": "Element",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "577",
+        "col_id": "vista_enhancer.features",
+        "description": "Features",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "578",
+        "col_id": "dbcid.evidence",
+        "description": "Levels",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "579",
+        "col_id": "dbsnp.rsid",
+        "description": "rsID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "580",
+        "col_id": "dbsnp_common.rsid",
+        "description": "rsID",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "581",
+        "col_id": "dbscsnv.ada_score",
+        "description": "AdaBoost",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "582",
+        "col_id": "dbscsnv.rf_score",
+        "description": "Random",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "583",
+        "col_id": "gnomad.af",
+        "description": "Global",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "584",
+        "col_id": "gnomad.af_afr",
+        "description": "African",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "585",
+        "col_id": "gnomad.af_amr",
+        "description": "American",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "586",
+        "col_id": "gnomad.af_asj",
+        "description": "Ashkenazi",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "587",
+        "col_id": "gnomad.af_eas",
+        "description": "East",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "588",
+        "col_id": "gnomad.af_fin",
+        "description": "Finnish",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "589",
+        "col_id": "gnomad.af_nfe",
+        "description": "Non-Fin",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "590",
+        "col_id": "gnomad.af_oth",
+        "description": "Other",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "591",
+        "col_id": "gnomad.af_sas",
+        "description": "South",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "592",
+        "col_id": "gnomad_gene.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "593",
+        "col_id": "gnomad_gene.oe_lof",
+        "description": "Obv/Exp",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "594",
+        "col_id": "gnomad_gene.oe_mis",
+        "description": "Obv/Exp",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "595",
+        "col_id": "gnomad_gene.oe_syn",
+        "description": "Obv/Exp",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "596",
+        "col_id": "gnomad_gene.lof_z",
+        "description": "LoF",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "597",
+        "col_id": "gnomad_gene.mis_z",
+        "description": "Mis",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "598",
+        "col_id": "gnomad_gene.syn_z",
+        "description": "Syn",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "599",
+        "col_id": "gnomad_gene.pLI",
+        "description": "pLI",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "600",
+        "col_id": "gnomad_gene.pRec",
+        "description": "pRec",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "601",
+        "col_id": "gnomad_gene.pNull",
+        "description": "pNull",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "602",
+        "col_id": "gnomad_gene.all",
+        "description": "All",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "603",
+        "col_id": "gnomad3.af",
+        "description": "Global",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "604",
+        "col_id": "gnomad3.af_afr",
+        "description": "African",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "605",
+        "col_id": "gnomad3.af_asj",
+        "description": "Ashkenazi",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "606",
+        "col_id": "gnomad3.af_eas",
+        "description": "East",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "607",
+        "col_id": "gnomad3.af_fin",
+        "description": "Finnish",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "608",
+        "col_id": "gnomad3.af_lat",
+        "description": "Latino",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "609",
+        "col_id": "gnomad3.af_nfe",
+        "description": "Non-Fin",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "610",
+        "col_id": "gnomad3.af_oth",
+        "description": "Other",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "611",
+        "col_id": "gnomad3.af_sas",
+        "description": "South",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "612",
+        "col_id": "mirbase.transcript",
+        "description": "Transcript",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "613",
+        "col_id": "mirbase.id",
+        "description": "Accession",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "614",
+        "col_id": "mirbase.name",
+        "description": "Name",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "615",
+        "col_id": "mirbase.derives_from",
+        "description": "Derives",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "616",
+        "col_id": "ncrna.ncrnaclass",
+        "description": "Class",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "617",
+        "col_id": "ncrna.ncrnaname",
+        "description": "Name",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    },
+    {
+        "col_num": "618",
+        "col_id": "phi.phi",
+        "description": "P(HI)",
+        "parse": "true|false",
+        "parse_type": "list-o-dicts,list,none"
+    }
+]
