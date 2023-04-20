@@ -2,6 +2,10 @@
 
 ***!!! For research purposes only !!!***
 
+> **_NOTE:_**  In a past life, DITTO used a different remote Git management provider, [UAB
+> Gitlab](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/ditto). It was migrated to
+> Github in April 2023, and the Gitlab version has been archived.
+
 - [DITTO](#ditto)
     - [Data](#data)
     - [Usage](#usage)
