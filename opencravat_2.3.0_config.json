@@ -87,8 +87,7 @@
         "col_num": "12",
         "col_id": "all_mappings",
         "description": "All",
-        "parse": "true",
-        "parse_type": "list"
+        "parse": false
     },
     {
         "col_num": "13",
@@ -487,7 +486,7 @@
         "col_id": "biogrid.acts",
         "description": "Interactors",
         "parse": "true",
-        "parse_type": "list"
+        "parse_type": "none"
     },
     {
         "col_num": "70",
@@ -2433,7 +2432,7 @@
         "col_id": "gtex.gtex_tissue",
         "description": "Tissue",
         "parse": "true",
-        "parse_type": "list"
+        "parse_type": "none"
     },
     {
         "col_num": "348",

@@ -4,26 +4,7 @@ import os
 import json
 import csv
 
-
-# Example fields for parsing and normalizing:
-# 'all_mappings': 'ENST00000253952.9:THOC6:Q86W42:missense_variant:p.Val234Leu:c.700G>C; ENST00000326266.13:THOC6:Q86W42:missense_variant:p.Val234Leu:c.700G>C; ENST00000389347.4:BICDL2:A1A5D9:2kb_downstream_variant::c.*936C>G; ENST00000572449.6:BICDL2:A1A5D9:2kb_downstream_variant::c.*936C>G; ENST00000573514.5:BICDL2:A1A5D9:2kb_downstream_variant::c.*936C>G; ENST00000574549.5:THOC6:Q86W42:missense_variant:p.Val210Leu:c.628G>C; ENST00000575576.5:THOC6:Q86W42:missense_variant:p.Val210Leu:c.628G>C; ENST00000642419.1:BICDL2::2kb_downstream_variant::c.*936C>G'
-# 'chasmplus.all': '[["ENST00000574549.5", 0.064, 0.314], ["ENST00000575576.5", 0.064, 0.314], ["NM_001142350.1", 0.055, 0.358], ["NM_024339.3", 0.047, 0.405]]'
-# 'biogrid.acts': 'EFTUD2;PPP2R1A;RRP9;SNRNP200;THOC1;THOC7;TPR;TRIM55;U2AF1;U2AF2;UTRN;VDAC2;ZC3H15;ZCCHC8;ZNF326'
-# 'clinvar.sig_conf': 'Pathogenic(1)|Likely pathogenic(2)|Uncertain significance(3)'
-# 'clinvar.disease_refs': 'MONDO:MONDO:0013362,MedGen:C3150939,OMIM:613680,Orphanet:ORPHA363444|MeSH:D030342,MedGen:C0950123|MedGen:CN517202'
-# 'funseq2.all': '[["", "", "", "", "", "", "4"]]'
-# 'intact.intact': 'GABARAPL2[20562859]|NUDC[25036637]|JUN[25609649]|THOC1[19165146;26496610]|THOC2[19165146;26496610]|DDX41[25920683]|THOC5[26496610]|ESR2[21182203]|GABARAP[20562859]|THOC7[26496610]|PLEKHA7[28877994]|BCLAF1[26496610]|MAP1LC3A[20562859]|ID1[26496610]|ABI1[26496610]|NCBP3[26496610;26382858]|'
-
-# TODO create config for field mappings and parsing logic needed for various field types from examples above
-
-
-# list of dictionaries (that looks like a list of lists, can have empty values), this will require mapping configuration
-
-
-# list
-
-
-# lists that don't need parsing
+ALL_MAPPINGS_COLUMN_ID = "all_mappings"
 
 
 def create_data_config(annot_csv, outfile = None):
@@ -44,8 +25,23 @@ def create_data_config(annot_csv, outfile = None):
                     "col_id": info[1],
                     "description": info[2],
                     "parse": True,
-                    "parse_type": "list-o-dicts,list,none",
-                    "separator": ";"
+                    "parse_type": {
+                        "none":{},
+                        "list_index": {
+                            "separator": ";"
+                        },
+                        "list":{
+                            "trx_index_col": "fathmm.ens_tid",
+                            "separator": ";"
+                        },
+                        "list-o-dicts":{
+                            "dict_index": {
+                                0: "column_name",
+                                1: "column_name1"
+                            },
+                            "trx_mapping_col_index": 0
+                        }
+                    }
                 })
             if cntr > 2000:
                 break
@@ -82,19 +78,29 @@ def parse_annotations(annot_csv, data_config_file, outfile):
 
     # the column "all_mappings" is the key split-by column to separate results on a per variant + transcript
     with open(outfile, "w", newline="") as paserdcsv:
-        csvwriter = csv.DictWriter(paserdcsv, fieldnames=[colconf["col_id"] for colconf in data_config])
+        parse_fieldnames = [colconf["col_id"] for colconf in data_config]
+        hardcoded_fieldnames = ["trx", "gene", "consequence", "protein_hgvs", "cdna_hgvs"]
+        csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames + parse_fieldnames)
         csvwriter.writeheader()
         with open(annot_csv, "r", newline="") as csvfile:
             reader = csv.DictReader(filter(lambda row: row[0]!='#', csvfile))
             for row in reader:
-                for column in data_config:
-                    # TODO rewrite parsing and configs to focus on "all_mappings" column
-                    if column["parse_type"] == "list-o-dicts":
-                        parse_list_of_dicts(row[column["col_id"]])
-                    elif column["parse_type"] == "list":
-                        row[column["col_id"]].split(column["separator"])
-                    else:
-                        row[column["col_id"]]
+                for variant_trx in row[ALL_MAPPINGS_COLUMN_ID].split(";"):
+                    vtrx_cols = variant_trx.split(":")
+                    trx = vtrx_cols[0].split(".")[0]
+                    gene = vtrx_cols[1]
+                    vtrx_consequence = vtrx_cols[3]
+                    protein_hgvs = vtrx_cols[4]
+                    cdna_hgvs = vtrx_cols[5]
+                    for column in parse_fieldnames:
+                        if "list-o-dicts" in column["parse_type"]:
+                            parse_list_of_dicts(row[column["col_id"]])
+                        elif "list" in column["parse_type"]:
+                            row[column["col_id"]].split(column["separator"])
+                        elif "list_index" in column["parse_type"]:
+                            continue
+                        else:
+                            row[column["col_id"]]
 
 
 def is_valid_output_file(p, arg):
