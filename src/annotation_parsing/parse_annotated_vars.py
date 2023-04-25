@@ -27,11 +27,9 @@ def create_data_config(annot_csv, outfile = None):
                     "parse": True,
                     "parse_type": {
                         "none":{},
-                        "list_index": {
-                            "separator": ";"
-                        },
                         "list":{
                             "trx_index_col": "fathmm.ens_tid",
+                            "column_list": ["fathmm.fathmm_score", "fathmm.fathmm_pred"],
                             "separator": ";"
                         },
                         "list-o-dicts":{
@@ -52,21 +50,33 @@ def create_data_config(annot_csv, outfile = None):
         json.dump(columns,ofp)
 
 
-def parse_list_of_dicts(data_value):
-    list_of_dicts = list()
-    if data_value.startswith("[["):
-        # parse list of dicts that uses json formatting
-        for sublist in json.loads(data_value):
-            sublist_dict = dict()
-            list_of_dicts.append(sublist_dict)
-            for index, value in enumerate(sublist):
-                sublist_dict[index] = value
-    else:
-        for sublist in data_value.split(";"):
-            sublist_dict = dict()
-            list_of_dicts.append(sublist_dict)
-            for index, value in enumerate(sublist.trim().split(":")):
-                sublist_dict[index] = value    
+def parse_list_of_dicts(data_value, column_config):
+    dict_of_dicts = dict()
+    for sublist in json.loads(data_value):
+        sublist_dict = dict()
+        trx_id = sublist[column_config["trx_mapping_col_index"]].split(".")[0]
+        dict_of_dicts[trx_id] = sublist_dict
+        for index, value in enumerate(sublist):
+            # look up column name by index value, assign column name as key in return dict
+            sublist_dict[column_config["dict_index"][index]] = value
+
+    return dict_of_dicts
+
+
+def parse_multicolumn_list_of_dicts(index_column, multi_column_config, data_cols_dict):
+    # data_cols_n_configs => list of tuples where tuple[0] is column value, tuple[1] is column config
+    index_mapping = dict()
+    dict_of_dicts = dict()
+    for index, index_value in enumerate(index_column.split(multi_column_config["separator"])):
+        index_mapping[index] = index_value.split(".")[0]
+        dict_of_dicts[index_mapping[index]] = dict()
+
+    for column, value in data_cols_dict.items():
+        sublist = value.split(multi_column_config["separator"])
+        for index, data_value in enumerate(sublist):
+            dict_of_dicts[index_mapping[index]][column] = data_value
+
+    return dict_of_dicts
 
 
 def parse_annotations(annot_csv, data_config_file, outfile):
@@ -78,29 +88,39 @@ def parse_annotations(annot_csv, data_config_file, outfile):
 
     # the column "all_mappings" is the key split-by column to separate results on a per variant + transcript
     with open(outfile, "w", newline="") as paserdcsv:
-        parse_fieldnames = [colconf["col_id"] for colconf in data_config]
         hardcoded_fieldnames = ["trx", "gene", "consequence", "protein_hgvs", "cdna_hgvs"]
+        # TODO add list of printed field names accounting for list and list-o-dicts
         csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames + parse_fieldnames)
         csvwriter.writeheader()
         with open(annot_csv, "r", newline="") as csvfile:
             reader = csv.DictReader(filter(lambda row: row[0]!='#', csvfile))
             for row in reader:
+                # parse list of dict columns first since this only needs to be done once per row and cached
+                cached_dicts_o_dicts = dict()
+                for column in [colconf for colconf in data_config if "list-o-dicts" in colconf["parse_type"]]:
+                    cached_dicts_o_dicts[column["col_id"]] = parse_list_of_dicts(row[column["col_id"]], column)
+                
+                # probably do parse_multicolumn_list_of_dicts in the cache of dict here as well
+
                 for variant_trx in row[ALL_MAPPINGS_COLUMN_ID].split(";"):
                     vtrx_cols = variant_trx.split(":")
                     trx = vtrx_cols[0].split(".")[0]
-                    gene = vtrx_cols[1]
-                    vtrx_consequence = vtrx_cols[3]
-                    protein_hgvs = vtrx_cols[4]
-                    cdna_hgvs = vtrx_cols[5]
-                    for column in parse_fieldnames:
-                        if "list-o-dicts" in column["parse_type"]:
-                            parse_list_of_dicts(row[column["col_id"]])
+                    annot_variant = dict()
+                    annot_variant["trx"] = trx
+                    annot_variant["gene"] = vtrx_cols[1]
+                    annot_variant["consequence"] = vtrx_cols[3]
+                    annot_variant["protein_hgvs"] = vtrx_cols[4]
+                    annot_variant["cdna_hgvs"] = vtrx_cols[5]
+                    for column in data_config:
+                        if "list-o-dicts" in column["parse_type"] \
+                            and trx in cached_dicts_o_dicts[column["col_id"]]:
+                            annot_variant.update(cached_dicts_o_dicts[column["col_id"]][trx])                                 
                         elif "list" in column["parse_type"]:
-                            row[column["col_id"]].split(column["separator"])
-                        elif "list_index" in column["parse_type"]:
-                            continue
-                        else:
+                            # TODO do some special processing for multicolumns like we did list of dicts
+                        elif "none" in column["parse_type"]:
                             row[column["col_id"]]
+                        else:
+                            continue
 
 
 def is_valid_output_file(p, arg):
