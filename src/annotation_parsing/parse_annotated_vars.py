@@ -7,47 +7,48 @@ import csv
 ALL_MAPPINGS_COLUMN_ID = "all_mappings"
 
 
-def create_data_config(annot_csv, outfile = None):
-    #Column description. Column 0 uid=UID
-    #Column description. Column 1 chrom=Chrom
-    #Column description. Column 2 pos=Position
-    #Column description. Column 3 ref_base=Ref Base
-    #Column description. Column 4 alt_base=Alt Base
+def create_data_config(annot_csv, outfile=None):
+    # Column description. Column 0 uid=UID
+    # Column description. Column 1 chrom=Chrom
+    # Column description. Column 2 pos=Position
+    # Column description. Column 3 ref_base=Ref Base
+    # Column description. Column 4 alt_base=Alt Base
     columns = list()
     with open(annot_csv) as csvfp:
         cntr = 0
         for line in csvfp:
             if line.startswith("#Column description. Column"):
-                line = line.replace("#Column description. Column ","").strip()
-                info = line.replace("="," ").split(" ")
-                columns.append({
-                    "col_num": info[0],
-                    "col_id": info[1],
-                    "description": info[2],
-                    "parse": True,
-                    "parse_type": {
-                        "none":{},
-                        "list":{
-                            "trx_index_col": "fathmm.ens_tid",
-                            "column_list": ["fathmm.fathmm_score", "fathmm.fathmm_pred"],
-                            "separator": ";"
-                        },
-                        "list-o-dicts":{
-                            "dict_index": {
-                                0: "column_name",
-                                1: "column_name1"
+                line = line.replace("#Column description. Column ", "").strip()
+                info = line.replace("=", " ").split(" ")
+                columns.append(
+                    {
+                        "col_num": info[0],
+                        "col_id": info[1],
+                        "description": info[2],
+                        "parse_type": {
+                            "none": "none",
+                            "list": {
+                                "trx_index_col": "fathmm.ens_tid",
+                                "column_list": [
+                                    "fathmm.fathmm_score",
+                                    "fathmm.fathmm_pred",
+                                ],
+                                "separator": ";",
                             },
-                            "trx_mapping_col_index": 0
-                        }
+                            "list-o-dicts": {
+                                "dict_index": {0: "column_name", 1: "column_name1"},
+                                "trx_mapping_col_index": 0,
+                            },
+                        },
                     }
-                })
+                )
             if cntr > 2000:
                 break
             else:
                 cntr += 1
 
     with open(outfile, "wt") as ofp:
-        json.dump(columns,ofp)
+        json.dump(columns, ofp)
 
 
 def parse_list_of_dicts(data_value, column_config):
@@ -67,7 +68,9 @@ def parse_multicolumn_list_of_dicts(index_column, multi_column_config, data_cols
     # data_cols_n_configs => list of tuples where tuple[0] is column value, tuple[1] is column config
     index_mapping = dict()
     dict_of_dicts = dict()
-    for index, index_value in enumerate(index_column.split(multi_column_config["separator"])):
+    for index, index_value in enumerate(
+        index_column.split(multi_column_config["separator"])
+    ):
         index_mapping[index] = index_value.split(".")[0]
         dict_of_dicts[index_mapping[index]] = dict()
 
@@ -84,23 +87,58 @@ def parse_annotations(annot_csv, data_config_file, outfile):
     data_config = list()
     with open(data_config_file, "rt") as dcfp:
         # parse and filter for column configs that needing parsing
-        data_config = [filter(lambda colconf: colconf["parse"], json.load(dcfp))]
+        data_config = json.load(dcfp)
 
     # the column "all_mappings" is the key split-by column to separate results on a per variant + transcript
     with open(outfile, "w", newline="") as paserdcsv:
-        hardcoded_fieldnames = ["trx", "gene", "consequence", "protein_hgvs", "cdna_hgvs"]
-        # TODO add list of printed field names accounting for list and list-o-dicts
-        csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames + parse_fieldnames)
+        hardcoded_fieldnames = [
+            "trx",
+            "gene",
+            "consequence",
+            "protein_hgvs",
+            "cdna_hgvs",
+        ]
+        parsed_fieldnames = list()
+        for colconf in data_config:
+            if "list" in colconf["parse_type"]:
+                parsed_fieldnames += colconf["parse_type"]["list"]["column_list"]
+            elif "list-o-dicts" in colconf["parse_type"]:
+                parsed_fieldnames += colconf["parse_type"]["list-o-dicts"][
+                    "dict_index"
+                ].values()
+            else:
+                parsed_fieldnames.append(colconf["col_id"])
+
+        csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames)
         csvwriter.writeheader()
+        
         with open(annot_csv, "r", newline="") as csvfile:
-            reader = csv.DictReader(filter(lambda row: row[0]!='#', csvfile))
+            reader = csv.DictReader(filter(lambda row: row[0] != "#", csvfile))
             for row in reader:
                 # parse list of dict columns first since this only needs to be done once per row and cached
                 cached_dicts_o_dicts = dict()
-                for column in [colconf for colconf in data_config if "list-o-dicts" in colconf["parse_type"]]:
-                    cached_dicts_o_dicts[column["col_id"]] = parse_list_of_dicts(row[column["col_id"]], column)
-                
-                # probably do parse_multicolumn_list_of_dicts in the cache of dict here as well
+                for column in [
+                    filter(
+                        lambda colconf: "list-o-dicts" in colconf["parse_type"],
+                        data_config,
+                    )
+                ]:
+                    cached_dicts_o_dicts[column["col_id"]] = parse_list_of_dicts(
+                        row[column["col_id"]], column
+                    )
+
+                # parse list which is a list of dicts spread across multiple columns
+                for column in [
+                    filter(lambda colconf: "list" in colconf["parse_type"], data_config)
+                ]:
+                    col_data_dict = {
+                        subcolumn: row[subcolumn] for subcolumn in column["column_list"]
+                    }
+                    cached_dicts_o_dicts[
+                        column["col_id"]
+                    ] = parse_multicolumn_list_of_dicts(
+                        row[column["col_id"]], column, col_data_dict
+                    )
 
                 for variant_trx in row[ALL_MAPPINGS_COLUMN_ID].split(";"):
                     vtrx_cols = variant_trx.split(":")
@@ -112,15 +150,17 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                     annot_variant["protein_hgvs"] = vtrx_cols[4]
                     annot_variant["cdna_hgvs"] = vtrx_cols[5]
                     for column in data_config:
-                        if "list-o-dicts" in column["parse_type"] \
-                            and trx in cached_dicts_o_dicts[column["col_id"]]:
-                            annot_variant.update(cached_dicts_o_dicts[column["col_id"]][trx])                                 
-                        elif "list" in column["parse_type"]:
-                            # TODO do some special processing for multicolumns like we did list of dicts
-                        elif "none" in column["parse_type"]:
-                            row[column["col_id"]]
+                        if "none" in column["parse_type"]:
+                            annot_variant[column["col_id"]] = row[column["col_id"]]
+                        elif trx in cached_dicts_o_dicts[column["col_id"]]:
+                            annot_variant.update(
+                                cached_dicts_o_dicts[column["col_id"]][trx]
+                            )
                         else:
                             continue
+
+                    # print parsed variant + transcript annotations to csv file output
+                    csvwriter.writerow(annot_variant)
 
 
 def is_valid_output_file(p, arg):
@@ -145,7 +185,7 @@ if __name__ == "__main__":
 
     PARSER = argparse.ArgumentParser(
         description="Simple parser for creating data model, data parsing config, and data parsing of annotations from OpenCravat",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     PARSER.add_argument(
@@ -154,7 +194,7 @@ if __name__ == "__main__":
         help="File path to the CSV file of annotated variants from OpenCravat",
         required=True,
         type=lambda x: is_valid_file(PARSER, x),
-        metavar="\b"
+        metavar="\b",
     )
 
     PARSER.add_argument(
@@ -163,7 +203,7 @@ if __name__ == "__main__":
         help="Determine what should be done: create a new data config file or parse the annotations from the OpenCravat CSV file",
         required=True,
         choices=EXECUTIONS,
-        metavar="\b"
+        metavar="\b",
     )
 
     OPTIONAL_ARGS = PARSER.add_argument_group("Override Args")
@@ -172,7 +212,7 @@ if __name__ == "__main__":
         "--output",
         help="Output from parsing",
         type=lambda x: is_valid_output_file(PARSER, x),
-        metavar="\b"
+        metavar="\b",
     )
 
     PARSER.add_argument(
@@ -180,7 +220,7 @@ if __name__ == "__main__":
         "--version",
         help="Verison of OpenCravat used to generate the config file (only required during config parsing)",
         type=str,
-        metavar="\b"
+        metavar="\b",
     )
 
     PARSER.add_argument(
@@ -188,13 +228,15 @@ if __name__ == "__main__":
         "--config",
         help="File path to the data config JSON file that determines how to parse annotated variants from OpenCravat",
         type=lambda x: is_valid_file(PARSER, x),
-        metavar="\b"
+        metavar="\b",
     )
 
     ARGS = PARSER.parse_args()
 
     if ARGS.exec == "config" and not ARGS.version:
-        print("Version of OpenCravat must be specified when creating a config from their data for tracking purposes")
+        print(
+            "Version of OpenCravat must be specified when creating a config from their data for tracking purposes"
+        )
         raise SystemExit(1)
 
     if ARGS.exec == "config":
