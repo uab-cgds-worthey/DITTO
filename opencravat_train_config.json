@@ -166,7 +166,7 @@
         }
     },
     {
-        "col_id": "clinvar.disease_names",
+        "col_id": "clinvar.id",
         "parse_type": {
             "none": "none"
         }
