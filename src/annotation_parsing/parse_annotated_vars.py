@@ -106,7 +106,7 @@ def parse_annotations(annot_csv, data_config_file, outfile):
     # the column "all_mappings" is the key split-by column to separate results on a per variant + transcript
     with open(outfile, "w", newline="") as paserdcsv:
         hardcoded_fieldnames = [
-            "trx",
+            "transcript",
             "gene",
             "consequence",
             "protein_hgvs",
@@ -163,7 +163,7 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                     annot_variant = dict()
                     if len(vtrx_cols) < 6:
                         # parse intergenic variant
-                        annot_variant["trx"] = ""
+                        annot_variant["transcript"] = ""
                         annot_variant["gene"] = ""
                         annot_variant["consequence"] = ""
                         annot_variant["protein_hgvs"] = ""
@@ -183,7 +183,7 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                                     annot_variant[subcol] = row[subcol]
                     else:
                         # parse variant with transcript info
-                        annot_variant["trx"] = trx
+                        annot_variant["transcript"] = trx
                         annot_variant["gene"] = vtrx_cols[1]
                         annot_variant["consequence"] = vtrx_cols[3]
                         annot_variant["protein_hgvs"] = vtrx_cols[4]
