@@ -159,24 +159,44 @@ def parse_annotations(annot_csv, data_config_file, outfile):
 
                 for variant_trx in row[ALL_MAPPINGS_COLUMN_ID].split(";"):
                     vtrx_cols = variant_trx.split(":")
-                    trx = vtrx_cols[0].split(".")[0]
-                    if len(vtrx_cols) < 6:
-                        print("hello")
+                    trx = vtrx_cols[0].split(".")[0].strip()
                     annot_variant = dict()
-                    annot_variant["trx"] = trx
-                    annot_variant["gene"] = vtrx_cols[1]
-                    annot_variant["consequence"] = vtrx_cols[3]
-                    annot_variant["protein_hgvs"] = vtrx_cols[4]
-                    annot_variant["cdna_hgvs"] = vtrx_cols[5]
-                    for column in data_config:
-                        if "none" in column["parse_type"]:
-                            annot_variant[column["col_id"]] = row[column["col_id"]]
-                        elif trx in cached_dicts_o_dicts[column["col_id"]]:
-                            annot_variant.update(
-                                cached_dicts_o_dicts[column["col_id"]][trx]
-                            )
-                        else:
-                            continue
+                    if len(vtrx_cols) < 6:
+                        # parse intergenic variant
+                        annot_variant["trx"] = ""
+                        annot_variant["gene"] = ""
+                        annot_variant["consequence"] = ""
+                        annot_variant["protein_hgvs"] = ""
+                        annot_variant["cdna_hgvs"] = ""
+                        for column in data_config:
+                            if "none" in column["parse_type"]:
+                                annot_variant[column["col_id"]] = row[column["col_id"]]
+                            elif "list-o-dicts" in column["parse_type"]:
+                                for subcol in column["parse_type"]["list-o-dicts"][
+                                    "dict_index"
+                                ].values():
+                                    annot_variant[subcol] = row[subcol]
+                            else:
+                                for subcol in column["parse_type"]["list"][
+                                    "column_list"
+                                ]:
+                                    annot_variant[subcol] = row[subcol]
+                    else:
+                        # parse variant with transcript info
+                        annot_variant["trx"] = trx
+                        annot_variant["gene"] = vtrx_cols[1]
+                        annot_variant["consequence"] = vtrx_cols[3]
+                        annot_variant["protein_hgvs"] = vtrx_cols[4]
+                        annot_variant["cdna_hgvs"] = vtrx_cols[5]
+                        for column in data_config:
+                            if "none" in column["parse_type"]:
+                                annot_variant[column["col_id"]] = row[column["col_id"]]
+                            elif trx in cached_dicts_o_dicts[column["col_id"]]:
+                                annot_variant.update(
+                                    cached_dicts_o_dicts[column["col_id"]][trx]
+                                )
+                            else:
+                                continue
 
                     # print parsed variant + transcript annotations to csv file output
                     csvwriter.writerow(annot_variant)
