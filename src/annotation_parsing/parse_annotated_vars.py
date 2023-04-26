@@ -22,9 +22,7 @@ def create_data_config(annot_csv, outfile=None):
                 info = line.replace("=", " ").split(" ")
                 columns.append(
                     {
-                        "col_num": info[0],
                         "col_id": info[1],
-                        "description": info[2],
                         "parse_type": {
                             "none": "none",
                             "list": {
@@ -59,7 +57,7 @@ def parse_list_of_dicts(data_value, column_config):
         dict_of_dicts[trx_id] = sublist_dict
         for index, value in enumerate(sublist):
             # look up column name by index value, assign column name as key in return dict
-            sublist_dict[column_config["dict_index"][index]] = value
+            sublist_dict[column_config["dict_index"][str(index)]] = value
 
     return dict_of_dicts
 
@@ -111,7 +109,7 @@ def parse_annotations(annot_csv, data_config_file, outfile):
 
         csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames)
         csvwriter.writeheader()
-        
+
         with open(annot_csv, "r", newline="") as csvfile:
             reader = csv.DictReader(filter(lambda row: row[0] != "#", csvfile))
             for row in reader:

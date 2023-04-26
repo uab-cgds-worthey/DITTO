@@ -1,103 +1,118 @@
 [
-    { "col_num": "0", "col_id": "uid", "description": "UID", "parse": true, "parse_type": "list-o-dicts,list,none" },
     {
-        "col_num": "1",
         "col_id": "chrom",
-        "description": "Chrom",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "parse_type": {
+            "none": "none"
+        }
     },
     {
-        "col_num": "2",
         "col_id": "pos",
-        "description": "Position",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "parse_type": {
+            "none": "none"
+        }
     },
     {
-        "col_num": "3",
         "col_id": "ref_base",
-        "description": "Ref",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "parse_type": {
+            "none": "none"
+        }
     },
     {
-        "col_num": "4",
         "col_id": "alt_base",
-        "description": "Alt",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
-    },
-    { "col_num": "5", "col_id": "note", "description": "Note", "parse": true, "parse_type": "list-o-dicts,list,none" },
-    {
-        "col_num": "6",
-        "col_id": "coding",
-        "description": "Coding",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
-    },
-    { "col_num": "7", "col_id": "hugo", "description": "Gene", "parse": true, "parse_type": "list-o-dicts,list,none" },
-    {
-        "col_num": "8",
-        "col_id": "transcript",
-        "description": "Transcript",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "parse_type": {
+            "none": "none"
+        }
     },
     {
-        "col_num": "9",
-        "col_id": "so",
-        "description": "Sequence",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "col_id": "thousandgenomes.af",
+        "parse_type": {
+            "none": "none"
+        }
     },
     {
-        "col_num": "12",
-        "col_id": "all_mappings",
-        "description": "All",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "col_id": "fathmm.ens_tid",
+        "parse_type": {
+            "list": {
+                "trx_index_col": "fathmm.ens_tid",
+                "column_list": ["fathmm.fathmm_score"],
+                "separator": ";"
+            }
+        }
     },
     {
-        "col_num": "85",
-        "col_id": "chasmplus.all",
-        "description": "All",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "col_id": "fathmm_mkl.fathmm_mkl_coding_score",
+        "parse_type": {
+            "none": "none"
+        }
     },
     {
-        "col_num": "69",
-        "col_id": "biogrid.acts",
-        "description": "Interactors",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "col_id": "gerp.gerp_nr",
+        "parse_type": {
+            "none": "none"
+        }
     },
     {
-        "col_num": "270",
-        "col_id": "clinvar.sig_conf",
-        "description": "Significance",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "col_id": "gerp.gerp_rs",
+        "parse_type": {
+            "none": "none"
+        }
     },
     {
-        "col_num": "266",
-        "col_id": "clinvar.disease_refs",
-        "description": "Disease",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "col_id": "gerp.gerp_rs_rank",
+        "parse_type": {
+            "none": "none"
+        }
     },
     {
-        "col_num": "337",
-        "col_id": "funseq2.all",
-        "description": "All",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "col_id": "mutation_assessor.all",
+        "parse_type": {
+            "list-o-dicts": {
+                "dict_index": {
+                    "1": "mutation_assessor.impact",
+                    "2": "mutation_assessor.score",
+                    "3": "mutation_assessor.rankscore"
+                },
+                "trx_mapping_col_index": 0
+            }
+        }
     },
     {
-        "col_num": "381",
-        "col_id": "intact.intact",
-        "description": "Raw",
-        "parse": true,
-        "parse_type": "list-o-dicts,list,none"
+        "col_id": "mutationtaster.all",
+        "parse_type": {
+            "list-o-dicts": {
+                "dict_index": {
+                    "1": "mutationtaster.score",
+                    "2": "mutationtaster.rankscore",
+                    "3": "mutationtaster.prediction",
+                    "4": "mutationtaster.model"
+                },
+                "trx_mapping_col_index": 0
+            }
+        }
+    },
+    {
+        "col_id": "gnomad_gene.all",
+        "parse_type": {
+            "list-o-dicts": {
+                "dict_index": {
+                    "1": "gnomad_gene.oe_lof",
+                    "2": "gnomad_gene.oe_mis",
+                    "3": "gnomad_gene.oe_syn",
+                    "4": "gnomad_gene.lof_z",
+                    "5": "gnomad_gene.mis_z",
+                    "6": "gnomad_gene.syn_z",
+                    "7": "gnomad_gene.pLI",
+                    "8": "gnomad_gene.pRec",
+                    "9": "gnomad_gene.pNull"
+                },
+                "trx_mapping_col_index": 0
+            }
+        }
+    },
+    {
+        "col_id": "gnomad3.af",
+        "parse_type": {
+            "none": "none"
+        }
     }
 ]
