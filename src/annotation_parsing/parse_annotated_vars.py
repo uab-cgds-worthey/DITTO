@@ -3,6 +3,12 @@ import argparse
 import os
 import json
 import csv
+import ctypes as ct
+
+# dealing with large fields in a CSV requires more memory allowed per field
+# see https://stackoverflow.com/questions/15063936/csv-error-field-larger-than-field-limit-131072 for discussion
+# and this solution
+csv.field_size_limit(int(ct.c_ulong(-1).value // 2))
 
 ALL_MAPPINGS_COLUMN_ID = "all_mappings"
 
@@ -51,12 +57,18 @@ def create_data_config(annot_csv, outfile=None):
 
 def parse_list_of_dicts(data_value, column_config):
     dict_of_dicts = dict()
+    if data_value == "":
+        return dict_of_dicts
+
     for sublist in json.loads(data_value):
         sublist_dict = dict()
         trx_id = sublist[column_config["trx_mapping_col_index"]].split(".")[0]
         dict_of_dicts[trx_id] = sublist_dict
         for index, value in enumerate(sublist):
             # look up column name by index value, assign column name as key in return dict
+            if str(index) not in column_config["dict_index"]:
+                continue
+
             sublist_dict[column_config["dict_index"][str(index)]] = value
 
     return dict_of_dicts
@@ -66,6 +78,10 @@ def parse_multicolumn_list_of_dicts(index_column, multi_column_config, data_cols
     # data_cols_n_configs => list of tuples where tuple[0] is column value, tuple[1] is column config
     index_mapping = dict()
     dict_of_dicts = dict()
+
+    if index_column == "":
+        return dict_of_dicts
+
     for index, index_value in enumerate(
         index_column.split(multi_column_config["separator"])
     ):
@@ -107,7 +123,9 @@ def parse_annotations(annot_csv, data_config_file, outfile):
             else:
                 parsed_fieldnames.append(colconf["col_id"])
 
-        csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames)
+        csvwriter = csv.DictWriter(
+            paserdcsv, fieldnames=hardcoded_fieldnames + parsed_fieldnames
+        )
         csvwriter.writeheader()
 
         with open(annot_csv, "r", newline="") as csvfile:
@@ -115,32 +133,35 @@ def parse_annotations(annot_csv, data_config_file, outfile):
             for row in reader:
                 # parse list of dict columns first since this only needs to be done once per row and cached
                 cached_dicts_o_dicts = dict()
-                for column in [
-                    filter(
-                        lambda colconf: "list-o-dicts" in colconf["parse_type"],
-                        data_config,
-                    )
-                ]:
+
+                for column in filter(
+                    lambda colconf: "list-o-dicts" in colconf["parse_type"], data_config
+                ):
                     cached_dicts_o_dicts[column["col_id"]] = parse_list_of_dicts(
-                        row[column["col_id"]], column
+                        row[column["col_id"]], column["parse_type"]["list-o-dicts"]
                     )
 
                 # parse list which is a list of dicts spread across multiple columns
-                for column in [
-                    filter(lambda colconf: "list" in colconf["parse_type"], data_config)
-                ]:
+                for column in filter(
+                    lambda colconf: "list" in colconf["parse_type"], data_config
+                ):
                     col_data_dict = {
-                        subcolumn: row[subcolumn] for subcolumn in column["column_list"]
+                        subcolumn: row[subcolumn]
+                        for subcolumn in column["parse_type"]["list"]["column_list"]
                     }
                     cached_dicts_o_dicts[
                         column["col_id"]
                     ] = parse_multicolumn_list_of_dicts(
-                        row[column["col_id"]], column, col_data_dict
+                        row[column["col_id"]],
+                        column["parse_type"]["list"],
+                        col_data_dict,
                     )
 
                 for variant_trx in row[ALL_MAPPINGS_COLUMN_ID].split(";"):
                     vtrx_cols = variant_trx.split(":")
                     trx = vtrx_cols[0].split(".")[0]
+                    if len(vtrx_cols) < 6:
+                        print("hello")
                     annot_variant = dict()
                     annot_variant["trx"] = trx
                     annot_variant["gene"] = vtrx_cols[1]
@@ -240,5 +261,5 @@ if __name__ == "__main__":
     if ARGS.exec == "config":
         create_data_config(ARGS.input_csv, f"opencravat_{ARGS.version}_config.json")
     else:
-        outfile = ARGS.outfile if ARGS.outfile else f"{Path(ARGS.input_csv).stem}.csv"
+        outfile = ARGS.output if ARGS.output else f"{Path(ARGS.input_csv).stem}.csv"
         parse_annotations(ARGS.input_csv, ARGS.config, outfile)
