@@ -305,32 +305,38 @@ class Objective(object):
 
 def data_parsing(var, config_dict, output):
     os.chdir(
-        "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test"
+        "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/"
     )
     # Load data
     # print(f'\nUsing merged_data-train_{var}..', file=open(output, 'a'))
-    X_train = pd.read_csv(f"train_{var}/merged_data-train_{var}.csv")
+    X_train = pd.read_csv(f"train_data_80.csv.gz")
     # var = X_train[config_dict['ML_VAR']]
-    X_train = X_train.drop(config_dict["ML_VAR"], axis=1)
+    X_train = X_train.drop(config_dict["id_cols"], axis=1)
     X_train.replace([np.inf, -np.inf], np.nan, inplace=True)
     X_train.fillna(0, inplace=True)
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
-    Y_train = pd.read_csv(f"train_{var}/merged_data-y-train_{var}.csv")
+    Y_train = pd.read_csv(f"train_data-y_80.csv.gz")
     Y_train = pd.get_dummies(Y_train)
-    # Y_train = label_binarize(Y_train.values, classes=['low_impact', 'high_impact']).ravel()
-    X_train, X_val, Y_train, Y_val = train_test_split(
-        X_train, Y_train, test_size=0.20, random_state=42
-    )
 
-    X_test = pd.read_csv(f"test_{var}/merged_data-test_{var}.csv")
-    # var = X_test[config_dict['ML_VAR']]
-    X_test = X_test.drop(config_dict["ML_VAR"], axis=1)
-    # feature_names = X_test.columns.tolist()
+    X_test = pd.read_csv(f"test_data_20.csv.gz")
+    # var = X_train[config_dict['ML_VAR']]
+    X_test = X_test.drop(config_dict["id_cols"], axis=1)
+    X_test.replace([np.inf, -np.inf], np.nan, inplace=True)
+    X_test.fillna(0, inplace=True)
     X_test = X_test.values
-    Y_test = pd.read_csv(f"test_{var}/merged_data-y-test_{var}.csv")
+    Y_test = pd.read_csv(f"test_data-y_20.csv.gz")
     Y_test = pd.get_dummies(Y_test)
-    # Y_test = label_binarize(Y_test.values, classes=['low_impact', 'high_impact']).ravel()
+
+    X_val = pd.read_csv(f"val_data_20.csv.gz")
+    # var = X_train[config_dict['ML_VAR']]
+    X_val = X_val.drop(config_dict["id_cols"], axis=1)
+    X_val.replace([np.inf, -np.inf], np.nan, inplace=True)
+    X_val.fillna(0, inplace=True)
+    X_val = X_val.values
+    Y_val = pd.read_csv(f"val_data-y_20.csv.gz")
+    Y_trY_valain = pd.get_dummies(Y_val)
+
     print(f"Shape: {Y_train.shape}")
     print("Data Loaded!")
     # scaler = StandardScaler().fit(X_train)
@@ -355,15 +361,15 @@ if __name__ == "__main__":
     var = args.var_tag
 
     os.chdir(
-        "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/train_test"
+        "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/"
     )
-    with open("../../../configs/columns_config.yaml") as fh:
+    with open("../../configs/columns_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
     start = time.perf_counter()
-    if not os.path.exists("../tuning/" + var):
-        os.makedirs("../tuning/" + var)
-    output = "../tuning/" + var + "/ML_results_" + var + ".csv"
+    if not os.path.exists("./tuning/" + var):
+        os.makedirs("./tuning/" + var)
+    output = "./tuning/" + var + "/ML_results_" + var + ".csv"
     # print('Working with '+var+' dataset...', file=open(output, "w"))
     print("Working with " + var + " dataset...")
     # X_train, X_test, Y_train, Y_test, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
@@ -378,12 +384,12 @@ if __name__ == "__main__":
     print("Starting Objective...")
     objective = Objective(X_train, X_val, X_test, Y_train, Y_val, Y_test)
     tensorboard_callback = TensorBoardCallback(
-        f"../tuning/{var}/Neural_network_{var}_logs/", metric_name="accuracy"
+        f"./tuning/{var}/Neural_network_{var}_logs/", metric_name="accuracy"
     )
     study = optuna.create_study(
         sampler=TPESampler(**TPESampler.hyperopt_parameters()),
         study_name=f"Neural_network_{var}",
-        storage=f"sqlite:///../tuning/{var}/Neural_network_{var}.db",  # study_name= "Ditto3",
+        storage=f"sqlite:///tuning/{var}/Neural_network_{var}.db",  # study_name= "Ditto3",
         direction="maximize",
         pruner=optuna.pruners.MedianPruner(n_startup_trials=100),
         load_if_exists=True,  # , pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
