@@ -180,8 +180,8 @@ class Objective(object):
             verbose=0,
             shuffle=True,
             callbacks=callbacks,
-            batch_size=config.suggest_int("batch_size", 100, 1000),
-            epochs=150,
+            batch_size=config.suggest_int("batch_size", 10, 1000),
+            epochs=500,
         )
 
         # Evaluate the model accuracy on the validation set.
@@ -236,7 +236,7 @@ class Objective(object):
         # score = model.evaluate(test_x, test_y, verbose=0)
         return model
 
-    def show_result(self, study, var, output, feature_names):
+    def show_result(self, study, output, feature_names):
         pruned_trials = [
             t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED
         ]
@@ -254,8 +254,8 @@ class Objective(object):
         for key, value in trial.params.items():
             print("    {}: {}".format(key, value))
         print(
-            f"NeuralNetwork_{var}:  {trial.params}",
-            file=open(f"../tuning/tuned_parameters.csv", "a"),
+            f"NeuralNetwork:  {trial.params}",
+            file=open("tuning/tuned_parameters.csv", "a"),
         )
 
         model = self.tuned_run(trial.params)
@@ -279,8 +279,8 @@ class Objective(object):
             file=open(output, "a"),
         )  # results:\nstorage ="sqlite:///../tuning/{var}/Neural_network_{var}.db"
         # Calling `save('my_model')` creates a SavedModel folder `my_model`.
-        model.save(f"../tuning/{var}/Neural_network/Neural_network_{var}")
-        model.save_weights(f"../tuning/{var}/Neural_network/weights.h5")
+        model.save("tuning/Neural_network/Neural_network")
+        model.save_weights("tuning/Neural_network/weights.h5")
 
         # explain all the predictions in the test set
         background = shap.kmeans(self.train_x, 10)
@@ -294,7 +294,7 @@ class Objective(object):
         # shap.plots.beeswarm(shap_vals, feature_names)
         # shap.plots.waterfall(shap_values[1], max_display=10)
         plt.savefig(
-            f"../tuning/{var}/Neural_network_{var}_features.pdf",
+            "tuning/Neural_network_features.pdf",
             format="pdf",
             dpi=1000,
             bbox_inches="tight",
@@ -303,9 +303,9 @@ class Objective(object):
         return None
 
 
-def data_parsing(var, config_dict, output):
+def data_parsing(config_dict):
     os.chdir(
-        "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/"
+        "/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/"
     )
     # Load data
     # print(f'\nUsing merged_data-train_{var}..', file=open(output, 'a'))
@@ -335,7 +335,7 @@ def data_parsing(var, config_dict, output):
     X_val.fillna(0, inplace=True)
     X_val = X_val.values
     Y_val = pd.read_csv(f"val_data-y_20.csv.gz")
-    Y_trY_valain = pd.get_dummies(Y_val)
+    Y_val = pd.get_dummies(Y_val)
 
     print(f"Shape: {Y_train.shape}")
     print("Data Loaded!")
@@ -347,34 +347,22 @@ def data_parsing(var, config_dict, output):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--var-tag",
-        "-v",
-        type=str,
-        default="nssnv",
-        help="Var tag used while filtering or untuned models. (Default: nssnv)",
-    )
-
-    args = parser.parse_args()
-
-    var = args.var_tag
 
     os.chdir(
-        "/data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/"
+        "/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/"
     )
-    with open("../../configs/columns_config.yaml") as fh:
+    with open("../../configs/col_config.yaml") as fh:
         config_dict = yaml.safe_load(fh)
 
     start = time.perf_counter()
-    if not os.path.exists("./tuning/" + var):
-        os.makedirs("./tuning/" + var)
-    output = "./tuning/" + var + "/ML_results_" + var + ".csv"
+    if not os.path.exists("./tuning/" ):
+        os.makedirs("./tuning/" )
+    output = "./tuning/"  + "ML_results.csv"
     # print('Working with '+var+' dataset...', file=open(output, "w"))
-    print("Working with " + var + " dataset...")
+    print("Working with dataset...")
     # X_train, X_test, Y_train, Y_test, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
     X_train, X_val, X_test, Y_train, Y_val, Y_test, feature_names = data_parsing(
-        var, config_dict, output
+        config_dict
     )
     # print('Model\tCross_validate(avg_train_score)\tCross_validate(avg_test_score)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
     # list1 = ray.get(classifier.remote(classifiers,var, X_train, X_test, Y_train, Y_test,background,feature_names))
@@ -384,20 +372,20 @@ if __name__ == "__main__":
     print("Starting Objective...")
     objective = Objective(X_train, X_val, X_test, Y_train, Y_val, Y_test)
     tensorboard_callback = TensorBoardCallback(
-        f"./tuning/{var}/Neural_network_{var}_logs/", metric_name="accuracy"
+        f"./tuning/Neural_network_logs/", metric_name="accuracy"
     )
     study = optuna.create_study(
         sampler=TPESampler(**TPESampler.hyperopt_parameters()),
-        study_name=f"Neural_network_{var}",
-        storage=f"sqlite:///tuning/{var}/Neural_network_{var}.db",  # study_name= "Ditto3",
+        study_name=f"Neural_network",
+        storage=f"sqlite:///tuning/Neural_network.db",  # study_name= "Ditto3",
         direction="maximize",
-        pruner=optuna.pruners.MedianPruner(n_startup_trials=100),
+        pruner=optuna.pruners.MedianPruner(n_startup_trials=200),
         load_if_exists=True,  # , pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
     )
     # study = optuna.load_study(study_name= "Ditto_all", sampler=TPESampler(**TPESampler.hyperopt_parameters()),storage ="sqlite:///Ditto_all.db") # study_name= "Ditto3",
     study.optimize(
         objective,
-        n_trials=1000,
+        n_trials=5000,
         callbacks=[tensorboard_callback],
         n_jobs=-1,
         gc_after_trial=True,
@@ -405,5 +393,5 @@ if __name__ == "__main__":
     finish = (time.perf_counter() - start) / 120
     # ttime = (finish- start)/120
     print(f"Total time in hrs: {finish}")
-    objective.show_result(study, var, output, feature_names)
+    objective.show_result(study, output, feature_names)
     del X_train, X_test, Y_train, Y_test, feature_names
