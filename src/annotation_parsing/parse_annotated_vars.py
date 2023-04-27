@@ -180,7 +180,7 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                                 for subcol in column["parse_type"]["list"][
                                     "column_list"
                                 ]:
-                                    annot_variant[subcol] = row[subcol]
+                                    annot_variant[subcol] = ""
                     else:
                         # parse variant with transcript info
                         annot_variant["transcript"] = trx

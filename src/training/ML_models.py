@@ -55,12 +55,20 @@ def data_parsing(config_dict):
     # Load data
     # print(f'\nUsing merged_data-train_{var}..', file=open(output, "a"))
     X_train = pd.read_csv(f"train_data_80.csv.gz")
+    X_val = pd.read_csv(f"val_data_20.csv.gz")
+
+    # concatenating df1 and df2 along rows
+    X_train = pd.concat([X_train, X_val], axis=0)
+    del X_val
     # var = X_train[config_dict['ML_VAR']]
     X_train = X_train.drop(config_dict["id_cols"], axis=1)
     feature_names = X_train.columns.tolist()
     #X_train = X_train.sample(frac=1).reset_index(drop=True)
     X_train = X_train.values
     Y_train = pd.read_csv(f"train_data-y_80.csv.gz")
+    Y_val = pd.read_csv(f"val_data-y_20.csv.gz")
+    Y_train = pd.concat([Y_train, Y_val], axis=0)
+    del Y_val
     Y_train = label_binarize(
         Y_train.values, classes=["low_impact", "high_impact"]
     ).ravel()
@@ -109,10 +117,10 @@ def classifier(
     # class_weights = class_weight.compute_class_weight('balanced', np.unique(Y_train), Y_train)
     # clf.fit(X_train, Y_train) #, class_weight=class_weights)
     # name = str(type(clf)).split("'")[1]  #.split(".")[3]
-    with open(f"./models_custom/{name}.joblib", "wb") as f:
+    with open(f"./models/{name}.joblib", "wb") as f:
         dump(clf, f, compress="lz4")
     # del clf
-    # with open(f"./models_custom/{var}/{name}_{var}.joblib", 'rb') as f:
+    # with open(f"./models/{var}/{name}_{var}.joblib", 'rb') as f:
     # clf = load(f)
     y_score = clf.predict(X_test)
     prc = precision_score(Y_test, y_score, average="weighted")
@@ -141,7 +149,7 @@ def classifier(
     shap.summary_plot(shap_values, background1, feature_names, max_display = 30, show=False)
     # shap.plots.waterfall(shap_values[0], max_display=15)
     plt.savefig(
-        f"./models_custom/{name}_features.pdf",
+        f"./models/{name}_features.pdf",
         format="pdf",
         dpi=1000,
         bbox_inches="tight",
@@ -169,9 +177,9 @@ if __name__ == "__main__":
         config_dict = yaml.safe_load(fh)
 
 
-    if not os.path.exists("./models_custom/" ):
-        os.makedirs("./models_custom/")
-    output = "./models_custom" + "/ML_results.csv"
+    if not os.path.exists("./models/" ):
+        os.makedirs("./models/")
+    output = "./models" + "/ML_results.csv"
     # print('Working with '+var+' dataset...', file=open(output, "a"))
     print("Working with dataset...")
     X_train, X_test, Y_train, Y_test, background, feature_names = data_parsing(
@@ -205,7 +213,7 @@ if __name__ == "__main__":
 
     for name, clf in classifiers.items():
 
-        with open(f"./models_custom/{name}.joblib", "rb") as f:
+        with open(f"./models/{name}.joblib", "rb") as f:
             clf = load(f)
 
         plot_precision_recall_curve(clf, X_test, Y_test, ax=ax_prc, name=name)
@@ -219,6 +227,6 @@ if __name__ == "__main__":
 
     plt.legend()
     plt.savefig(
-        f"./models_custom/roc.pdf", format="pdf", dpi=1000, bbox_inches="tight"
+        f"./models/roc.pdf", format="pdf", dpi=1000, bbox_inches="tight"
     )
     gc.collect()
