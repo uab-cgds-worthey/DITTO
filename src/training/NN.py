@@ -6,21 +6,19 @@ Created on Thu Oct  1 01:11:09 2020
 @author: tarunmamidi
 """
 import time
-import os
 import numpy as np
 
 np.random.seed(5)
+from pathlib import Path
 import optuna
 from optuna.integration import TFKerasPruningCallback
 from optuna.integration.tensorboard import TensorBoardCallback
 from optuna.samplers import TPESampler
 import tensorflow as tf
-import tensorflow.keras as keras
 import argparse
+import os
+from sklearn.model_selection import train_test_split
 
-# import ray
-# Start Ray.
-# ray.init(ignore_reinit_error=True)
 try:
     tf.get_logger().setLevel("INFO")
 except Exception as exc:
@@ -28,13 +26,9 @@ except Exception as exc:
 import warnings
 
 warnings.simplefilter("ignore")
-# import ray
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, Activation
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import label_binarize
+from tensorflow.keras.layers import Dense, Dropout
 
-# from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import (
     precision_score,
     roc_auc_score,
@@ -53,17 +47,10 @@ import shap
 # EPOCHS = 150
 class Objective(object):
     def __init__(self, train_x, val_x, test_x, train_y, val_y, test_y):
-
         self.train_x = train_x
         self.test_x = test_x
         self.train_y = train_y
         self.test_y = test_y
-        self.val_x = val_x
-        self.val_y = val_y
-        # self.var = var
-        # self.x = x
-        # self.n_columns = 112
-        # self.CLASS = 2
 
     def __call__(self, config):
         # Clear clutter from previous TensorFlow graphs.
@@ -173,20 +160,20 @@ class Objective(object):
         ]
 
         # Train the model
-        model.fit(
+        history = model.fit(
             self.train_x,
             self.train_y,
-            validation_data=(self.val_x, self.val_y),
+            validation_split=0.2,
             verbose=0,
             shuffle=True,
             callbacks=callbacks,
             batch_size=config.suggest_int("batch_size", 10, 1000),
             epochs=500,
         )
-
+        return history.history["val_accuracy"][-1]
         # Evaluate the model accuracy on the validation set.
-        score = model.evaluate(self.val_x, self.val_y, verbose=0)
-        return score[1]
+        # score = model.evaluate(self.val_x, self.val_y, verbose=0)
+        # return score[1]
 
     def tuned_run(self, config):
         # Clear clutter from previous TensorFlow graphs.
@@ -236,13 +223,9 @@ class Objective(object):
         # score = model.evaluate(test_x, test_y, verbose=0)
         return model
 
-    def show_result(self, study, output, feature_names):
-        pruned_trials = [
-            t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED
-        ]
-        complete_trials = [
-            t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE
-        ]
+    def show_result(self, study, out_dir, output, feature_names):
+        pruned_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED]
+        complete_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE]
         print("Study statistics: ")
         print("  Number of finished trials: ", len(study.trials))
         print("  Number of pruned trials: ", len(pruned_trials))
@@ -255,7 +238,7 @@ class Objective(object):
             print("    {}: {}".format(key, value))
         print(
             f"NeuralNetwork:  {trial.params}",
-            file=open("tuning/tuned_parameters.csv", "a"),
+            file=open(out_dir + "/tuned_parameters.csv", "a"),
         )
 
         model = self.tuned_run(trial.params)
@@ -267,9 +250,7 @@ class Objective(object):
         roc_auc = roc_auc_score(self.test_y, y_score.round())
         accuracy = accuracy_score(self.test_y, y_score.round())
         # prc_micro = average_precision_score(self.test_y, y_score, average='micro')
-        matrix = confusion_matrix(
-            np.argmax(self.test_y.values, axis=1), np.argmax(y_score, axis=1)
-        )
+        matrix = confusion_matrix(np.argmax(self.test_y.values, axis=1), np.argmax(y_score, axis=1))
         print(
             f"Model\tTest_loss\tTest_accuracy\tPrecision\tRecall\troc_auc\tAccuracy\tConfusion_matrix[low_impact, high_impact]",
             file=open(output, "a"),
@@ -279,22 +260,20 @@ class Objective(object):
             file=open(output, "a"),
         )  # results:\nstorage ="sqlite:///../tuning/{var}/Neural_network_{var}.db"
         # Calling `save('my_model')` creates a SavedModel folder `my_model`.
-        model.save("tuning/Neural_network/Neural_network")
-        model.save_weights("tuning/Neural_network/weights.h5")
+        model.save(out_dir + "/Neural_network")
+        model.save_weights(out_dir + "/weights.h5")
 
         # explain all the predictions in the test set
         background = shap.kmeans(self.train_x, 10)
         explainer = shap.KernelExplainer(model.predict, background)
-        background = self.test_x[
-            np.random.choice(self.test_x.shape[0], 10000, replace=False)
-        ]
+        background = self.test_x[np.random.choice(self.test_x.shape[0], 10000, replace=False)]
         shap_values = explainer.shap_values(background)
         plt.figure()
         shap.summary_plot(shap_values, background, feature_names, show=False)
         # shap.plots.beeswarm(shap_vals, feature_names)
         # shap.plots.waterfall(shap_values[1], max_display=10)
         plt.savefig(
-            "tuning/Neural_network_features.pdf",
+            out_dir + "/Neural_network_features.pdf",
             format="pdf",
             dpi=1000,
             bbox_inches="tight",
@@ -303,81 +282,126 @@ class Objective(object):
         return None
 
 
-def data_parsing(config_dict):
-    os.chdir(
-        "/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/"
-    )
+def data_parsing(train_x, train_y, test_x, test_y, config_dict):
     # Load data
     # print(f'\nUsing merged_data-train_{var}..', file=open(output, 'a'))
-    X_train = pd.read_csv(f"train_data_80.csv.gz")
+    X_train = pd.read_csv(train_x)
     # var = X_train[config_dict['ML_VAR']]
     X_train = X_train.drop(config_dict["id_cols"], axis=1)
     X_train.replace([np.inf, -np.inf], np.nan, inplace=True)
     X_train.fillna(0, inplace=True)
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
-    Y_train = pd.read_csv(f"train_data-y_80.csv.gz")
+    Y_train = pd.read_csv(train_y)
     Y_train = pd.get_dummies(Y_train)
 
-    X_test = pd.read_csv(f"test_data_20.csv.gz")
+    X_test = pd.read_csv(test_x)
     # var = X_train[config_dict['ML_VAR']]
     X_test = X_test.drop(config_dict["id_cols"], axis=1)
     X_test.replace([np.inf, -np.inf], np.nan, inplace=True)
     X_test.fillna(0, inplace=True)
     X_test = X_test.values
-    Y_test = pd.read_csv(f"test_data-y_20.csv.gz")
+    Y_test = pd.read_csv(test_y)
     Y_test = pd.get_dummies(Y_test)
-
-    X_val = pd.read_csv(f"val_data_20.csv.gz")
-    # var = X_train[config_dict['ML_VAR']]
-    X_val = X_val.drop(config_dict["id_cols"], axis=1)
-    X_val.replace([np.inf, -np.inf], np.nan, inplace=True)
-    X_val.fillna(0, inplace=True)
-    X_val = X_val.values
-    Y_val = pd.read_csv(f"val_data-y_20.csv.gz")
-    Y_val = pd.get_dummies(Y_val)
 
     print(f"Shape: {Y_train.shape}")
     print("Data Loaded!")
     # scaler = StandardScaler().fit(X_train)
     # X_train = scaler.transform(X_train)
     # X_test = scaler.transform(X_test)
-    # explain all the predictions in the test set
-    return X_train, X_val, X_test, Y_train, Y_val, Y_test, feature_names
+    return X_train, X_test, Y_train, Y_test, feature_names
+
+
+def is_valid_file(p, arg):
+    if not Path(os.path.expandvars(arg)).is_file():
+        p.error(f"The file {arg} does not exist!")
+    else:
+        return os.path.expandvars(arg)
+
+
+def is_valid_dir(p, arg):
+    if not Path(os.path.expandvars(arg)).is_dir():
+        p.error(f"The directory {arg} does not exist!")
+    else:
+        return os.path.expandvars(arg)
 
 
 if __name__ == "__main__":
-
-    os.chdir(
-        "/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/"
+    PARSER = argparse.ArgumentParser(
+        description="Script to train and tune DITTO using processed annotations from OpenCravat",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    with open("../../configs/col_config.yaml") as fh:
+
+    PARSER.add_argument(
+        "--train_x",
+        help="File path to the CSV file of X_train data",
+        required=True,
+        type=lambda x: is_valid_file(PARSER, x),
+        metavar="\b",
+    )
+    PARSER.add_argument(
+        "--train_y",
+        help="File path to the CSV file of y_train data",
+        required=True,
+        type=lambda x: is_valid_file(PARSER, x),
+        metavar="\b",
+    )
+    PARSER.add_argument(
+        "--test_x",
+        help="File path to the CSV file of X_test data",
+        required=True,
+        type=lambda x: is_valid_file(PARSER, x),
+        metavar="\b",
+    )
+    PARSER.add_argument(
+        "--test_y",
+        help="File path to the CSV file of y_test data",
+        required=True,
+        type=lambda x: is_valid_file(PARSER, x),
+        metavar="\b",
+    )
+    PARSER.add_argument(
+        "-c",
+        "--config",
+        help="File path to the data config JSON file that determines how to process annotated variants from OpenCravat",
+        required=True,
+        type=lambda x: is_valid_file(PARSER, x),
+        metavar="\b",
+    )
+    OPTIONAL_ARGS = PARSER.add_argument_group("Override Args")
+    PARSER.add_argument(
+        "-o",
+        "--outdir",
+        help="Output directory to save files from training/tuning DITTO",
+        type=lambda x: is_valid_dir(PARSER, x),
+        metavar="\b",
+    )
+
+    ARGS = PARSER.parse_args()
+    out_dir = ARGS.outdir if ARGS.outdir else f"{Path().resolve()}"
+
+    with open(ARGS.config) as fh:
         config_dict = yaml.safe_load(fh)
 
     start = time.perf_counter()
-    if not os.path.exists("./tuning/" ):
-        os.makedirs("./tuning/" )
-    output = "./tuning/"  + "ML_results.csv"
+
+    output = out_dir + "ML_results.csv"
     # print('Working with '+var+' dataset...', file=open(output, "w"))
     print("Working with dataset...")
-    # X_train, X_test, Y_train, Y_test, feature_names = ray.get(data_parsing.remote(var,config_dict,output))
-    X_train, X_val, X_test, Y_train, Y_val, Y_test, feature_names = data_parsing(
-        config_dict
+
+    X_train, X_test, Y_train, Y_test, feature_names = data_parsing(
+        ARGS.train_x, ARGS.train_y, ARGS.test_x, ARGS.test_y, config_dict
     )
-    # print('Model\tCross_validate(avg_train_score)\tCross_validate(avg_test_score)\tPrecision(test_data)\tRecall\troc_auc\tAccuracy\tTime(min)\tConfusion_matrix[low_impact, high_impact]', file=open(output, "a"))    #\tConfusion_matrix[low_impact, high_impact]
-    # list1 = ray.get(classifier.remote(classifiers,var, X_train, X_test, Y_train, Y_test,background,feature_names))
-    # print(f'{list1[0]}\t{list1[1]}\t{list1[2]}\t{list1[3]}\t{list1[4]}\t{list1[5]}\t{list1[6]}\t{list1[7]}\n{list1[8]}', file=open(output, "a"))
-    # print(f'training and testing done!')
 
     print("Starting Objective...")
-    objective = Objective(X_train, X_val, X_test, Y_train, Y_val, Y_test)
+    objective = Objective(X_train, X_test, Y_train, Y_test)
     tensorboard_callback = TensorBoardCallback(
-        f"./tuning/Neural_network_logs/", metric_name="accuracy"
+        out_dir + "/Neural_network_logs/", metric_name="accuracy"
     )
     study = optuna.create_study(
         sampler=TPESampler(**TPESampler.hyperopt_parameters()),
-        study_name=f"Neural_network",
-        storage=f"sqlite:///tuning/Neural_network.db",  # study_name= "Ditto3",
+        study_name=f"DITTO_NN",
+        storage=f"sqlite:///{out_dir}/Neural_network.db",  # study_name= "Ditto3",
         direction="maximize",
         pruner=optuna.pruners.MedianPruner(n_startup_trials=200),
         load_if_exists=True,  # , pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
@@ -385,13 +409,12 @@ if __name__ == "__main__":
     # study = optuna.load_study(study_name= "Ditto_all", sampler=TPESampler(**TPESampler.hyperopt_parameters()),storage ="sqlite:///Ditto_all.db") # study_name= "Ditto3",
     study.optimize(
         objective,
-        n_trials=5000,
+        n_trials=500,
         callbacks=[tensorboard_callback],
         n_jobs=-1,
         gc_after_trial=True,
-    )  # , n_jobs = -1 timeout=600,
+    )
     finish = (time.perf_counter() - start) / 120
-    # ttime = (finish- start)/120
     print(f"Total time in hrs: {finish}")
-    objective.show_result(study, output, feature_names)
+    objective.show_result(study, out_dir, output, feature_names)
     del X_train, X_test, Y_train, Y_test, feature_names
