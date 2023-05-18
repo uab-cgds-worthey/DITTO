@@ -4,6 +4,7 @@ import os
 import json
 import csv
 import ctypes as ct
+import gzip
 
 # dealing with large fields in a CSV requires more memory allowed per field
 # see https://stackoverflow.com/questions/15063936/csv-error-field-larger-than-field-limit-131072 for discussion
@@ -82,9 +83,7 @@ def parse_multicolumn_list_of_dicts(index_column, multi_column_config, data_cols
     if index_column == "":
         return dict_of_dicts
 
-    for index, index_value in enumerate(
-        index_column.split(multi_column_config["separator"])
-    ):
+    for index, index_value in enumerate(index_column.split(multi_column_config["separator"])):
         index_mapping[index] = index_value.split(".")[0]
         dict_of_dicts[index_mapping[index]] = dict()
 
@@ -96,7 +95,24 @@ def parse_multicolumn_list_of_dicts(index_column, multi_column_config, data_cols
     return dict_of_dicts
 
 
-def parse_annotations(annot_csv, data_config_file, outfile):
+def get_DExTR_dict(DExTR_path):
+    # Initialize an empty dictionary to store the data
+    x = {}
+
+    with gzip.open(DExTR_path, "rt") as f:
+        for row in csv.DictReader(f):
+            # Extract the value in column "A" as the index
+            index = row["Transcript"]
+
+            # Create a nested dictionary using the remaining columns as keys and values
+            values = {key: value for key, value in row.items() if key != "Transcript"}
+
+            # Add the nested dictionary to the main dictionary with the index as the key
+            x[index] = values
+    return x
+
+
+def parse_annotations(annot_csv, data_config_file, DExTR_dict, outfile):
     # reading data config for determination of parsing
     data_config = list()
     with open(data_config_file, "rt") as dcfp:
@@ -111,21 +127,47 @@ def parse_annotations(annot_csv, data_config_file, outfile):
             "consequence",
             "protein_hgvs",
             "cdna_hgvs",
+            "DExTR_Adipose_Tissue",
+            "DExTR_Muscle",
+            "DExTR_Blood_Vessel",
+            "DExTR_Heart",
+            "DExTR_Uterus",
+            "DExTR_Vagina",
+            "DExTR_Breast",
+            "DExTR_Skin",
+            "DExTR_Salivary_Gland",
+            "DExTR_Brain",
+            "DExTR_Adrenal_Gland",
+            "DExTR_Thyroid",
+            "DExTR_Lung",
+            "DExTR_Spleen",
+            "DExTR_Pancreas",
+            "DExTR_Esophagus",
+            "DExTR_Stomach",
+            "DExTR_Colon",
+            "DExTR_Small_Intestine",
+            "DExTR_Prostate",
+            "DExTR_Testis",
+            "DExTR_Nerve",
+            "DExTR_Blood",
+            "DExTR_Pituitary",
+            "DExTR_Ovary",
+            "DExTR_Liver",
+            "DExTR_Kidney",
+            "DExTR_Cervix_Uteri",
+            "DExTR_Fallopian_Tube",
+            "DExTR_Bladder",
         ]
         parsed_fieldnames = list()
         for colconf in data_config:
             if "list" in colconf["parse_type"]:
                 parsed_fieldnames += colconf["parse_type"]["list"]["column_list"]
             elif "list-o-dicts" in colconf["parse_type"]:
-                parsed_fieldnames += colconf["parse_type"]["list-o-dicts"][
-                    "dict_index"
-                ].values()
+                parsed_fieldnames += colconf["parse_type"]["list-o-dicts"]["dict_index"].values()
             else:
                 parsed_fieldnames.append(colconf["col_id"])
 
-        csvwriter = csv.DictWriter(
-            paserdcsv, fieldnames=hardcoded_fieldnames + parsed_fieldnames
-        )
+        csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames + parsed_fieldnames)
         csvwriter.writeheader()
 
         with open(annot_csv, "r", newline="") as csvfile:
@@ -142,16 +184,12 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                     )
 
                 # parse list which is a list of dicts spread across multiple columns
-                for column in filter(
-                    lambda colconf: "list" in colconf["parse_type"], data_config
-                ):
+                for column in filter(lambda colconf: "list" in colconf["parse_type"], data_config):
                     col_data_dict = {
                         subcolumn: row[subcolumn]
                         for subcolumn in column["parse_type"]["list"]["column_list"]
                     }
-                    cached_dicts_o_dicts[
-                        column["col_id"]
-                    ] = parse_multicolumn_list_of_dicts(
+                    cached_dicts_o_dicts[column["col_id"]] = parse_multicolumn_list_of_dicts(
                         row[column["col_id"]],
                         column["parse_type"]["list"],
                         col_data_dict,
@@ -168,6 +206,36 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                         annot_variant["consequence"] = ""
                         annot_variant["protein_hgvs"] = ""
                         annot_variant["cdna_hgvs"] = ""
+                        annot_variant["DExTR_Adipose_Tissue"] = ("",)
+                        annot_variant["DExTR_Muscle"] = ("",)
+                        annot_variant["DExTR_Blood_Vessel"] = ("",)
+                        annot_variant["DExTR_Heart"] = ("",)
+                        annot_variant["DExTR_Uterus"] = ("",)
+                        annot_variant["DExTR_Vagina"] = ("",)
+                        annot_variant["DExTR_Breast"] = ("",)
+                        annot_variant["DExTR_Skin"] = ("",)
+                        annot_variant["DExTR_Salivary_Gland"] = ("",)
+                        annot_variant["DExTR_Brain"] = ("",)
+                        annot_variant["DExTR_Adrenal_Gland"] = ("",)
+                        annot_variant["DExTR_Thyroid"] = ("",)
+                        annot_variant["DExTR_Lung"] = ("",)
+                        annot_variant["DExTR_Spleen"] = ("",)
+                        annot_variant["DExTR_Pancreas"] = ("",)
+                        annot_variant["DExTR_Esophagus"] = ("",)
+                        annot_variant["DExTR_Stomach"] = ("",)
+                        annot_variant["DExTR_Colon"] = ("",)
+                        annot_variant["DExTR_Small_Intestine"] = ("",)
+                        annot_variant["DExTR_Prostate"] = ("",)
+                        annot_variant["DExTR_Testis"] = ("",)
+                        annot_variant["DExTR_Nerve"] = ("",)
+                        annot_variant["DExTR_Blood"] = ("",)
+                        annot_variant["DExTR_Pituitary"] = ("",)
+                        annot_variant["DExTR_Ovary"] = ("",)
+                        annot_variant["DExTR_Liver"] = ("",)
+                        annot_variant["DExTR_Kidney"] = ("",)
+                        annot_variant["DExTR_Cervix_Uteri"] = ("",)
+                        annot_variant["DExTR_Fallopian_Tube"] = ("",)
+                        annot_variant["DExTR_Bladder"] = ("",)
                         for column in data_config:
                             if "none" in column["parse_type"]:
                                 annot_variant[column["col_id"]] = row[column["col_id"]]
@@ -177,9 +245,7 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                                 ].values():
                                     annot_variant[subcol] = row[subcol]
                             else:
-                                for subcol in column["parse_type"]["list"][
-                                    "column_list"
-                                ]:
+                                for subcol in column["parse_type"]["list"]["column_list"]:
                                     annot_variant[subcol] = ""
                     else:
                         # parse variant with transcript info
@@ -188,13 +254,13 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                         annot_variant["consequence"] = vtrx_cols[3]
                         annot_variant["protein_hgvs"] = vtrx_cols[4]
                         annot_variant["cdna_hgvs"] = vtrx_cols[5]
+                        if trx in DExTR_dict:
+                            annot_variant.update(DExTR_dict[trx])
                         for column in data_config:
                             if "none" in column["parse_type"]:
                                 annot_variant[column["col_id"]] = row[column["col_id"]]
                             elif trx in cached_dicts_o_dicts[column["col_id"]]:
-                                annot_variant.update(
-                                    cached_dicts_o_dicts[column["col_id"]][trx]
-                                )
+                                annot_variant.update(cached_dicts_o_dicts[column["col_id"]][trx])
                             else:
                                 continue
 
@@ -282,4 +348,5 @@ if __name__ == "__main__":
         create_data_config(ARGS.input_csv, f"opencravat_{ARGS.version}_config.json")
     else:
         outfile = ARGS.output if ARGS.output else f"{Path(ARGS.input_csv).stem}.csv"
-        parse_annotations(ARGS.input_csv, ARGS.config, outfile)
+        DExTR_dict = get_DExTR_dict("DExTR/GEP_scores_transcripts.csv.gz")
+        parse_annotations(ARGS.input_csv, ARGS.config, DExTR_dict, outfile)
