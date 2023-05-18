@@ -120,7 +120,7 @@ def parse_annotations(annot_csv, data_config_file, DExTR_dict, outfile):
         data_config = json.load(dcfp)
 
     # the column "all_mappings" is the key split-by column to separate results on a per variant + transcript
-    with open(outfile, "w", newline="") as paserdcsv:
+    with gzip.open(outfile, "wt", newline="") as paserdcsv:
         hardcoded_fieldnames = [
             "transcript",
             "gene",
@@ -170,7 +170,7 @@ def parse_annotations(annot_csv, data_config_file, DExTR_dict, outfile):
         csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames + parsed_fieldnames)
         csvwriter.writeheader()
 
-        with open(annot_csv, "r", newline="") as csvfile:
+        with gzip.open(annot_csv, 'rt', newline="") if ".gz" in annot_csv else open(annot_csv, 'r', newline="") as csvfile:
             reader = csv.DictReader(filter(lambda row: row[0] != "#", csvfile))
             for row in reader:
                 # parse list of dict columns first since this only needs to be done once per row and cached
@@ -206,36 +206,36 @@ def parse_annotations(annot_csv, data_config_file, DExTR_dict, outfile):
                         annot_variant["consequence"] = ""
                         annot_variant["protein_hgvs"] = ""
                         annot_variant["cdna_hgvs"] = ""
-                        annot_variant["DExTR_Adipose_Tissue"] = ("",)
-                        annot_variant["DExTR_Muscle"] = ("",)
-                        annot_variant["DExTR_Blood_Vessel"] = ("",)
-                        annot_variant["DExTR_Heart"] = ("",)
-                        annot_variant["DExTR_Uterus"] = ("",)
-                        annot_variant["DExTR_Vagina"] = ("",)
-                        annot_variant["DExTR_Breast"] = ("",)
-                        annot_variant["DExTR_Skin"] = ("",)
-                        annot_variant["DExTR_Salivary_Gland"] = ("",)
-                        annot_variant["DExTR_Brain"] = ("",)
-                        annot_variant["DExTR_Adrenal_Gland"] = ("",)
-                        annot_variant["DExTR_Thyroid"] = ("",)
-                        annot_variant["DExTR_Lung"] = ("",)
-                        annot_variant["DExTR_Spleen"] = ("",)
-                        annot_variant["DExTR_Pancreas"] = ("",)
-                        annot_variant["DExTR_Esophagus"] = ("",)
-                        annot_variant["DExTR_Stomach"] = ("",)
-                        annot_variant["DExTR_Colon"] = ("",)
-                        annot_variant["DExTR_Small_Intestine"] = ("",)
-                        annot_variant["DExTR_Prostate"] = ("",)
-                        annot_variant["DExTR_Testis"] = ("",)
-                        annot_variant["DExTR_Nerve"] = ("",)
-                        annot_variant["DExTR_Blood"] = ("",)
-                        annot_variant["DExTR_Pituitary"] = ("",)
-                        annot_variant["DExTR_Ovary"] = ("",)
-                        annot_variant["DExTR_Liver"] = ("",)
-                        annot_variant["DExTR_Kidney"] = ("",)
-                        annot_variant["DExTR_Cervix_Uteri"] = ("",)
-                        annot_variant["DExTR_Fallopian_Tube"] = ("",)
-                        annot_variant["DExTR_Bladder"] = ("",)
+                        annot_variant["DExTR_Adipose_Tissue"] = ""
+                        annot_variant["DExTR_Muscle"] = ""
+                        annot_variant["DExTR_Blood_Vessel"] = ""
+                        annot_variant["DExTR_Heart"] = ""
+                        annot_variant["DExTR_Uterus"] = ""
+                        annot_variant["DExTR_Vagina"] = ""
+                        annot_variant["DExTR_Breast"] = ""
+                        annot_variant["DExTR_Skin"] = ""
+                        annot_variant["DExTR_Salivary_Gland"] = ""
+                        annot_variant["DExTR_Brain"] = ""
+                        annot_variant["DExTR_Adrenal_Gland"] = ""
+                        annot_variant["DExTR_Thyroid"] = ""
+                        annot_variant["DExTR_Lung"] = ""
+                        annot_variant["DExTR_Spleen"] = ""
+                        annot_variant["DExTR_Pancreas"] = ""
+                        annot_variant["DExTR_Esophagus"] = ""
+                        annot_variant["DExTR_Stomach"] = ""
+                        annot_variant["DExTR_Colon"] = ""
+                        annot_variant["DExTR_Small_Intestine"] = ""
+                        annot_variant["DExTR_Prostate"] = ""
+                        annot_variant["DExTR_Testis"] = ""
+                        annot_variant["DExTR_Nerve"] = ""
+                        annot_variant["DExTR_Blood"] = ""
+                        annot_variant["DExTR_Pituitary"] = ""
+                        annot_variant["DExTR_Ovary"] = ""
+                        annot_variant["DExTR_Liver"] = ""
+                        annot_variant["DExTR_Kidney"] = ""
+                        annot_variant["DExTR_Cervix_Uteri"] = ""
+                        annot_variant["DExTR_Fallopian_Tube"] = ""
+                        annot_variant["DExTR_Bladder"] = ""
                         for column in data_config:
                             if "none" in column["parse_type"]:
                                 annot_variant[column["col_id"]] = row[column["col_id"]]
