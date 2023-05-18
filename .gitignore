@@ -29,7 +29,6 @@ dask-worker-space/
 *.py*.sh
 *.tsv
 *.csv
-*.gz*
 .DS_Store
 
 # PyInstaller
