@@ -423,19 +423,7 @@
         }
     },
     {
-        "col_id": "ndex_chd.numhit",
-        "parse_type": {
-            "none": "none"
-        }
-    },
-    {
         "col_id": "ndex.numhit",
-        "parse_type": {
-            "none": "none"
-        }
-    },
-    {
-        "col_id": "ndex_signor.numhit",
         "parse_type": {
             "none": "none"
         }

@@ -4,6 +4,36 @@ raw_cols:
  - consequence
  - protein_hgvs
  - cdna_hgvs
+ - DExTR_Adipose_Tissue
+ - DExTR_Muscle
+ - DExTR_Blood_Vessel
+ - DExTR_Heart
+ - DExTR_Uterus
+ - DExTR_Vagina
+ - DExTR_Breast
+ - DExTR_Skin
+ - DExTR_Salivary_Gland
+ - DExTR_Brain
+ - DExTR_Adrenal_Gland
+ - DExTR_Thyroid
+ - DExTR_Lung
+ - DExTR_Spleen
+ - DExTR_Pancreas
+ - DExTR_Esophagus
+ - DExTR_Stomach
+ - DExTR_Colon
+ - DExTR_Small_Intestine
+ - DExTR_Prostate
+ - DExTR_Testis
+ - DExTR_Nerve
+ - DExTR_Blood
+ - DExTR_Pituitary
+ - DExTR_Ovary
+ - DExTR_Liver
+ - DExTR_Kidney
+ - DExTR_Cervix_Uteri
+ - DExTR_Fallopian_Tube
+ - DExTR_Bladder
  - chrom
  - pos
  - ref_base
@@ -49,7 +79,7 @@ raw_cols:
  - exac_gene.exac_dup_score
  - exac_gene.exac_cnv_score
  - exac_gene.exac_cnv_flag
- #- fathmm.fathmm_score
+ - fathmm.fathmm_score
  - fathmm_xf_coding.fathmm_xf_coding_score
  - funseq2.score
  - gerp.gerp_rs
@@ -195,7 +225,7 @@ CLNREVSTAT: #https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/
   -  practice_guideline
   -  reviewed_by_expert_panel
   -  criteria_provided,_multiple_submitters,_no_conflicts
-  -  criteria_provided,_single_submitter
+  #-  criteria_provided,_single_submitter
 
 dummies_sep:
  gtex.gtex_tissue: '|'
