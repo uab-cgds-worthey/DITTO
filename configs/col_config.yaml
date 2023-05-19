@@ -212,19 +212,19 @@ train_ClinicalSignificance:
 
 BenchmarkSignificance:
  - Pathogenic
- - Likely_pathogenic
- - Likely_benign
+ - Likely pathogenic
+ - Likely benign
  - Benign
- - Benign/Likely_benign
- - Pathogenic/Likely_pathogenic
- - Pathogenic,_other
- - Pathogenic/Likely_pathogenic,_other
- - Pathogenic,_drug_response
+ - Benign/Likely benign
+ - Pathogenic/Likely pathogenic
+ - Pathogenic, other
+ - Pathogenic/Likely pathogenic, other
+ - Pathogenic, drug response
 
 CLNREVSTAT: #https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/
-  -  practice_guideline
-  -  reviewed_by_expert_panel
-  -  criteria_provided,_multiple_submitters,_no_conflicts
+  -  practice guideline
+  -  reviewed by expert panel
+  -  criteria provided, multiple submitters, no conflicts
   #-  criteria_provided,_single_submitter
 
 dummies_sep:
