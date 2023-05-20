@@ -49,7 +49,7 @@ raw_cols:
  - exac_gene.exac_dup_score
  - exac_gene.exac_cnv_score
  - exac_gene.exac_cnv_flag
- #- fathmm.fathmm_score
+ - fathmm.fathmm_score
  - fathmm_xf_coding.fathmm_xf_coding_score
  - funseq2.score
  - gerp.gerp_rs
@@ -62,8 +62,6 @@ raw_cols:
  - lrt.lrt_score
  - lrt.lrt_omega
  - loftool.loftool_score
- - mitomap.score
- - mitomap.status
  - mavedb.score
  - metalr.score
  - metasvm.score
@@ -208,92 +206,123 @@ dummies_sep:
  cgc.class: ', '
 
 median_scores:
- aloft.tolerant: 0.0289
- aloft.recessive: 0.5911249999999999
- aloft.dominant: 0.32145
- cadd_exome.phred: 10.11
- chasmplus.score: 0.074
- chasmplus.pval: 0.273
+ DExTR_Adipose_Tissue: -62.39960214
+ DExTR_Muscle: -157.90062959999997
+ DExTR_Blood_Vessel: -56.66313844
+ DExTR_Heart: -192.11897009999998
+ DExTR_Uterus: -21.69915294
+ DExTR_Vagina: -69.25323533
+ DExTR_Breast: -41.97212607
+ DExTR_Skin: -20.53916321
+ DExTR_Salivary_Gland: -76.7753792
+ DExTR_Brain: -118.90540929999999
+ DExTR_Adrenal_Gland: -79.11240112
+ DExTR_Thyroid: -32.05163631
+ DExTR_Lung: -39.878867799999995
+ DExTR_Spleen: -67.96118139
+ DExTR_Pancreas: -336.1687172
+ DExTR_Esophagus: -56.00437118
+ DExTR_Stomach: -193.8704183
+ DExTR_Colon: -39.6943693
+ DExTR_Small_Intestine: -42.27475377
+ DExTR_Prostate: -54.4245231
+ DExTR_Testis: -9.456228797
+ DExTR_Nerve: -23.7263633
+ DExTR_Blood: -181.1995209
+ DExTR_Pituitary: -39.14241921
+ DExTR_Ovary: -35.90099484
+ DExTR_Liver: -289.111887
+ DExTR_Kidney: -127.5745548
+ DExTR_Cervix_Uteri: -24.99423209
+ DExTR_Fallopian_Tube: 0.0
+ DExTR_Bladder: -38.70179792
+ aloft.tolerant: 0.0254
+ aloft.recessive: 0.5171749999999999
+ aloft.dominant: 0.42410000000000003
+ cadd_exome.phred: 9.894
+ chasmplus.score: 0.071
+ chasmplus.pval: 0.285
  civic.clinical_a_score: 4.0
  cosmic.variant_count: 1.0
- cosmic_gene.occurrences: 1394.0
- cscape.score: 0.5136155
+ cosmic_gene.occurrences: 1573.0
+ cscape.score: 0.4793455
  cancer_genome_interpreter.resistant: 0.0
  cancer_genome_interpreter.responsive: 1.0
  cancer_genome_interpreter.other: 0.0
- clinpred.score: 0.784
- dann.score: 0.6532157883887229
- dann_coding.dann_coding_score: 0.9945883491141246
- dgi.score: 3.79
- ess_gene.indispensability_score: 0.854403362556228
- exac_gene.exac_pli: 0.0506929591139338
- exac_gene.exac_pnull: 1.14435985995889e-05
- exac_gene.exac_del_score: 0.244988743340227
- exac_gene.exac_dup_score: 0.167670163013553
- exac_gene.exac_cnv_score: 0.105598885584888
- fathmm_xf_coding.fathmm_xf_coding_score: 0.4298729999999999
- funseq2.score: 0.634313422024004
- gerp.gerp_rs: 4.82
- ghis.ghis: 0.550189169
- gwas_catalog.pval: 0.0
- genehancer.score: 1.15
- linsight.value: 0.104933
- lrt.lrt_score: 1.1e-05
- lrt.lrt_omega: 0.060217499999999896
- loftool.loftool_score: 0.169
- mavedb.score: 0.8737701029206105
- metalr.score: 0.4774
- metasvm.score: -0.1304
- mutpred1.mutpred_general_score: 0.7240000000000001
- mutpred_indel.score: 0.577
- mutation_assessor.score: 2.25
+ clinpred.score: 0.08900000000000001
+ dann.score: 0.6545129348446139
+ dann_coding.dann_coding_score: 0.9943269294611523
+ dgi.score: 3.44
+ ess_gene.indispensability_score: 0.876052271195032
+ exac_gene.exac_pli: 0.00725253971720532
+ exac_gene.exac_pnull: 2.54721516269318e-05
+ exac_gene.exac_del_score: 0.22288602511090902
+ exac_gene.exac_dup_score: 0.15982937633893599
+ exac_gene.exac_cnv_score: -0.0430275954791392
+ fathmm.fathmm_score: -1.51
+ fathmm_xf_coding.fathmm_xf_coding_score: 0.355259
+ funseq2.score: 0.7056330706663941
+ gerp.gerp_rs: 4.65
+ ghis.ghis: 0.5510271529999999
+ gwas_catalog.pval: 3e-11
+ genehancer.score: 1.09
+ linsight.value: 0.1381115
+ lrt.lrt_score: 4.9e-05
+ lrt.lrt_omega: 0.10129
+ loftool.loftool_score: 0.11599999999999999
+ mavedb.score: 0.915390540437152
+ metalr.score: 0.3835
+ metasvm.score: -0.3796
+ mutpred1.mutpred_general_score: 0.81
+ mutpred_indel.score: 0.578
+ mutation_assessor.score: 2.0
  mutationtaster.score: 1.0
- ndex_chd.numhit: 1.0
- ndex.numhit: 3.0
+ ndex_chd.numhit: 2.0
+ ndex.numhit: 4.0
  ndex_signor.numhit: 1.0
- prec.prec: 0.29137
- provean.score: -2.9
+ prec.prec: 0.34375
+ provean.score: -2.27
  pangalodb.sensitivity: 0.0
- pangalodb.specificity: 0.0103383
- phdsnpg.score: 0.949
+ pangalodb.specificity: 0.0112782
+ phdsnpg.score: 0.9209999999999999
  phastcons.phastcons100_vert: 1.0
- phastcons.phastcons30_mamm: 0.992
- phastcons.phastcons17way_primate: 0.971
- phylop.phylop100_vert: 5.099
+ phastcons.phastcons30_mamm: 0.985
+ phastcons.phastcons17way_primate: 0.956
+ phylop.phylop100_vert: 4.146
  phylop.phylop30_mamm: 1.026
- phylop.phylop17_primate: 0.609
- polyphen2.hdiv_rank: 0.6407
- polyphen2.hvar_rank: 0.631
- revel.score: 0.538
- rvis.rvis_evs: -0.41
+ phylop.phylop17_primate: 0.599
+ polyphen2.hdiv_rank: 0.5543100000000001
+ polyphen2.hvar_rank: 0.53214
+ revel.score: 0.40399999999999997
+ rvis.rvis_evs: -0.34
  sift.score: 1.0
- sift.med: 2.75
- sift.seqs: 45.0
- segway.mean_score: 0.104006191733
- siphy.logodds_rank: 0.66151
- spliceai.ds_ag: 0.0007
+ sift.med: 2.74
+ sift.seqs: 46.0
+ segway.mean_score: 0.0901259894737
+ siphy.logodds_rank: 0.6200100000000001
+ spliceai.ds_ag: 0.0004
  spliceai.ds_al: 0.0
- spliceai.ds_dg: 0.0003
+ spliceai.ds_dg: 0.0004
  spliceai.ds_dl: 0.0
- spliceai.dp_ag: -1.0
+ spliceai.dp_ag: 0.0
  spliceai.dp_al: 0.0
  spliceai.dp_dg: 0.0
  spliceai.dp_dl: 0.0
- vest.score: 0.777
- dbscsnv.ada_score: 0.0174375201391208
- dbscsnv.rf_score: 0.224
- gnomad.af: 9.55840183521e-05
- gnomad_gene.oe_lof: 0.34352
- gnomad_gene.oe_mis: 0.87096
- gnomad_gene.oe_syn: 1.0154
- gnomad_gene.lof_z: 3.7258
- gnomad_gene.mis_z: 0.9844
- gnomad_gene.syn_z: -0.15312
- gnomad_gene.pLI: 0.00051429
- gnomad_gene.pRec: 0.43636
- gnomad_gene.pNull: 1.5453e-05
- gnomad3.af: 0.0
- phi.phi: 0.40227
+ vest.score: 0.74
+ dbscsnv.ada_score: 0.9810062561035401
+ dbscsnv.rf_score: 0.708
+ gnomad.af: 0.000204403902111
+ gnomad_gene.oe_lof: 0.3552
+ gnomad_gene.oe_mis: 0.88869
+ gnomad_gene.oe_syn: 1.0122
+ gnomad_gene.lof_z: 3.7411
+ gnomad_gene.mis_z: 0.90404
+ gnomad_gene.syn_z: -0.1255
+ gnomad_gene.pLI: 5.0777e-05
+ gnomad_gene.pRec: 0.30551
+ gnomad_gene.pNull: 1.4285e-05
+ gnomad3.af: 0.000293325
+ phi.phi: 0.42565
 
 filtered_cols:
  - transcript
@@ -314,6 +343,36 @@ filtered_cols:
  - omim.omim_id
  - uniprot.acc
  - dbsnp.rsid
+ - DExTR_Adipose_Tissue
+ - DExTR_Muscle
+ - DExTR_Blood_Vessel
+ - DExTR_Heart
+ - DExTR_Uterus
+ - DExTR_Vagina
+ - DExTR_Breast
+ - DExTR_Skin
+ - DExTR_Salivary_Gland
+ - DExTR_Brain
+ - DExTR_Adrenal_Gland
+ - DExTR_Thyroid
+ - DExTR_Lung
+ - DExTR_Spleen
+ - DExTR_Pancreas
+ - DExTR_Esophagus
+ - DExTR_Stomach
+ - DExTR_Colon
+ - DExTR_Small_Intestine
+ - DExTR_Prostate
+ - DExTR_Testis
+ - DExTR_Nerve
+ - DExTR_Blood
+ - DExTR_Pituitary
+ - DExTR_Ovary
+ - DExTR_Liver
+ - DExTR_Kidney
+ - DExTR_Cervix_Uteri
+ - DExTR_Fallopian_Tube
+ - DExTR_Bladder
  - aloft.tolerant
  - aloft.recessive
  - aloft.dominant
@@ -337,6 +396,7 @@ filtered_cols:
  - exac_gene.exac_del_score
  - exac_gene.exac_dup_score
  - exac_gene.exac_cnv_score
+ - fathmm.fathmm_score
  - fathmm_xf_coding.fathmm_xf_coding_score
  - funseq2.score
  - gerp.gerp_rs
@@ -454,19 +514,15 @@ filtered_cols:
  - allosteric modulator
  - antagonist
  - antibody
- - antisense oligonucleotide
  - binder
  - blocker
  - chaperone
- - cleavage
  - cofactor
  - inducer
  - inhibitor
  - ligand
  - modulator
- - multitarget
  - negative modulator
- - partial agonist
  - positive modulator
  - potentiator
  - product of
@@ -538,6 +594,12 @@ filtered_cols:
  - ccre_screen._group_dELS
  - ccre_screen._group_pELS
  - ccre_screen.bound_Yes
+ - clinvar.sig_Benign
+ - clinvar.sig_Benign/Likely benign
+ - clinvar.sig_Likely benign
+ - clinvar.sig_Likely pathogenic
+ - clinvar.sig_Pathogenic
+ - clinvar.sig_Pathogenic/Likely pathogenic
  - ensembl_regulatory_build.region_CTCF_binding_site
  - ensembl_regulatory_build.region_TF_binding_site
  - ensembl_regulatory_build.region_enhancer

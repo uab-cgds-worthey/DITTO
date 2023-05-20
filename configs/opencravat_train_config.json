@@ -340,18 +340,6 @@
         }
     },
     {
-        "col_id": "mitomap.score",
-        "parse_type": {
-            "none": "none"
-        }
-    },
-    {
-        "col_id": "mitomap.status",
-        "parse_type": {
-            "none": "none"
-        }
-    },
-    {
         "col_id": "mavedb.score",
         "parse_type": {
             "none": "none"
