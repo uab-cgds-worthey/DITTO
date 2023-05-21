@@ -17,8 +17,8 @@ from optuna.samplers import TPESampler
 import tensorflow as tf
 import argparse
 import os
-from sklearn.model_selection import train_test_split
-
+from sklearn.preprocessing import label_binarize
+from sklearn.utils import class_weight
 try:
     tf.get_logger().setLevel("INFO")
 except Exception as exc:
@@ -46,11 +46,12 @@ import shap
 
 # EPOCHS = 150
 class Objective(object):
-    def __init__(self, train_x, val_x, test_x, train_y, val_y, test_y):
+    def __init__(self, train_x, test_x, train_y, test_y, class_weights):
         self.train_x = train_x
         self.test_x = test_x
         self.train_y = train_y
         self.test_y = test_y
+        self.class_weights = class_weights
 
     def __call__(self, config):
         # Clear clutter from previous TensorFlow graphs.
@@ -126,7 +127,7 @@ class Objective(object):
             )
         model.add(
             Dense(
-                units=self.train_y.shape[1],
+                units=len(np.unique(self.train_y)),
                 name="dense_last",
                 kernel_initializer=config.suggest_categorical(
                     "kernel_initializer",
@@ -169,6 +170,7 @@ class Objective(object):
             callbacks=callbacks,
             batch_size=config.suggest_int("batch_size", 10, 1000),
             epochs=500,
+            class_weight = self.class_weights
         )
         return history.history["val_accuracy"][-1]
         # Evaluate the model accuracy on the validation set.
@@ -199,7 +201,7 @@ class Objective(object):
             model.add(Dropout(config["dropout_l{}".format(i)]))
         model.add(
             Dense(
-                units=self.train_y.shape[1],
+                units=len(np.unique(self.train_y)),
                 name="dense_last",
                 kernel_initializer=config["kernel_initializer"],
                 activation="sigmoid",
@@ -218,6 +220,7 @@ class Objective(object):
             verbose=2,
             batch_size=config["batch_size"],
             epochs=500,
+            class_weights = self.class_weights
         )
         # Evaluate the model accuracy on the validation set.
         # score = model.evaluate(test_x, test_y, verbose=0)
@@ -293,7 +296,13 @@ def data_parsing(train_x, train_y, test_x, test_y, config_dict):
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
     Y_train = pd.read_csv(train_y)
-    Y_train = pd.get_dummies(Y_train)
+    Y_train = label_binarize(
+        Y_train.values, classes=list(np.unique(Y_train))
+    ).ravel()
+    class_weights = class_weight.compute_class_weight(class_weight='balanced',classes=np.unique(Y_train),y=Y_train)
+    class_weights = {i:w for i,w in enumerate(class_weights)}
+    #Y_train = pd.get_dummies(Y_train)
+
 
     X_test = pd.read_csv(test_x)
     # var = X_train[config_dict['ML_VAR']]
@@ -302,14 +311,17 @@ def data_parsing(train_x, train_y, test_x, test_y, config_dict):
     X_test.fillna(0, inplace=True)
     X_test = X_test.values
     Y_test = pd.read_csv(test_y)
-    Y_test = pd.get_dummies(Y_test)
+    #Y_test = pd.get_dummies(Y_test)
+    Y_test = label_binarize(
+        Y_test.values, classes=list(np.unique(Y_test))
+    ).ravel()
 
     print(f"Shape: {Y_train.shape}")
     print("Data Loaded!")
     # scaler = StandardScaler().fit(X_train)
     # X_train = scaler.transform(X_train)
     # X_test = scaler.transform(X_test)
-    return X_train, X_test, Y_train, Y_test, feature_names
+    return X_train, X_test, Y_train, Y_test, feature_names, class_weights
 
 
 def is_valid_file(p, arg):
@@ -385,16 +397,16 @@ if __name__ == "__main__":
 
     start = time.perf_counter()
 
-    output = out_dir + "ML_results.csv"
+    output = out_dir + "/ML_results.csv"
     # print('Working with '+var+' dataset...', file=open(output, "w"))
     print("Working with dataset...")
 
-    X_train, X_test, Y_train, Y_test, feature_names = data_parsing(
+    X_train, X_test, Y_train, Y_test, feature_names, class_weights = data_parsing(
         ARGS.train_x, ARGS.train_y, ARGS.test_x, ARGS.test_y, config_dict
     )
 
     print("Starting Objective...")
-    objective = Objective(X_train, X_test, Y_train, Y_test)
+    objective = Objective(X_train, X_test, Y_train, Y_test, class_weights)
     tensorboard_callback = TensorBoardCallback(
         out_dir + "/Neural_network_logs/", metric_name="accuracy"
     )
@@ -403,13 +415,13 @@ if __name__ == "__main__":
         study_name=f"DITTO_NN",
         storage=f"sqlite:///{out_dir}/Neural_network.db",  # study_name= "Ditto3",
         direction="maximize",
-        pruner=optuna.pruners.MedianPruner(n_startup_trials=200),
+        pruner=optuna.pruners.MedianPruner(n_startup_trials=2),
         load_if_exists=True,  # , pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
     )
     # study = optuna.load_study(study_name= "Ditto_all", sampler=TPESampler(**TPESampler.hyperopt_parameters()),storage ="sqlite:///Ditto_all.db") # study_name= "Ditto3",
     study.optimize(
         objective,
-        n_trials=500,
+        n_trials=5,
         callbacks=[tensorboard_callback],
         n_jobs=-1,
         gc_after_trial=True,
