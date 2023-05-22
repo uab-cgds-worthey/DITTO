@@ -354,6 +354,40 @@ median_scores:
  gnomad3.af: 0.000293325
  phi.phi: 0.42565
 
+consequence_cols:
+ - 2kb_downstream_variant
+ - 2kb_upstream_variant
+ - 3_prime_UTR_variant
+ - 5_prime_UTR_variant
+ - NMD_transcript_variant
+ - NSD_transcript
+ - complex_substitution
+ - exon_loss_variant
+ - frameshift_elongation
+ - frameshift_truncation
+ - inframe_deletion
+ - inframe_insertion
+ - intron_variant
+ - lnc_RNA
+ - miRNA
+ - misc_RNA
+ - missense_variant
+ - polymorphic_pseudogene
+ - processed_transcript
+ - rRNA
+ - ribozyme
+ - scaRNA
+ - snRNA
+ - snoRNA
+ - splice_site_variant
+ - start_lost
+ - start_retained_variant
+ - stop_gained
+ - stop_lost
+ - stop_retained_variant
+ - synonymous_variant
+ - transcript_ablation
+
 filtered_cols:
  - transcript
  - gene
