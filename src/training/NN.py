@@ -127,7 +127,7 @@ class Objective(object):
             )
         model.add(
             Dense(
-                units=len(np.unique(self.train_y)),
+                units=self.train_y.shape[1],
                 name="dense_last",
                 kernel_initializer=config.suggest_categorical(
                     "kernel_initializer",
@@ -201,7 +201,7 @@ class Objective(object):
             model.add(Dropout(config["dropout_l{}".format(i)]))
         model.add(
             Dense(
-                units=len(np.unique(self.train_y)),
+                units=self.train_y.shape[1],
                 name="dense_last",
                 kernel_initializer=config["kernel_initializer"],
                 activation="sigmoid",
@@ -220,7 +220,7 @@ class Objective(object):
             verbose=2,
             batch_size=config["batch_size"],
             epochs=500,
-            class_weights = self.class_weights
+            class_weight = self.class_weights
         )
         # Evaluate the model accuracy on the validation set.
         # score = model.evaluate(test_x, test_y, verbose=0)
@@ -253,7 +253,8 @@ class Objective(object):
         roc_auc = roc_auc_score(self.test_y, y_score.round())
         accuracy = accuracy_score(self.test_y, y_score.round())
         # prc_micro = average_precision_score(self.test_y, y_score, average='micro')
-        matrix = confusion_matrix(np.argmax(self.test_y.values, axis=1), np.argmax(y_score, axis=1))
+        #matrix = confusion_matrix(np.argmax(self.test_y.values, axis=1), np.argmax(y_score, axis=1))
+        matrix = confusion_matrix(self.test_y, y_score.round())
         print(
             f"Model\tTest_loss\tTest_accuracy\tPrecision\tRecall\troc_auc\tAccuracy\tConfusion_matrix[low_impact, high_impact]",
             file=open(output, "a"),
@@ -301,6 +302,7 @@ def data_parsing(train_x, train_y, test_x, test_y, config_dict):
     ).ravel()
     class_weights = class_weight.compute_class_weight(class_weight='balanced',classes=np.unique(Y_train),y=Y_train)
     class_weights = {i:w for i,w in enumerate(class_weights)}
+    Y_train = Y_train.reshape(-1, 1)
     #Y_train = pd.get_dummies(Y_train)
 
 
@@ -314,7 +316,7 @@ def data_parsing(train_x, train_y, test_x, test_y, config_dict):
     #Y_test = pd.get_dummies(Y_test)
     Y_test = label_binarize(
         Y_test.values, classes=list(np.unique(Y_test))
-    ).ravel()
+    ).ravel().reshape(-1, 1)
 
     print(f"Shape: {Y_train.shape}")
     print("Data Loaded!")
@@ -415,13 +417,13 @@ if __name__ == "__main__":
         study_name=f"DITTO_NN",
         storage=f"sqlite:///{out_dir}/Neural_network.db",  # study_name= "Ditto3",
         direction="maximize",
-        pruner=optuna.pruners.MedianPruner(n_startup_trials=2),
+        pruner=optuna.pruners.MedianPruner(n_startup_trials=200),
         load_if_exists=True,  # , pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
     )
     # study = optuna.load_study(study_name= "Ditto_all", sampler=TPESampler(**TPESampler.hyperopt_parameters()),storage ="sqlite:///Ditto_all.db") # study_name= "Ditto3",
     study.optimize(
         objective,
-        n_trials=5,
+        n_trials=500,
         callbacks=[tensorboard_callback],
         n_jobs=-1,
         gc_after_trial=True,
