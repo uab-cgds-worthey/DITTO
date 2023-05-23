@@ -308,15 +308,18 @@ class Objective(object):
         model.save(out_dir + "/Neural_network")
         model.save_weights(out_dir + "/weights.h5")
 
-        # explain all the predictions in the test set
-        background_so = shap.kmeans(self.so_train, 10)
-        background_x = shap.kmeans(self.train_x, 10)
-        explainer = shap.KernelExplainer(model.predict, [background_so, background_x])
-        background_so = self.test_x[np.random.choice(self.so_test.shape[0], 10, replace=False)]
+        # explain the predictions in the test set
+        #background_so = shap.kmeans(self.so_train, 10)
+        #background_x = shap.kmeans(self.train_x, 10)
+        background_so = self.so_test[np.random.choice(self.so_test.shape[0], 10, replace=False)]
         background_x = self.test_x[np.random.choice(self.test_x.shape[0], 10, replace=False)]
+        explainer = shap.DeepExplainer(model, [background_so, background_x])
+        #print(explainer.expected_value[0])
+        #print([background_so, background_x])
         shap_values = explainer.shap_values([background_so, background_x])
+        samples_combined = np.concatenate([background_so, background_x], axis=1)
         plt.figure()
-        shap.summary_plot(shap_values, [background_so, background_x], feature_names, show=False)
+        shap.summary_plot(shap_values, samples_combined, feature_names, show=False)
         # shap.plots.beeswarm(shap_vals, feature_names)
         # shap.plots.waterfall(shap_values[1], max_display=10)
         plt.savefig(
@@ -460,13 +463,13 @@ if __name__ == "__main__":
         study_name=f"DITTO_NN",
         storage=f"sqlite:///{out_dir}/Neural_network.db",  # study_name= "Ditto3",
         direction="maximize",
-        pruner=optuna.pruners.MedianPruner(n_startup_trials=2),
+        pruner=optuna.pruners.MedianPruner(n_startup_trials=1),
         load_if_exists=True,  # , pruner=optuna.pruners.MedianPruner(n_startup_trials=150)
     )
     # study = optuna.load_study(study_name= "Ditto_all", sampler=TPESampler(**TPESampler.hyperopt_parameters()),storage ="sqlite:///Ditto_all.db") # study_name= "Ditto3",
     study.optimize(
         objective,
-        n_trials=5,
+        n_trials=1,
         callbacks=[tensorboard_callback],
         n_jobs=-1,
         gc_after_trial=True,
