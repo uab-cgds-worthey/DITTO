@@ -191,6 +191,7 @@ id_cols:
  - clingen.disease
  - clingen.classification
  - clinvar.id
+ - clinvar.sig
  - clinvar.rev_stat
  - clinvar.sig_conf
  - ncbigene.entrez
