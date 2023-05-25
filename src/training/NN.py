@@ -15,6 +15,7 @@ from optuna.integration import TFKerasPruningCallback
 from optuna.integration.tensorboard import TensorBoardCallback
 from optuna.samplers import TPESampler
 import tensorflow as tf
+print(tf.config.list_physical_devices('GPU'))
 import argparse
 import os
 from sklearn.preprocessing import label_binarize
@@ -23,8 +24,8 @@ try:
     tf.get_logger().setLevel("INFO")
 except Exception as exc:
     print(exc)
-import warnings
 
+import warnings
 warnings.simplefilter("ignore")
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
@@ -425,7 +426,7 @@ if __name__ == "__main__":
         objective,
         n_trials=500,
         callbacks=[tensorboard_callback],
-        n_jobs=-1,
+        n_jobs=2,
         gc_after_trial=True,
     )
     finish = (time.perf_counter() - start) / 120

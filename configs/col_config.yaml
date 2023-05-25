@@ -684,3 +684,29 @@ filtered_cols:
  - prec.stat_recessive
  - sift.confidence_High
  - sift.confidence_Low
+
+Benchmark_cols:
+ - cadd_exome.phred
+ - cscape.score
+ - clinpred.score
+ - dann.score
+ - dann_coding.dann_coding_score
+ - dgi.score
+ - fathmm_xf_coding.fathmm_xf_coding_score
+ - funseq2.score
+ - linsight.value
+ - lrt.lrt_score
+ - loftool.loftool_score
+ - metasvm.score
+ - metalr.score
+ - mutpred1.mutpred_general_score
+ - mutpred_indel.score
+ - mutation_assessor.score
+ - mutationtaster.score
+ - provean.score
+ - phdsnpg.score
+ - revel.score
+ - sift.score
+ - vest.score
+ - dbscsnv.ada_score
+ - dbscsnv.rf_score
