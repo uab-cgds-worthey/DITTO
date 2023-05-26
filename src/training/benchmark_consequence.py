@@ -15,7 +15,9 @@ from sklearn.metrics import (
 from sklearn.preprocessing import label_binarize
 import os
 from pathlib import Path
+import tensorflow as tf
 from tensorflow import keras
+tf.config.run_functions_eagerly(True)
 
 
 def get_roc_plot(so, X_test, Y_test, outdir):
@@ -45,7 +47,8 @@ def get_roc_plot(so, X_test, Y_test, outdir):
             ax_prc.plot(recall,precision,label=str(name)+" = "+str(prc))
 
 
-    ax_prc.legend(bbox_to_anchor=(1,0), loc="lower left", fontsize=20)
+    #ax_prc.legend(bbox_to_anchor=(1,0), loc="lower left", fontsize=20)
+    ax_prc.legend( loc="lower right", fontsize=20)
     ax_roc.legend( loc="lower right", fontsize=20)
     fig.savefig(
         f"{outdir}/{so}_ROC_PRC_benchmarking.pdf",
@@ -82,28 +85,35 @@ def get_SHAP(test_x, clf, so, outdir, feature_names):
         )
     return None
 
-def run_test(X_test, outdir, feature_names, consequence_list, clf):
+def run_test(X_test, outdir, feature_names, clf, config_dict):
+    consequence_list = list(set(config_dict['consequence_cols']) & set(X_test.columns))
     for so in consequence_list:
         test_x = X_test[X_test[so]==1]
-        benchmark_df = test_x[config_dict['Benchmark_cols']]
-        Y_test = test_x['class']
-        test_x = test_x.drop(["class"], axis=1).values
-        #benchmark_df.columns =
-        #['CADD','Cscape','Clinpred','DANN','DANN_coding','DGI','fathmm_xf','funseq2','linsight','LRT','loftool','MetaSVM','MetaLR','Mutpred','Mutpred_indel','Mutation_assessor','Mutationtaster','Provean','phdsnpg','revel','SIFT','VEST','dbscsnv.ada_score','dbscsnv.rf_score']
-        y_score = get_prediction(clf, test_x)
-        benchmark_df['DITTO'] = y_score
-        get_roc_plot(so, benchmark_df, Y_test, outdir)
+        try:
+            benchmark_df = test_x[config_dict['Benchmark_cols'].keys()]
+            Y_test = test_x['class']
+            test_x = test_x.drop(["class"], axis=1)
+            test_x.rename(columns=config_dict['Benchmark_cols'], inplace=True)
+            #benchmark_df.columns =
+            #['CADD','Cscape','Clinpred','DANN','DANN_coding','DGI','fathmm_xf','funseq2','linsight','LRT','loftool','MetaSVM','MetaLR','Mutpred','Mutpred_indel','Mutation_assessor','Mutationtaster','Provean','phdsnpg','revel','SIFT','VEST','dbscsnv.ada_score','dbscsnv.rf_score']
+            y_score = get_prediction(clf, test_x)
+            benchmark_df['DITTO'] = y_score
+            get_roc_plot(so, benchmark_df, Y_test, outdir)
+        except:
+            print(f"Error occured for {so} ROC plot!")
 
     for so in consequence_list:
         test_x = X_test[X_test[so]==1]
         test_x = test_x.drop(["class"], axis=1).values
-        get_SHAP(test_x, clf, so, outdir, feature_names)
+        try:
+            get_SHAP(test_x, clf, so, outdir, feature_names)
+        except:
+            print(f"Error occured for {so} SHAP plot!")
         return None
 
 def data_parsing(test_x, test_y, config_dict):
     # Load data
     X_test = pd.read_csv(test_x)
-    consequence_list = list(X_test['consequence'].unique())
     X_test = X_test.drop(config_dict["id_cols"], axis=1)
     X_test.replace([np.inf, -np.inf], np.nan, inplace=True)
     X_test.fillna(0, inplace=True)
@@ -122,7 +132,7 @@ def data_parsing(test_x, test_y, config_dict):
     # scaler = StandardScaler().fit(X_train)
     # X_train = scaler.transform(X_train)
     # X_test = scaler.transform(X_test)
-    return X_test,feature_names, consequence_list
+    return X_test,feature_names
 
 def load_model(model_path):
     clf = keras.models.load_model(model_path + '/Neural_network')
@@ -197,8 +207,8 @@ if __name__ == "__main__":
     clf = load_model(
         ARGS.ditto
     )
-    X_test, feature_names, consequence_list = data_parsing(
+    X_test, feature_names = data_parsing(
         ARGS.test_x, ARGS.test_y, config_dict
     )
 
-    run_test(X_test, out_dir, feature_names, consequence_list, clf)
+    run_test(X_test, out_dir, feature_names, clf, config_dict)
