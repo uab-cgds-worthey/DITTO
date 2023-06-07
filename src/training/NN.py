@@ -292,7 +292,7 @@ def data_parsing(train_x, train_y, test_x, test_y, config_dict):
     # print(f'\nUsing merged_data-train_{var}..', file=open(output, 'a'))
     X_train = pd.read_csv(train_x)
     # var = X_train[config_dict['ML_VAR']]
-    X_train = X_train.drop(config_dict["id_cols"], axis=1)
+    X_train = X_train.drop(config_dict["train_cols"], axis=1)
     X_train.replace([np.inf, -np.inf], np.nan, inplace=True)
     X_train.fillna(0, inplace=True)
     feature_names = X_train.columns.tolist()
@@ -309,7 +309,7 @@ def data_parsing(train_x, train_y, test_x, test_y, config_dict):
 
     X_test = pd.read_csv(test_x)
     # var = X_train[config_dict['ML_VAR']]
-    X_test = X_test.drop(config_dict["id_cols"], axis=1)
+    X_test = X_test.drop(config_dict["train_cols"], axis=1)
     X_test.replace([np.inf, -np.inf], np.nan, inplace=True)
     X_test.fillna(0, inplace=True)
     X_test = X_test.values
@@ -411,7 +411,7 @@ if __name__ == "__main__":
     print("Starting Objective...")
     objective = Objective(X_train, X_test, Y_train, Y_test, class_weights)
     tensorboard_callback = TensorBoardCallback(
-        out_dir + "/Neural_network_logs/", metric_name="accuracy"
+        out_dir + "/Neural_network_logs/", metric_name="val_accuracy"
     )
     study = optuna.create_study(
         sampler=TPESampler(**TPESampler.hyperopt_parameters()),

@@ -25,7 +25,7 @@
 
 ## Data
 
-Input for this project is a single sample VCF file. This will be annotated using VEP and given to Ditto for predictions.
+Input for this project is a single sample VCF file. This will be annotated using openCravat and given to Ditto for predictions.
 
 ## Usage
 
@@ -38,9 +38,7 @@ Installation simply requires fetching the source code. Following are required:
 To fetch source code, change in to directory of your choice and run:
 
 ```sh
-git clone -b master \
-    --recurse-submodules \
-    git@gitlab.rc.uab.edu:center-for-computational-genomics-and-data-science/sciops/ditto.git
+git clone https://github.com/uab-cgds-worthey/DITTO.git
 ```
 
 ### Requirements
@@ -53,7 +51,6 @@ potentially Windows).
 *Tools:*
 
 - Anaconda3
-    - Tested with version: 2020.02
 
 ### Activate conda environment
 
@@ -61,32 +58,36 @@ Change in to root directory and run the commands below:
 
 ```sh
 # create conda environment. Needed only the first time.
-conda env create --file configs/envs/testing.yaml
+conda env create --file configs/envs/environment.yaml
 
 # if you need to update existing environment
-conda env update --file configs/envs/testing.yaml
+conda env update --file configs/envs/training.yaml
 
 # activate conda environment
-conda activate testing
+conda activate training
 ```
 
 ### Steps to run DITTO predictions
 
 Remove variants with `*` in `ALT Allele` column. These are called "Spanning or overlapping deletions" introduced in the VCF v4.3 specification. More on this [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele-).
-Current version of VEP that we're using doesn't support these variants. We will work on this in our future release.
+Current version of openCravat that we're using doesn't support these variants. We will work on this in our future release.
 
 ```sh
 bcftools annotate  -e'ALT="*" || type!="snp"' path/to/indexed_vcf.gz -Oz -o path/to/indexed_vcf_filtered.vcf.gz
 ```
 
-#### Run VEP annotation
+#### Run openCravat annotation
 
-Please look at the steps to run VEP [here](variant_annotation/README.md)
+Please look at the steps to run openCravat [here](variant_annotation/README.md)
 
 
-#### Parse VEP annotations
+#### Parse openCravat annotations
 
-Please look at the steps to parse VEP annotations [here](annotation_parsing/README.md)
+Please look at the steps to parse openCravat annotations [here](annotation_parsing/README.md)
+
+Example:
+
+`python src/annotation_parsing/parse_annotated_vars.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/clinvar_6623.vcf.gz.variant.csv.gz -e parse -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/clinvar_6623_parsed.csv.gz -c configs/opencravat_train_config.json`
 
 
 #### Filter variants for Ditto prediction
