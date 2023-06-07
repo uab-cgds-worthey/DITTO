@@ -46,7 +46,7 @@
         }
     },
     {
-        "col_id": "cadd_exome.phred",
+        "col_id": "cadd.phred",
         "parse_type": {
             "none": "none"
         }
@@ -70,7 +70,7 @@
         }
     },
     {
-        "col_id": "civic.clinical_a_score",
+        "col_id": "civic.molecular_profile_score",
         "parse_type": {
             "none": "none"
         }
@@ -616,6 +616,18 @@
     },
     {
         "col_id": "uniprot.acc",
+        "parse_type": {
+            "none": "none"
+        }
+    },
+    {
+        "col_id": "varity_r.varity_r_loo",
+        "parse_type": {
+            "none": "none"
+        }
+    },
+    {
+        "col_id": "varity_r.varity_er_loo",
         "parse_type": {
             "none": "none"
         }
