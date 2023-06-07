@@ -170,7 +170,7 @@ def parse_annotations(annot_csv, data_config_file, DExTR_dict, outfile):
         csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames + parsed_fieldnames)
         csvwriter.writeheader()
 
-        with gzip.open(annot_csv, 'rt', newline="") if ".gz" in annot_csv else open(annot_csv, 'r', newline="") as csvfile:
+        with gzip.open(annot_csv, 'rt', newline="") if annot_csv.endswith(".gz") else open(annot_csv, 'r', newline="") as csvfile:
             reader = csv.DictReader(filter(lambda row: row[0] != "#", csvfile))
             for row in reader:
                 # parse list of dict columns first since this only needs to be done once per row and cached

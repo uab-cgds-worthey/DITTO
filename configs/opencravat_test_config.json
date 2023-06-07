@@ -30,30 +30,6 @@
         }
     },
     {
-        "col_id": "extra_vcf_info.CLNDN",
-        "parse_type": {
-            "none": "none"
-        }
-    },
-    {
-        "col_id": "extra_vcf_info.CLNREVSTAT",
-        "parse_type": {
-            "none": "none"
-        }
-    },
-    {
-        "col_id": "extra_vcf_info.CLNSIG",
-        "parse_type": {
-            "none": "none"
-        }
-    },
-    {
-        "col_id": "extra_vcf_info.CLNSIGCONF",
-        "parse_type": {
-            "none": "none"
-        }
-    },
-    {
         "col_id": "aloft.all",
         "parse_type": {
             "list-o-dicts": {
