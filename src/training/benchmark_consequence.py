@@ -38,11 +38,17 @@ def get_roc_plot(so, X_test, Y_test, outdir):
 
     for name in list(X_test.columns):
             fpr, tpr, _ = roc_curve(Y_test, X_test[name].fillna(0).values)
-            auc = roc_auc_score(Y_test, X_test[name].fillna(0).values)
+            try:
+                auc = roc_auc_score(Y_test, X_test[name].fillna(0).values)
+            except:
+                auc=np.nan
             auc = "{:.2f}".format(auc)
             ax_roc.plot(fpr,tpr,label=str(name)+" = "+str(auc))
             precision, recall, _ = precision_recall_curve(Y_test, X_test[name].fillna(0).values)
-            prc = average_precision_score(Y_test, X_test[name].fillna(0).values)
+            try:
+                prc = average_precision_score(Y_test, X_test[name].fillna(0).values)
+            except:
+                prc=np.nan
             prc = "{:.2f}".format(prc)
             ax_prc.plot(recall,precision,label=str(name)+" = "+str(prc))
 
@@ -94,22 +100,12 @@ def run_test(X_test, outdir, feature_names, clf, config_dict):
             Y_test = test_x['class']
             test_x = test_x.drop(["class"], axis=1)
             test_x.rename(columns=config_dict['Benchmark_cols'], inplace=True)
-            #benchmark_df.columns =
-            #['CADD','Cscape','Clinpred','DANN','DANN_coding','DGI','fathmm_xf','funseq2','linsight','LRT','loftool','MetaSVM','MetaLR','Mutpred','Mutpred_indel','Mutation_assessor','Mutationtaster','Provean','phdsnpg','revel','SIFT','VEST','dbscsnv.ada_score','dbscsnv.rf_score']
             y_score = get_prediction(clf, test_x)
             benchmark_df['DITTO'] = y_score
             get_roc_plot(so, benchmark_df, Y_test, outdir)
         except:
             print(f"Error occured for {so} ROC plot!")
-
-    for so in consequence_list:
-        test_x = X_test[X_test[so]==1]
-        test_x = test_x.drop(["class"], axis=1).values
-        try:
-            get_SHAP(test_x, clf, so, outdir, feature_names)
-        except:
-            print(f"Error occured for {so} SHAP plot!")
-        return None
+            pass
 
 def data_parsing(test_x, test_y, config_dict):
     # Load data

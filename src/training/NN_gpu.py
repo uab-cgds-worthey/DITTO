@@ -7,7 +7,6 @@ Created on Thu Oct  1 01:11:09 2020
 """
 import time
 import numpy as np
-
 np.random.seed(5)
 from pathlib import Path
 import optuna
@@ -15,8 +14,11 @@ from optuna.integration import TFKerasPruningCallback
 from optuna.integration.tensorboard import TensorBoardCallback
 from optuna.samplers import TPESampler
 import tensorflow as tf
-import argparse
 import os
+#os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Set the desired GPU device number
+physical_devices = tf.config.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(physical_devices[0], True)
+import argparse
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import class_weight
 try:
@@ -28,7 +30,7 @@ import warnings
 warnings.simplefilter("ignore")
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
-
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     precision_score,
     roc_auc_score,
@@ -57,11 +59,6 @@ class Objective(object):
         # Clear clutter from previous TensorFlow graphs.
         tf.keras.backend.clear_session()
 
-        # Metrics to be monitored by Optuna.
-        if tf.__version__ >= "2":
-            monitor = "val_accuracy"
-        else:
-            monitor = "val_acc"
         n_layers = config.suggest_int("n_layers", 1, 30)
         model = Sequential()
         model.add(
@@ -153,29 +150,38 @@ class Objective(object):
             ),
             metrics=["accuracy"],
         )
-        # model.summary()
-        # Create callbacks for early stopping and pruning.
-        callbacks = [
-            tf.keras.callbacks.EarlyStopping(patience=10),
-            TFKerasPruningCallback(config, monitor),
-        ]
 
-        # Train the model
-        history = model.fit(
-            self.train_x,
-            self.train_y,
-            validation_split=0.2,
-            verbose=0,
-            shuffle=True,
-            callbacks=callbacks,
-            batch_size=config.suggest_int("batch_size", 10, 1000),
-            epochs=500,
-            class_weight = self.class_weights
+        batch_size=config.suggest_int("batch_size", 10, 1000)
+        train_x, val_x, train_y, val_y = train_test_split(
+            self.train_x, self.train_y, test_size=0.2, stratify=self.train_y
         )
-        return history.history["val_accuracy"][-1]
-        # Evaluate the model accuracy on the validation set.
-        # score = model.evaluate(self.val_x, self.val_y, verbose=0)
-        # return score[1]
+
+        num_batches = int(np.ceil(len(train_x) / batch_size))
+
+        for _ in range(500):
+            for batch_idx in range(num_batches):
+                start_idx = batch_idx * batch_size
+                end_idx = (batch_idx + 1) * batch_size
+
+                batch_x = train_x[start_idx:end_idx]
+                batch_y = train_y[start_idx:end_idx]
+
+                # Train the model on the current batch
+                model.fit(
+                    batch_x,
+                    batch_y,
+                    verbose=0,
+                    shuffle=True,
+                    batch_size=batch_size,
+                    class_weight=self.class_weights,
+                    # Add any other necessary arguments for training
+                )
+
+        # Calculate the validation accuracy
+        val_accuracy = model.evaluate(val_x, val_y)[1]
+
+        return val_accuracy
+
 
     def tuned_run(self, config):
         # Clear clutter from previous TensorFlow graphs.
@@ -214,14 +220,25 @@ class Objective(object):
         )
         # model.summary()
         # Train the model
-        model.fit(
-            self.train_x,
-            self.train_y,
-            verbose=2,
-            batch_size=config["batch_size"],
-            epochs=500,
-            class_weight = self.class_weights
-        )
+        batch_size=config["batch_size"]
+        num_batches = int(np.ceil(len(self.train_x) / batch_size))
+        for _ in range(500):
+            for batch_idx in range(num_batches):
+                start_idx = batch_idx * batch_size
+                end_idx = (batch_idx + 1) * batch_size
+
+                batch_x = self.train_x[start_idx:end_idx]
+                batch_y = self.train_y[start_idx:end_idx]
+
+                # Train the model on the current batch
+                model.fit(
+                    batch_x,
+                    batch_y,
+                    verbose=2,
+                    batch_size=batch_size,
+                    class_weight=self.class_weights,
+                    # Add any other necessary arguments for training
+                )
         # Evaluate the model accuracy on the validation set.
         # score = model.evaluate(test_x, test_y, verbose=0)
         return model
@@ -393,6 +410,7 @@ if __name__ == "__main__":
 
     ARGS = PARSER.parse_args()
     out_dir = ARGS.outdir if ARGS.outdir else f"{Path().resolve()}"
+    print(tf.config.list_physical_devices('GPU'))
 
     with open(ARGS.config) as fh:
         config_dict = yaml.safe_load(fh)
