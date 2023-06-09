@@ -585,7 +585,7 @@ filtered_cols:
  - sift.confidence_Low
 
 Benchmark_cols:
- cadd_exome.phred: 'CADD'
+ cadd.phred: 'CADD'
  cscape.score: "CSCAPE"
  clinpred.score: 'ClinPred'
  dann.score: 'DANN'
@@ -609,3 +609,5 @@ Benchmark_cols:
  vest.score: 'VEST'
  dbscsnv.ada_score: 'dbSCSNV_ADA'
  dbscsnv.rf_score: 'dbSCSNV_RF'
+ varity_r.varity_r_loo: 'varity_r'
+ varity_r.varity_er_loo: 'varity_er'

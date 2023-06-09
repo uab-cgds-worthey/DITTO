@@ -37,25 +37,25 @@ def get_roc_plot(so, X_test, Y_test, outdir):
     ax_prc.grid(linestyle="--")
 
     for name in list(X_test.columns):
-            fpr, tpr, _ = roc_curve(Y_test, X_test[name].fillna(0).values)
+            fpr, tpr, _ = roc_curve(Y_test, X_test[name].values)
             try:
-                auc = roc_auc_score(Y_test, X_test[name].fillna(0).values)
+                auc = roc_auc_score(Y_test, X_test[name].values)
             except:
                 auc=np.nan
             auc = "{:.2f}".format(auc)
             ax_roc.plot(fpr,tpr,label=str(name)+" = "+str(auc))
-            precision, recall, _ = precision_recall_curve(Y_test, X_test[name].fillna(0).values)
+            precision, recall, _ = precision_recall_curve(Y_test, X_test[name].values)
             try:
-                prc = average_precision_score(Y_test, X_test[name].fillna(0).values)
+                prc = average_precision_score(Y_test, X_test[name].values)
             except:
                 prc=np.nan
             prc = "{:.2f}".format(prc)
             ax_prc.plot(recall,precision,label=str(name)+" = "+str(prc))
 
+    plt.subplots_adjust(wspace = 0.4)
+    ax_prc.legend( bbox_to_anchor=(1,0.5), loc="center left", fontsize=20)
+    ax_roc.legend( bbox_to_anchor=(1,0.5), loc="center left", fontsize=20)
 
-    #ax_prc.legend(bbox_to_anchor=(1,0), loc="lower left", fontsize=20)
-    ax_prc.legend( loc="lower right", fontsize=20)
-    ax_roc.legend( loc="lower right", fontsize=20)
     fig.savefig(
         f"{outdir}/{so}_ROC_PRC_benchmarking.pdf",
         format="pdf",
@@ -73,7 +73,7 @@ def get_SHAP(test_x, clf, so, outdir, feature_names):
         sample_size = 100
     else:
         sample_size = test_x.shape[0]
-    background_x = test_x[np.random.choice(test_x.shape[0], sample_size, replace=False)]
+    background_x = test_x.sample(n=sample_size)
     explainer = shap.KernelExplainer(model = clf, data = background_x) #(background_so, background_x))
     shap_values = explainer.shap_values(background_x)
 
@@ -91,28 +91,33 @@ def get_SHAP(test_x, clf, so, outdir, feature_names):
         )
     return None
 
-def run_test(X_test, outdir, feature_names, clf, config_dict):
+def run_test(X_test, outdir, clf, config_dict, feature_names):
     consequence_list = list(set(config_dict['consequence_cols']) & set(X_test.columns))
     for so in consequence_list:
         test_x = X_test[X_test[so]==1]
-        try:
-            benchmark_df = test_x[config_dict['Benchmark_cols'].keys()]
-            Y_test = test_x['class']
-            test_x = test_x.drop(["class"], axis=1)
-            test_x.rename(columns=config_dict['Benchmark_cols'], inplace=True)
+        #try:
+        benchmark_df = test_x[config_dict['Benchmark_cols'].keys()]
+        benchmark_df.columns = benchmark_df.columns.to_series().map(config_dict['Benchmark_cols'])
+        Y_test = test_x['class']
+        test_x = test_x.drop(["class"], axis=1)
+        if not test_x.empty and len(Y_test.unique())==2:
+            #test_x.rename(columns=config_dict['Benchmark_cols'], inplace=True)
+            print(f"{so} class shape: {Y_test.value_counts()}")
             y_score = get_prediction(clf, test_x)
             benchmark_df['DITTO'] = y_score
             get_roc_plot(so, benchmark_df, Y_test, outdir)
-        except:
-            print(f"Error occured for {so} ROC plot!")
-            pass
+            get_SHAP(test_x, clf, so, outdir, feature_names)
+        #except:
+            #print(f"Error occured for {so} ROC plot!")
+            #pass
+    return None
 
 def data_parsing(test_x, test_y, config_dict):
     # Load data
     X_test = pd.read_csv(test_x)
-    X_test = X_test.drop(config_dict["id_cols"], axis=1)
+    X_test = X_test.drop(config_dict["train_cols"], axis=1)
     X_test.replace([np.inf, -np.inf], np.nan, inplace=True)
-    X_test.fillna(0, inplace=True)
+    X_test.fillna(X_test.mean(), inplace=True)
     feature_names = X_test.columns.tolist()
     #X_test = X_test.values
     Y_test = pd.read_csv(test_y)
@@ -128,7 +133,7 @@ def data_parsing(test_x, test_y, config_dict):
     # scaler = StandardScaler().fit(X_train)
     # X_train = scaler.transform(X_train)
     # X_test = scaler.transform(X_test)
-    return X_test,feature_names
+    return X_test, feature_names
 
 def load_model(model_path):
     clf = keras.models.load_model(model_path + '/Neural_network')
@@ -207,4 +212,4 @@ if __name__ == "__main__":
         ARGS.test_x, ARGS.test_y, config_dict
     )
 
-    run_test(X_test, out_dir, feature_names, clf, config_dict)
+    run_test(X_test, out_dir, clf, config_dict, feature_names)
