@@ -286,17 +286,19 @@ class Objective(object):
         return None
 
 
-def data_parsing(train_x, train_y, test_x, test_y, config_dict):
+def data_parsing(train_x,  test_x, config_dict):
     # Load data
     # print(f'\nUsing merged_data-train_{var}..', file=open(output, 'a'))
     X_train = pd.read_csv(train_x)
     # var = X_train[config_dict['ML_VAR']]
+    Y_train = X_train['class']
     X_train = X_train.drop(config_dict["train_cols"], axis=1)
+    X_train = X_train.drop("class", axis=1)
     X_train.replace([np.inf, -np.inf], np.nan, inplace=True)
-    X_train.fillna(0, inplace=True)
+    X_train.fillna(X_train.mean(), inplace=True)
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
-    Y_train = pd.read_csv(train_y)
+
     Y_train = label_binarize(
         Y_train.values, classes=list(np.unique(Y_train))
     ).ravel()
@@ -308,11 +310,13 @@ def data_parsing(train_x, train_y, test_x, test_y, config_dict):
 
     X_test = pd.read_csv(test_x)
     # var = X_train[config_dict['ML_VAR']]
+    Y_test = X_test['class']
     X_test = X_test.drop(config_dict["train_cols"], axis=1)
+    X_test = X_test.drop("class", axis=1)
     X_test.replace([np.inf, -np.inf], np.nan, inplace=True)
     X_test.fillna(0, inplace=True)
     X_test = X_test.values
-    Y_test = pd.read_csv(test_y)
+
     #Y_test = pd.get_dummies(Y_test)
     Y_test = label_binarize(
         Y_test.values, classes=list(np.unique(Y_test))
@@ -354,22 +358,8 @@ if __name__ == "__main__":
         metavar="\b",
     )
     PARSER.add_argument(
-        "--train_y",
-        help="File path to the CSV file of y_train data",
-        required=True,
-        type=lambda x: is_valid_file(PARSER, x),
-        metavar="\b",
-    )
-    PARSER.add_argument(
         "--test_x",
         help="File path to the CSV file of X_test data",
-        required=True,
-        type=lambda x: is_valid_file(PARSER, x),
-        metavar="\b",
-    )
-    PARSER.add_argument(
-        "--test_y",
-        help="File path to the CSV file of y_test data",
         required=True,
         type=lambda x: is_valid_file(PARSER, x),
         metavar="\b",
@@ -404,7 +394,7 @@ if __name__ == "__main__":
     print("Working with dataset...")
 
     X_train, X_test, Y_train, Y_test, feature_names, class_weights = data_parsing(
-        ARGS.train_x, ARGS.train_y, ARGS.test_x, ARGS.test_y, config_dict
+        ARGS.train_x, ARGS.test_x, config_dict
     )
 
     print("Starting Objective...")

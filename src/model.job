@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-#SBATCH --job-name=NN_benchmarking
-#SBATCH --output=logs/train_data_3_star_benchmarking.out
+#SBATCH --job-name=train_data_3_star
+#SBATCH --output=logs/train_data_3_star.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
-#SBATCH --partition=short
+#SBATCH --partition=largemem
 ##SBATCH --partition=pascalnodes
 ##SBATCH --gres=gpu:1
 #
@@ -13,7 +13,7 @@
 #SBATCH --cpus-per-task=10
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.
-#SBATCH --mem=10G
+#SBATCH --mem=100G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
@@ -27,6 +27,6 @@ module load Anaconda3
 source activate training
 
 #Run your scripts here
-#python training/NN.py --train_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star_DExTR/train_data_80.csv.gz --train_y /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star_DExTR/train_data-y_80.csv.gz --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star_DExTR/test_data_20.csv.gz --test_y /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star_DExTR/test_data-y_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star_DExTR_GPU
+python training/NN.py --train_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/train_class_data_80.csv.gz --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_class_data_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star
 
-python training/benchmark_consequence.py --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_data_20.csv.gz --test_y /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_data-y_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/benchmarking
+#python training/benchmark_consequence.py --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_data_20.csv.gz --test_y /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_data-y_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/benchmarking
