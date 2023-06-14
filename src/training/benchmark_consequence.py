@@ -36,23 +36,20 @@ def get_roc_plot(so, X_test, Y_test, outdir):
     ax_prc.set_title("Precision Recall (PRC) curves", fontsize=fsize)
     ax_prc.grid(linestyle="--")
 
+    roc_scores_so = {}
+    prc_scores_so = {}
     for name in list(X_test.columns):
             fpr, tpr, _ = roc_curve(Y_test, X_test[name].values)
-            try:
-                auc = roc_auc_score(Y_test, X_test[name].values)
-            except:
-                auc=np.nan
+            auc = roc_auc_score(Y_test, X_test[name].values)
+
             auc = "{:.2f}".format(auc)
+            roc_scores_so[name] = auc
             ax_roc.plot(fpr,tpr,label=str(name)+" = "+str(auc))
             precision, recall, _ = precision_recall_curve(Y_test, X_test[name].values)
-            try:
-                prc = average_precision_score(Y_test, X_test[name].values)
-            except:
-                prc=np.nan
+            prc = average_precision_score(Y_test, X_test[name].values)
             prc = "{:.2f}".format(prc)
+            prc_scores_so[name] = prc
             ax_prc.plot(recall,precision,label=str(name)+" = "+str(prc))
-
-    plt.subplots_adjust(wspace = 0.4)
     ax_prc.legend( bbox_to_anchor=(1,0.5), loc="center left", fontsize=20)
     ax_roc.legend( bbox_to_anchor=(1,0.5), loc="center left", fontsize=20)
 
@@ -62,7 +59,7 @@ def get_roc_plot(so, X_test, Y_test, outdir):
         dpi=1000,
         bbox_inches="tight",
     )
-    return None
+    return roc_scores_so, prc_scores_so
 
 def get_prediction(clf, X_test):
     y_score = clf.predict(X_test.values)
@@ -93,7 +90,11 @@ def get_SHAP(test_x, clf, so, outdir, feature_names):
 
 def run_test(X_test, outdir, clf, config_dict, feature_names):
     consequence_list = list(set(config_dict['consequence_cols']) & set(X_test.columns))
+    roc_scores = {}
+    prc_scores = {}
     for so in consequence_list:
+        roc_scores[so] = {}
+        prc_scores[so] = {}
         test_x = X_test[X_test[so]==1]
         #try:
         benchmark_df = test_x[config_dict['Benchmark_cols'].keys()]
@@ -105,34 +106,31 @@ def run_test(X_test, outdir, clf, config_dict, feature_names):
             print(f"{so} class shape: {Y_test.value_counts()}")
             y_score = get_prediction(clf, test_x)
             benchmark_df['DITTO'] = y_score
-            get_roc_plot(so, benchmark_df, Y_test, outdir)
+            roc_scores_so, prc_scores_so = get_roc_plot(so, benchmark_df, Y_test, outdir)
+            roc_scores[so].update(roc_scores_so)
+            prc_scores[so].update(prc_scores_so)
             get_SHAP(test_x, clf, so, outdir, feature_names)
-        #except:
-            #print(f"Error occured for {so} ROC plot!")
-            #pass
+
+    pd.DataFrame(roc_scores).to_csv(f"{outdir}/NN_roc_scores.csv")
+    pd.DataFrame(prc_scores).to_csv(f"{outdir}/NN_prc_scores.csv")
     return None
 
-def data_parsing(test_x, test_y, config_dict):
+def data_parsing(test_x, config_dict):
     # Load data
     X_test = pd.read_csv(test_x)
+    Y_test = X_test['class']
     X_test = X_test.drop(config_dict["train_cols"], axis=1)
+    X_test = X_test.drop("class", axis=1)
     X_test.replace([np.inf, -np.inf], np.nan, inplace=True)
     X_test.fillna(X_test.mean(), inplace=True)
     feature_names = X_test.columns.tolist()
-    #X_test = X_test.values
-    Y_test = pd.read_csv(test_y)
-    #Y_test = pd.get_dummies(Y_test)
-    Y_test = label_binarize(
-        Y_test.values, classes=list(np.unique(Y_test))
-    ).ravel().reshape(-1, 1)
-    X_test['class'] = Y_test
 
-    print(f"Shape: {Y_test.shape}")
-    #print(X_test['class'])
+    Y_test = label_binarize(
+    Y_test.values, classes=list(np.unique(Y_test))
+        ).ravel().reshape(-1, 1)
+    X_test['class'] = Y_test
     print("Data Loaded!")
-    # scaler = StandardScaler().fit(X_train)
-    # X_train = scaler.transform(X_train)
-    # X_test = scaler.transform(X_test)
+
     return X_test, feature_names
 
 def load_model(model_path):
@@ -163,13 +161,6 @@ if __name__ == "__main__":
     PARSER.add_argument(
         "--test_x",
         help="File path to the CSV file of X_test data",
-        required=True,
-        type=lambda x: is_valid_file(PARSER, x),
-        metavar="\b",
-    )
-    PARSER.add_argument(
-        "--test_y",
-        help="File path to the CSV file of y_test data",
         required=True,
         type=lambda x: is_valid_file(PARSER, x),
         metavar="\b",
@@ -209,7 +200,7 @@ if __name__ == "__main__":
         ARGS.ditto
     )
     X_test, feature_names = data_parsing(
-        ARGS.test_x, ARGS.test_y, config_dict
+        ARGS.test_x, config_dict
     )
 
     run_test(X_test, out_dir, clf, config_dict, feature_names)

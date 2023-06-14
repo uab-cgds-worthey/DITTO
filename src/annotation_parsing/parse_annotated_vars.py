@@ -127,36 +127,6 @@ def parse_annotations(annot_csv, data_config_file, DExTR_dict, outfile):
             "consequence",
             "protein_hgvs",
             "cdna_hgvs",
-            #"DExTR_Adipose_Tissue",
-            #"DExTR_Muscle",
-            #"DExTR_Blood_Vessel",
-            #"DExTR_Heart",
-            #"DExTR_Uterus",
-            #"DExTR_Vagina",
-            #"DExTR_Breast",
-            #"DExTR_Skin",
-            #"DExTR_Salivary_Gland",
-            #"DExTR_Brain",
-            #"DExTR_Adrenal_Gland",
-            #"DExTR_Thyroid",
-            #"DExTR_Lung",
-            #"DExTR_Spleen",
-            #"DExTR_Pancreas",
-            #"DExTR_Esophagus",
-            #"DExTR_Stomach",
-            #"DExTR_Colon",
-            #"DExTR_Small_Intestine",
-            #"DExTR_Prostate",
-            #"DExTR_Testis",
-            #"DExTR_Nerve",
-            #"DExTR_Blood",
-            #"DExTR_Pituitary",
-            #"DExTR_Ovary",
-            #"DExTR_Liver",
-            #"DExTR_Kidney",
-            #"DExTR_Cervix_Uteri",
-            #"DExTR_Fallopian_Tube",
-            #"DExTR_Bladder",
         ]
         parsed_fieldnames = list()
         for colconf in data_config:
@@ -206,36 +176,6 @@ def parse_annotations(annot_csv, data_config_file, DExTR_dict, outfile):
                         annot_variant["consequence"] = ""
                         annot_variant["protein_hgvs"] = ""
                         annot_variant["cdna_hgvs"] = ""
-                        #annot_variant["DExTR_Adipose_Tissue"] = ""
-                        #annot_variant["DExTR_Muscle"] = ""
-                        #annot_variant["DExTR_Blood_Vessel"] = ""
-                        #annot_variant["DExTR_Heart"] = ""
-                        #annot_variant["DExTR_Uterus"] = ""
-                        #annot_variant["DExTR_Vagina"] = ""
-                        #annot_variant["DExTR_Breast"] = ""
-                        #annot_variant["DExTR_Skin"] = ""
-                        #annot_variant["DExTR_Salivary_Gland"] = ""
-                        #annot_variant["DExTR_Brain"] = ""
-                        #annot_variant["DExTR_Adrenal_Gland"] = ""
-                        #annot_variant["DExTR_Thyroid"] = ""
-                        #annot_variant["DExTR_Lung"] = ""
-                        #annot_variant["DExTR_Spleen"] = ""
-                        #annot_variant["DExTR_Pancreas"] = ""
-                        #annot_variant["DExTR_Esophagus"] = ""
-                        #annot_variant["DExTR_Stomach"] = ""
-                        #annot_variant["DExTR_Colon"] = ""
-                        #annot_variant["DExTR_Small_Intestine"] = ""
-                        #annot_variant["DExTR_Prostate"] = ""
-                        #annot_variant["DExTR_Testis"] = ""
-                        #annot_variant["DExTR_Nerve"] = ""
-                        #annot_variant["DExTR_Blood"] = ""
-                        #annot_variant["DExTR_Pituitary"] = ""
-                        #annot_variant["DExTR_Ovary"] = ""
-                        #annot_variant["DExTR_Liver"] = ""
-                        #annot_variant["DExTR_Kidney"] = ""
-                        #annot_variant["DExTR_Cervix_Uteri"] = ""
-                        #annot_variant["DExTR_Fallopian_Tube"] = ""
-                        #annot_variant["DExTR_Bladder"] = ""
                         for column in data_config:
                             if "none" in column["parse_type"]:
                                 annot_variant[column["col_id"]] = row[column["col_id"]]
