@@ -27,7 +27,8 @@ def get_roc_plot(so, X_test, Y_test, outdir, weights):
     fig, [ax_roc, ax_prc] = plt.subplots(1, 2, figsize=(50, 20))
     fig.suptitle(f"DITTO Benchmarking for {so}", fontsize=40)
     fsize = 30
-
+    ax_roc.tick_params(axis='both', which='major', labelsize=fsize)
+    ax_prc.tick_params(axis='both', which='major', labelsize=fsize)
     ax_roc.set_xlabel("False Positive Rate", fontsize=fsize)
     ax_roc.set_ylabel("True Positive Rate", fontsize=fsize)
     ax_roc.set_title("Receiver Operating Characteristic (ROC) curves", fontsize=fsize)
@@ -53,8 +54,8 @@ def get_roc_plot(so, X_test, Y_test, outdir, weights):
             f1 = f1_score(Y_test, X_test[name].round(), sample_weight= weights, average='weighted')
             f1_scores_so[name] = "{:.2f}".format(f1)
             ax_prc.plot(recall,precision,label=str(name)+" = "+str(prc))
-    ax_prc.legend( bbox_to_anchor=(1,0.5), loc="center left", fontsize=20)
-    ax_roc.legend( bbox_to_anchor=(1,0.5), loc="center left", fontsize=20)
+    ax_prc.legend( bbox_to_anchor=(1,0.5), loc="center left", fontsize=fsize)
+    ax_roc.legend( bbox_to_anchor=(1,0.5), loc="center left", fontsize=fsize)
     fig.tight_layout()
 
     fig.savefig(
@@ -68,6 +69,19 @@ def get_roc_plot(so, X_test, Y_test, outdir, weights):
 def get_prediction(clf, X_test):
     y_score = clf.predict(X_test.values)
     return y_score
+
+def get_matrix(y_score, Y_test, so, outdir):
+    cm = confusion_matrix(Y_test,y_score.round())
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Path', 'Benign'])
+    disp.plot()
+    plt.title(f"Confusion matrix for {so}", fontsize=15)
+    plt.savefig(
+        f"{outdir}/{so}_matrix.pdf",
+        format="pdf",
+        dpi=1000,
+        bbox_inches="tight",
+    )
+    return None
 
 def get_SHAP(test_x, clf, so, outdir, feature_names):
     if test_x.shape[0] > 500:
@@ -102,20 +116,21 @@ def run_test(X_test, outdir, clf, config_dict, feature_names, class_weights):
         prc_scores[so] = {}
         f1_scores[so] = {}
         test_x = X_test[X_test[so]==1]
-        #try:
-        benchmark_df = test_x[config_dict['Benchmark_cols'].keys()]
-        benchmark_df.columns = benchmark_df.columns.to_series().map(config_dict['Benchmark_cols'])
-        benchmark_df_names = benchmark_df.columns.tolist()
-        min_max_scaler = MinMaxScaler()
-        benchmark_df = min_max_scaler.fit_transform(benchmark_df)
-        benchmark_df = pd.DataFrame(benchmark_df)
-        benchmark_df.columns = benchmark_df_names
         Y_test = test_x['class']
         test_x = test_x.drop(["class"], axis=1)
         if not test_x.empty and len(Y_test.unique())==2:
+            benchmark_df = test_x[config_dict['Benchmark_cols'].keys()]
+            benchmark_df.columns = benchmark_df.columns.to_series().map(config_dict['Benchmark_cols'])
+            benchmark_df_names = benchmark_df.columns.tolist()
+            min_max_scaler = MinMaxScaler()
+            benchmark_df = min_max_scaler.fit_transform(benchmark_df)
+            benchmark_df = pd.DataFrame(benchmark_df)
+            benchmark_df.columns = benchmark_df_names
             #test_x.rename(columns=config_dict['Benchmark_cols'], inplace=True)
+            class_weights = np.array([class_weights[i] for i in  Y_test])
             print(f"{so} class shape: {Y_test.value_counts()}")
             y_score = get_prediction(clf, test_x)
+            get_matrix(y_score, Y_test, so, outdir)
             benchmark_df['DITTO'] = y_score
             roc_scores_so, prc_scores_so, f1_scores_so = get_roc_plot(so, benchmark_df, Y_test, outdir, class_weights)
             roc_scores[so].update(roc_scores_so)
@@ -140,10 +155,9 @@ def data_parsing(test_x, config_dict):
 
     class_weights = class_weight.compute_class_weight(class_weight='balanced',classes=np.unique(Y_test),y=Y_test)
     class_weights = {i:w for i,w in enumerate(class_weights)}
-    class_weights = np.array([class_weights[i] for i in  Y_test])
     Y_test = label_binarize(
     Y_test.values, classes=list(np.unique(Y_test))
-        ).ravel().reshape(-1, 1)
+        ).ravel()
     X_test['class'] = Y_test
     print("Data Loaded!")
 
