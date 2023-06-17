@@ -9,7 +9,6 @@ raw_cols:
  - ref_base
  - alt_base
  - coding
- - aloft.affect
  - aloft.tolerant
  - aloft.recessive
  - aloft.dominant
@@ -190,7 +189,6 @@ CLNREVSTAT: #https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/
   -  practice_guideline
   -  reviewed_by_expert_panel
   -  criteria_provided,_multiple_submitters,_no_conflicts
-  #-  criteria_provided,_single_submitter
 
 dummies_sep:
  gtex.gtex_tissue: '|'
@@ -203,70 +201,70 @@ dummies_sep:
  cgc.class: ', '
 
 median_scores:
- aloft.tolerant: 0.03195
- aloft.recessive: 0.5445
- aloft.dominant: 0.3846
- cadd.phred: 9.158
+ aloft.tolerant: 0.03175
+ aloft.recessive: 0.5456
+ aloft.dominant: 0.38385
+ cadd.phred: 9.129
  chasmplus.score: 0.073
  chasmplus.pval: 0.277
  civic.molecular_profile_score: 7.5
  cosmic.variant_count: 1.0
- cosmic_gene.occurrences: 1726.0
- cscape.score: 0.437311
+ cosmic_gene.occurrences: 1725.0
+ cscape.score: 0.436793
  cancer_genome_interpreter.resistant: 0.0
- cancer_genome_interpreter.responsive: 1.0
+ cancer_genome_interpreter.responsive: 2.0
  cancer_genome_interpreter.other: 0.0
- clinpred.score: 0.111
- dann.score: 0.6542089049693963
- dann_coding.dann_coding_score: 0.9943064605452162
+ clinpred.score: 0.109
+ dann.score: 0.6540942459117577
+ dann_coding.dann_coding_score: 0.994319113925808
  dgi.score: 3.55
- ess_gene.indispensability_score: 0.864377222503323
- exac_gene.exac_pli: 0.0599265597352726
- exac_gene.exac_pnull: 1.01366553213123e-05
- exac_gene.exac_del_score: 0.244988743340227
- exac_gene.exac_dup_score: 0.189100654118317
+ ess_gene.indispensability_score: 0.863945523287189
+ exac_gene.exac_pli: 0.0614137585139882
+ exac_gene.exac_pnull: 1.01047322872054e-05
+ exac_gene.exac_del_score: 0.2455437788049
+ exac_gene.exac_dup_score: 0.194157677715669
  exac_gene.exac_cnv_score: 0.034861123316654
- fathmm.fathmm_score: -1.56
- fathmm_xf_coding.fathmm_xf_coding_score: 0.344734
+ fathmm.fathmm_score: -1.59
+ fathmm_xf_coding.fathmm_xf_coding_score: 0.346275
  funseq2.score: 0.498146534129084
- gerp.gerp_rs: 4.67
+ gerp.gerp_rs: 4.66
  ghis.ghis: 0.561316286
- gwas_catalog.pval: 5e-10
+ gwas_catalog.pval: 2e-09
  genehancer.score: 1.09
- linsight.value: 0.143264
+ linsight.value: 0.142985
  lrt.lrt_score: 4.2e-05
- lrt.lrt_omega: 0.098973
+ lrt.lrt_omega: 0.099477
  loftool.loftool_score: 0.101
- mavedb.score: 0.875537936143512
- metalr.score: 0.4018
- metasvm.score: -0.3397
- mutpred1.mutpred_general_score: 0.8029999999999999
- mutpred_indel.score: 0.577
+ mavedb.score: 0.8677136380949829
+ metalr.score: 0.4031
+ metasvm.score: -0.3355
+ mutpred1.mutpred_general_score: 0.7979999999999999
+ mutpred_indel.score: 0.581
  mutation_assessor.score: 2.0
  mutationtaster.score: 1.0
  ndex_chd.numhit: 2.0
  ndex.numhit: 4.0
  ndex_signor.numhit: 1.0
- prec.prec: 0.36635
+ prec.prec: 0.36264
  provean.score: -2.3
  pangalodb.sensitivity: 0.0
  pangalodb.specificity: 0.0112782
- phdsnpg.score: 0.931
+ phdsnpg.score: 0.93
  phastcons.phastcons100_vert: 1.0
  phastcons.phastcons30_mamm: 0.987
- phastcons.phastcons17way_primate: 0.96
- phylop.phylop100_vert: 4.232
+ phastcons.phastcons17way_primate: 0.961
+ phylop.phylop100_vert: 4.239
  phylop.phylop30_mamm: 1.026
  phylop.phylop17_primate: 0.599
- polyphen2.hdiv_rank: 0.56013
- polyphen2.hvar_rank: 0.537585
- revel.score: 0.385
+ polyphen2.hdiv_rank: 0.55554
+ polyphen2.hvar_rank: 0.53365
+ revel.score: 0.38
  rvis.rvis_evs: -0.41
  sift.score: 1.0
  sift.med: 2.74
  sift.seqs: 46.0
  segway.mean_score: 0.0858073982609
- siphy.logodds_rank: 0.62667
+ siphy.logodds_rank: 0.62632
  spliceai.ds_ag: 0.0004
  spliceai.ds_al: 0.0
  spliceai.ds_dg: 0.0004
@@ -275,23 +273,23 @@ median_scores:
  spliceai.dp_al: 0.0
  spliceai.dp_dg: 0.0
  spliceai.dp_dl: 0.0
- varity_r.varity_r_loo: 0.356928043103218
- varity_r.varity_er_loo: 0.29573298
- vest.score: 0.755
- dbscsnv.ada_score: 0.661528364410983
- dbscsnv.rf_score: 0.562
- gnomad.af: 0.000117491241562
- gnomad_gene.oe_lof: 0.34943
- gnomad_gene.oe_mis: 0.884
+ varity_r.varity_r_loo: 0.3558284342288971
+ varity_r.varity_er_loo: 0.29223165
+ vest.score: 0.754
+ dbscsnv.ada_score: 0.5035390098589105
+ dbscsnv.rf_score: 0.516
+ gnomad.af: 0.000116777782496
+ gnomad_gene.oe_lof: 0.34946
+ gnomad_gene.oe_mis: 0.88424
  gnomad_gene.oe_syn: 1.0119
  gnomad_gene.lof_z: 3.7638
  gnomad_gene.mis_z: 0.92308
- gnomad_gene.syn_z: -0.11866
- gnomad_gene.pLI: 8.5823e-05
+ gnomad_gene.syn_z: -0.1187
+ gnomad_gene.pLI: 7.8292e-05
  gnomad_gene.pRec: 0.30551
- gnomad_gene.pNull: 1.1139e-05
- gnomad3.af: 0.000167785
- phi.phi: 0.47997
+ gnomad_gene.pNull: 1.1292e-05
+ gnomad3.af: 0.000167535
+ phi.phi: 0.48298
 
 consequence_cols:
  - 2kb_downstream_variant
@@ -355,7 +353,6 @@ filtered_cols:
  - cscape.score
  - cancer_genome_interpreter.resistant
  - cancer_genome_interpreter.responsive
- - cancer_genome_interpreter.other
  - clinpred.score
  - dann.score
  - dann_coding.dann_coding_score
