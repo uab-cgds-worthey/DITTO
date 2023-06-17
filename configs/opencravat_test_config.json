@@ -34,6 +34,7 @@
         "parse_type": {
             "list-o-dicts": {
                 "dict_index": {
+                    "1": "aloft.affect",
                     "2": "aloft.tolerant",
                     "3": "aloft.recessive",
                     "4": "aloft.dominant",

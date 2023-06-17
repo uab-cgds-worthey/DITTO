@@ -5,6 +5,10 @@ import json
 import csv
 import ctypes as ct
 import gzip
+import pandas as pd
+from tqdm import tqdm
+from tensorflow import keras
+import yaml
 
 # dealing with large fields in a CSV requires more memory allowed per field
 # see https://stackoverflow.com/questions/15063936/csv-error-field-larger-than-field-limit-131072 for discussion
@@ -53,7 +57,45 @@ def parse_multicolumn_list_of_dicts(index_column, multi_column_config, data_cols
     return dict_of_dicts
 
 
-def parse_annotations(annot_csv, data_config_file, outfile):
+def test_parsing(dataframe, config_dict, clf):
+    # Drop variant info columns so we can perform one-hot encoding
+    # dataframe = dataframe[config_dict["raw_cols"]]
+    dataframe["so"] = dataframe["consequence"]
+    var = dataframe[config_dict["id_cols"]]
+    dataframe = dataframe.drop(config_dict["id_cols"], axis=1)
+    # dataframe = dataframe.replace(['.','-'], np.nan)
+
+    # Perform one-hot encoding
+    for key in config_dict["dummies_sep"]:
+        dataframe = pd.concat(
+            (dataframe, dataframe[key].str.get_dummies(sep=config_dict["dummies_sep"][key])), axis=1
+        )
+    dataframe = dataframe.drop(list(config_dict["dummies_sep"].keys()), axis=1)
+    dataframe = pd.get_dummies(dataframe, prefix_sep="_")
+
+    df2 = pd.DataFrame(columns=config_dict["filtered_cols"])
+    for key in config_dict["filtered_cols"]:
+        if key in dataframe.columns:
+            df2[key] = dataframe[key]
+        else:
+            df2[key] = 0
+    del dataframe
+
+    df2 = df2.drop(config_dict["train_cols"], axis=1)
+    for key in list(config_dict["median_scores"].keys()):
+        if key in df2.columns:
+            df2[key] = df2[key].fillna(config_dict["median_scores"][key]).astype("float64")
+
+    y_score = clf.predict(df2.values)
+    # print(df2.isnull().sum(axis=0))
+    y_score = pd.DataFrame(y_score, columns=["DITTO"])
+    # print(y_score)
+    # var["DITTO"] = y_score
+    var = pd.concat([var.reset_index(drop=True), y_score.reset_index(drop=True)], axis=1)
+    return var
+
+
+def parse_annotations(annot_csv, data_config_file, outfile, clf, config_dict):
     # reading data config for determination of parsing
     data_config = list()
     with open(data_config_file, "rt") as dcfp:
@@ -61,7 +103,7 @@ def parse_annotations(annot_csv, data_config_file, outfile):
         data_config = json.load(dcfp)
 
     # the column "all_mappings" is the key split-by column to separate results on a per variant + transcript
-    with gzip.open(outfile, "wt", newline="") as paserdcsv:
+    with open(outfile, "w", newline="") as paserdcsv:
         hardcoded_fieldnames = [
             "transcript",
             "gene",
@@ -78,8 +120,9 @@ def parse_annotations(annot_csv, data_config_file, outfile):
             else:
                 parsed_fieldnames.append(colconf["col_id"])
 
-        csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames + parsed_fieldnames)
-        csvwriter.writeheader()
+        # csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames + parsed_fieldnames)
+        # csvwriter.writeheader()
+        pd.DataFrame(columns=config_dict["id_cols"] + ["DITTO"]).to_csv(paserdcsv, index=False)
 
         with gzip.open(annot_csv, "rt", newline="") if annot_csv.endswith(".gz") else open(
             annot_csv, "r", newline=""
@@ -108,6 +151,7 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                         col_data_dict,
                     )
 
+                df_list = list()
                 for variant_trx in row[ALL_MAPPINGS_COLUMN_ID].split(";"):
                     vtrx_cols = variant_trx.split(":")
                     trx = vtrx_cols[0].split(".")[0].strip()
@@ -146,7 +190,15 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                                 continue
 
                     # print parsed variant + transcript annotations to csv file output
-                    csvwriter.writerow(annot_variant)
+                    # csvwriter.writerow(annot_variant)
+                    # unwanted = set(annot_variant) - set(config_dict["raw_cols"])
+                    # for unwanted_key in unwanted:
+                    #    del annot_variant[unwanted_key]
+                    df_list.append(annot_variant)
+                    # annot_variant = {k: [v] for k, v in annot_variant.items()}
+                # pd.DataFrame(df_list).to_csv(outfile, mode="a", index=False)
+                df = test_parsing(pd.DataFrame(df_list), config_dict, clf)
+                df.to_csv(paserdcsv, mode="a", header=False, index=False)
 
 
 def is_valid_output_file(p, arg):
@@ -196,7 +248,11 @@ if __name__ == "__main__":
     )
 
     ARGS = PARSER.parse_args()
+    clf = keras.models.load_model("model/Neural_network")
+    clf.load_weights("model/weights.h5")
+    with open("configs/col_config.yaml") as fh:
+        config_dict = yaml.safe_load(fh)
 
     outfile = ARGS.output if ARGS.output else f"{Path(ARGS.input_csv).stem}.csv"
     DExTR_dict = {}  # get_DExTR_dict("DExTR/GEP_scores_transcripts_scaled.csv.gz")
-    parse_annotations(ARGS.input_csv, ARGS.config, outfile)
+    parse_annotations(ARGS.input_csv, ARGS.config, outfile, clf, config_dict)
