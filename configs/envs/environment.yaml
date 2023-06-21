@@ -17,5 +17,6 @@ dependencies:
   - scikit-optimize=0.9.0
   - hyperopt=0.2.7
   - seaborn=0.12.2
+  - ipykernel=6.23.1
   - pip:
     - tensorflow==2.11

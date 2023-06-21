@@ -23,7 +23,7 @@ try:
     tf.get_logger().setLevel("INFO")
 except Exception as exc:
     print(exc)
-
+import pickle
 import warnings
 warnings.simplefilter("ignore")
 from tensorflow.keras.models import Sequential
@@ -267,8 +267,14 @@ class Objective(object):
         model.save(out_dir + "/Neural_network")
         model.save_weights(out_dir + "/weights.h5")
 
-        # explain all the predictions in the test set
+        # explain predictions
         background = shap.kmeans(self.train_x, 10)
+
+        output = open(out_dir +'background.pkl', 'wb')
+        # Pickle dictionary using HIGHEST_PROTOCOL.
+        pickle.dump(background, output, protocol=pickle.HIGHEST_PROTOCOL)
+        output.close()
+
         explainer = shap.KernelExplainer(model.predict, background)
         background = self.test_x[np.random.choice(self.test_x.shape[0], 10000, replace=False)]
         shap_values = explainer.shap_values(background)

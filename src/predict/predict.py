@@ -20,7 +20,8 @@ def test_parsing(dataframe, config_dict, clf):
 
     # Perform one-hot encoding
     for key in config_dict["dummies_sep"]:
-        dataframe = pd.concat(
+        if not dataframe[key].isnull().all():
+            dataframe = pd.concat(
             (dataframe, dataframe[key].str.get_dummies(sep=config_dict["dummies_sep"][key])), axis=1
         )
     dataframe = dataframe.drop(list(config_dict["dummies_sep"].keys()), axis=1)
@@ -39,9 +40,10 @@ def test_parsing(dataframe, config_dict, clf):
         if key in df2.columns:
             df2[key] = df2[key].fillna(config_dict["median_scores"][key]).astype("float64")
 
+    df2 = df2*1
     y_score = clf.predict(df2.values)
-    # print(df2.isnull().sum(axis=0))
     y_score = pd.DataFrame(y_score, columns=["DITTO"])
+    y_score = round(1-y_score, 2)
     # print(y_score)
     # var["DITTO"] = y_score
     var = pd.concat([var.reset_index(drop=True), y_score.reset_index(drop=True)], axis=1)

@@ -13,7 +13,7 @@
 #SBATCH --cpus-per-task=10
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.
-#SBATCH --mem=10G
+#SBATCH --mem=50G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
@@ -28,7 +28,9 @@ source activate training
 #source activate opencravat
 
 #Run your scripts here
-#oc run /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/clinvar_6623.vcf.gz -l hg38 -t csv --package mypackage -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/
+#oc run /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/variants_onTranscript_VEP.vcf -l hg38 -t csv --package mypackage -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/
+
+python annotation_parsing/parse_annotated_vars.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/variants_onTranscript_VEP.vcf.variant.csv -e parse -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/lovd.parsed.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/opencravat_test_config.json
 
 #python training/NN.py --train_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/train_class_data_80.csv.gz --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_class_data_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star
 
