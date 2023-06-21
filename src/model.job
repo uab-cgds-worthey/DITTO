@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-#SBATCH --job-name=train_data_3_star
-#SBATCH --output=logs/train_data_3_star.out
+#SBATCH --job-name=LOVD
+#SBATCH --output=logs/LOVD_predict.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
-#SBATCH --partition=largemem
+#SBATCH --partition=express
 ##SBATCH --partition=pascalnodes
 ##SBATCH --gres=gpu:1
 #
@@ -13,7 +13,7 @@
 #SBATCH --cpus-per-task=10
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.
-#SBATCH --mem=100G
+#SBATCH --mem=10G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
@@ -30,6 +30,8 @@ source activate training
 #Run your scripts here
 #oc run /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/clinvar_6623.vcf.gz -l hg38 -t csv --package mypackage -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/
 
-python training/NN.py --train_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/train_class_data_80.csv.gz --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_class_data_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star
+#python training/NN.py --train_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/train_class_data_80.csv.gz --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_class_data_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star
 
 #python training/benchmark_consequence.py --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_data_20.csv.gz --test_y /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_data-y_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/benchmarking
+
+python predict/predict.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/lovd.parsed.csv.gz -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/ditto_predictions.csv -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/

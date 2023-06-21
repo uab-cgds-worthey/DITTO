@@ -18,4 +18,4 @@ dependencies:
   - hyperopt=0.2.7
   - seaborn=0.12.2
   - pip:
-    - tensorflow-gpu==2.9
+    - tensorflow==2.11
