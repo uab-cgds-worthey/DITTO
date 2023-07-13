@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-#SBATCH --job-name=LOVD
-#SBATCH --output=logs/LOVD_predict.out
+#SBATCH --job-name=cf
+#SBATCH --output=logs/cf_6_28.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
@@ -13,7 +13,7 @@
 #SBATCH --cpus-per-task=10
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.
-#SBATCH --mem=50G
+#SBATCH --mem=60G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
@@ -24,16 +24,36 @@ module reset
 #module load cuda11.8/toolkit
 #module load cuDNN/8.2.1.32-CUDA-11.3.1
 module load Anaconda3
-source activate training
-#source activate opencravat
 
-#Run your scripts here
-#oc run /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/variants_onTranscript_VEP.vcf -l hg38 -t csv --package mypackage -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/
 
-python annotation_parsing/parse_annotated_vars.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/variants_onTranscript_VEP.vcf.variant.csv -e parse -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/lovd.parsed.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/opencravat_test_config.json
+#Run your training scripts here
+#source activate training
 
-#python training/NN.py --train_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/train_class_data_80.csv.gz --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_class_data_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star
+#python training/NN.py --train_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/train_class_data_80.csv.gz --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_class_data_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star_PB
+
 
 #python training/benchmark_consequence.py --test_x /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_data_20.csv.gz --test_y /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/test_data-y_20.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/benchmarking
 
-python predict/predict.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/lovd.parsed.csv.gz -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/ditto_predictions.csv -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/
+#Run your testing scripts here
+#module load tabix
+#module load BCFtools
+#Check if there is chr in chromosome position column
+#grep -v ^# hgmd_pro_2020.4_hg38.vcf | cut -f1 -d$'\t' | sort -u
+#sed -E -i 's/(^[^#]+)/chr\1/' /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/variants_onTranscript_VEP_37.vcf
+
+#Index and normalize the VCF
+#bgzip -c  /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/variants_onTranscript_VEP_37.vcf > /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/variants_onTranscript_VEP_37.vcf.gz
+
+#tabix -fp vcf /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/variants_onTranscript_VEP_37.vcf.gz
+
+#bcftools norm -f /data/project/worthey_lab/temp_datasets_central/mana/gatk_bundle/b37/data/human_g1k_v37.fasta /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/variants_onTranscript_VEP_37.vcf.gz -Oz -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/variants_onTranscript_VEP_37.vcf.gz
+
+source activate opencravat
+
+oc run /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/cf_list_6_28.txt -l hg38 -t csv --package mypackage -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/
+
+python annotation_parsing/parse_annotated_vars.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/cf_list_6_28.txt.variant.csv -e parse -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/cf_list_6_28.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/opencravat_test_config.json
+
+source activate training
+
+python predict/predict.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/cf_list_6_28.csv.gz -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/cf_6_28_ditto_predictions.csv -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/

@@ -676,3 +676,12 @@ Running VEP for PKD variants from dbNSFP
 ```sh
 ./src/run_pipeline.sh -s -v /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/dbnsfp_pkd_for_VEP.vcf -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/ditto/data/processed/Ditto/  -d ~/.ditto_datasets.yaml
 ```
+
+################### 6/24/23 ######################################################################
+
+Normalizing NF1 LOVD variants
+```
+[tmamidi@c0152 DITTO]$ bcftools norm -f /data/project/worthey_lab/datasets_central/human_reference_genome/processed/GRCh38/no_alt_rel20190408/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna data/external/variants_onTranscript_VEP.vcf.gz -Oz -o ./data/int
+erim/lovd_norm.vcf.gz
+Lines   total/split/realigned/skipped:  7992/0/1793/0
+```
