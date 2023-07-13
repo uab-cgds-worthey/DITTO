@@ -86,11 +86,10 @@ def test_parsing(dataframe, config_dict, clf):
         if key in df2.columns:
             df2[key] = df2[key].fillna(config_dict["median_scores"][key]).astype("float64")
 
-    y_score = clf.predict(df2.values)
-    # print(df2.isnull().sum(axis=0))
+    df2 = df2*1
+    y_score = 1 - clf.predict(df2, verbose=0)
     y_score = pd.DataFrame(y_score, columns=["DITTO"])
-    # print(y_score)
-    # var["DITTO"] = y_score
+
     var = pd.concat([var.reset_index(drop=True), y_score.reset_index(drop=True)], axis=1)
     return var
 
@@ -120,6 +119,8 @@ def parse_annotations(annot_csv, data_config_file, outfile, clf, config_dict):
             else:
                 parsed_fieldnames.append(colconf["col_id"])
 
+        # Create a set of pre-defined keys
+        predefined_keys = set(hardcoded_fieldnames + parsed_fieldnames)
         # csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames + parsed_fieldnames)
         # csvwriter.writeheader()
         pd.DataFrame(columns=config_dict["id_cols"] + ["DITTO"]).to_csv(paserdcsv, index=False)
@@ -129,6 +130,7 @@ def parse_annotations(annot_csv, data_config_file, outfile, clf, config_dict):
         ) as csvfile:
             reader = csv.DictReader(filter(lambda row: row[0] != "#", csvfile))
             for row in reader:
+                df_list = list()
                 # parse list of dict columns first since this only needs to be done once per row and cached
                 cached_dicts_o_dicts = dict()
 
@@ -151,11 +153,12 @@ def parse_annotations(annot_csv, data_config_file, outfile, clf, config_dict):
                         col_data_dict,
                     )
 
-                df_list = list()
+                # parse each variant + transcript
                 for variant_trx in row[ALL_MAPPINGS_COLUMN_ID].split(";"):
                     vtrx_cols = variant_trx.split(":")
                     trx = vtrx_cols[0].split(".")[0].strip()
-                    annot_variant = dict()
+                    # Initialize annot_variant with all pre-defined keys set to None
+                    annot_variant = {key: None for key in predefined_keys}
                     if len(vtrx_cols) < 6:
                         # parse intergenic variant
                         annot_variant["transcript"] = ""
@@ -191,14 +194,12 @@ def parse_annotations(annot_csv, data_config_file, outfile, clf, config_dict):
 
                     # print parsed variant + transcript annotations to csv file output
                     # csvwriter.writerow(annot_variant)
-                    # unwanted = set(annot_variant) - set(config_dict["raw_cols"])
-                    # for unwanted_key in unwanted:
-                    #    del annot_variant[unwanted_key]
+
                     df_list.append(annot_variant)
-                    # annot_variant = {k: [v] for k, v in annot_variant.items()}
-                # pd.DataFrame(df_list).to_csv(outfile, mode="a", index=False)
+
                 df = test_parsing(pd.DataFrame(df_list), config_dict, clf)
                 df.to_csv(paserdcsv, mode="a", header=False, index=False)
+    return None
 
 
 def is_valid_output_file(p, arg):

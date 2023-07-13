@@ -94,25 +94,7 @@ def parse_multicolumn_list_of_dicts(index_column, multi_column_config, data_cols
 
     return dict_of_dicts
 
-
-def get_DExTR_dict(DExTR_path):
-    # Initialize an empty dictionary to store the data
-    x = {}
-
-    with gzip.open(DExTR_path, "rt") as f:
-        for row in csv.DictReader(f):
-            # Extract the value in column "A" as the index
-            index = row["Transcript"]
-
-            # Create a nested dictionary using the remaining columns as keys and values
-            values = {key: value for key, value in row.items() if key != "Transcript"}
-
-            # Add the nested dictionary to the main dictionary with the index as the key
-            x[index] = values
-    return x
-
-
-def parse_annotations(annot_csv, data_config_file, DExTR_dict, outfile):
+def parse_annotations(annot_csv, data_config_file, outfile):
     # reading data config for determination of parsing
     data_config = list()
     with open(data_config_file, "rt") as dcfp:
@@ -288,5 +270,4 @@ if __name__ == "__main__":
         create_data_config(ARGS.input_csv, f"opencravat_{ARGS.version}_config.json")
     else:
         outfile = ARGS.output if ARGS.output else f"{Path(ARGS.input_csv).stem}.csv"
-        DExTR_dict = {} #get_DExTR_dict("DExTR/GEP_scores_transcripts_scaled.csv.gz")
-        parse_annotations(ARGS.input_csv, ARGS.config, DExTR_dict, outfile)
+        parse_annotations(ARGS.input_csv, ARGS.config, outfile)
