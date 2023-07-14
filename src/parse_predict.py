@@ -1,3 +1,5 @@
+#python src/parse_predict.py -i data/external/test.csv -o data/interim/test_parse.csv -c configs/opencravat_test_config.json -e parse_predict
+
 from pathlib import Path
 import argparse
 import os
@@ -5,9 +7,7 @@ import json
 import csv
 import ctypes as ct
 import gzip
-import pandas as pd
-from tensorflow import keras
-import yaml
+
 # dealing with large fields in a CSV requires more memory allowed per field
 # see https://stackoverflow.com/questions/15063936/csv-error-field-larger-than-field-limit-131072 for discussion
 # and this solution
@@ -98,7 +98,6 @@ def parse_multicolumn_list_of_dicts(index_column, multi_column_config, data_cols
 
 def test_parsing(dataframe, config_dict, clf):
     # Drop variant info columns so we can perform one-hot encoding
-    # dataframe = dataframe[config_dict["raw_cols"]]
     dataframe["so"] = dataframe["consequence"]
     var = dataframe[config_dict["id_cols"]]
     dataframe = dataframe.drop(config_dict["id_cols"], axis=1)
@@ -158,9 +157,9 @@ def parse_annotations(annot_csv, data_config_file, outfile, clf, config_dict,pre
                 parsed_fieldnames.append(colconf["col_id"])
 
         # Create a set of pre-defined keys
-        predefined_keys = set(hardcoded_fieldnames + parsed_fieldnames)
+        predefined_keys = hardcoded_fieldnames + parsed_fieldnames
         if not predict:
-            csvwriter = csv.DictWriter(paserdcsv, fieldnames=hardcoded_fieldnames + parsed_fieldnames)
+            csvwriter = csv.DictWriter(paserdcsv, fieldnames=predefined_keys)
             csvwriter.writeheader()
         else:
             pd.DataFrame(columns=config_dict["id_cols"] + ["DITTO"]).to_csv(paserdcsv, index=False)
@@ -326,6 +325,9 @@ if __name__ == "__main__":
     if ARGS.exec == "config":
         create_data_config(ARGS.input_csv, f"opencravat_{ARGS.version}_config.json")
     elif ARGS.exec == "parse_predict":
+        import pandas as pd
+        from tensorflow import keras
+        import yaml
         clf = keras.models.load_model("model/Neural_network")
         clf.load_weights("model/weights.h5")
         with open("configs/col_config.yaml") as fh:
