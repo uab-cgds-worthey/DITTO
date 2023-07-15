@@ -101,16 +101,24 @@ def test_parsing(dataframe, config_dict, clf):
     dataframe["so"] = dataframe["consequence"]
     var = dataframe[config_dict["id_cols"]]
     dataframe = dataframe.drop(config_dict["id_cols"], axis=1)
-    # dataframe = dataframe.replace(['.','-'], np.nan)
+    dataframe = dataframe.replace(['.','-',''], np.nan)
+    for key in dataframe.columns:
+        try:
+            dataframe[key] = dataframe[key].astype("float64")
+        except:
+            pass
 
     # Perform one-hot encoding
     for key in config_dict["dummies_sep"]:
-        dataframe = pd.concat(
+        if not dataframe[key].isnull().all():
+            dataframe = pd.concat(
             (dataframe, dataframe[key].str.get_dummies(sep=config_dict["dummies_sep"][key])), axis=1
         )
+
     dataframe = dataframe.drop(list(config_dict["dummies_sep"].keys()), axis=1)
     dataframe = pd.get_dummies(dataframe, prefix_sep="_")
 
+    dataframe = dataframe*1
     df2 = pd.DataFrame(columns=config_dict["filtered_cols"])
     for key in config_dict["filtered_cols"]:
         if key in dataframe.columns:
@@ -124,7 +132,6 @@ def test_parsing(dataframe, config_dict, clf):
         if key in df2.columns:
             df2[key] = df2[key].fillna(config_dict["median_scores"][key]).astype("float64")
 
-    df2 = df2*1
     y_score = 1 - clf.predict(df2, verbose=0)
     y_score = pd.DataFrame(y_score, columns=["DITTO"])
 
@@ -214,7 +221,7 @@ def parse_annotations(annot_csv, data_config_file, outfile, clf, config_dict,pre
                                     annot_variant[subcol] = row[subcol]
                             else:
                                 for subcol in column["parse_type"]["list"]["column_list"]:
-                                    annot_variant[subcol] = ""
+                                    annot_variant[subcol] = None
                     else:
                         # parse variant with transcript info
                         annot_variant["transcript"] = trx
@@ -222,8 +229,7 @@ def parse_annotations(annot_csv, data_config_file, outfile, clf, config_dict,pre
                         annot_variant["consequence"] = vtrx_cols[3]
                         annot_variant["protein_hgvs"] = vtrx_cols[4]
                         annot_variant["cdna_hgvs"] = vtrx_cols[5]
-                        #if trx in DExTR_dict:
-                        #    annot_variant.update(DExTR_dict[trx])
+
                         for column in data_config:
                             if "none" in column["parse_type"]:
                                 annot_variant[column["col_id"]] = row[column["col_id"]]
@@ -235,14 +241,12 @@ def parse_annotations(annot_csv, data_config_file, outfile, clf, config_dict,pre
                     # print parsed variant + transcript annotations to csv file output
                     if not predict:
                         csvwriter.writerow(annot_variant)
-                        return None
                     else:
                         df_list.append(annot_variant)
 
                 if predict:
                     df = test_parsing(pd.DataFrame(df_list), config_dict, clf)
                     df.to_csv(paserdcsv, mode="a", header=False, index=False)
-                    return None
 
 
 def is_valid_output_file(p, arg):
@@ -328,10 +332,14 @@ if __name__ == "__main__":
         import pandas as pd
         from tensorflow import keras
         import yaml
-        clf = keras.models.load_model("model/Neural_network")
-        clf.load_weights("model/weights.h5")
-        with open("configs/col_config.yaml") as fh:
+        import numpy as np
+
+        clf = keras.models.load_model("/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/Neural_network")
+        clf.load_weights("/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/weights.h5")
+
+        with open("/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml") as fh:
             config_dict = yaml.safe_load(fh)
+
         outfile = ARGS.output if ARGS.output else f"{Path(ARGS.input_csv).stem}.csv"
         parse_annotations(ARGS.input_csv, ARGS.config, outfile, clf, config_dict,True)
     else:
