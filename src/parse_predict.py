@@ -7,7 +7,7 @@ import json
 import csv
 import ctypes as ct
 import gzip
-
+import gc
 # dealing with large fields in a CSV requires more memory allowed per field
 # see https://stackoverflow.com/questions/15063936/csv-error-field-larger-than-field-limit-131072 for discussion
 # and this solution
@@ -134,6 +134,7 @@ def test_parsing(dataframe, config_dict, clf):
 
     y_score = 1 - clf.predict(df2, verbose=0)
     y_score = pd.DataFrame(y_score, columns=["DITTO"])
+    del df2
 
     var = pd.concat([var.reset_index(drop=True), y_score.reset_index(drop=True)], axis=1)
     return var
@@ -247,6 +248,7 @@ def parse_annotations(annot_csv, data_config_file, outfile, clf, config_dict,pre
                 if predict:
                     df = test_parsing(pd.DataFrame(df_list), config_dict, clf)
                     df.to_csv(paserdcsv, mode="a", header=False, index=False)
+                    gc.collect()
 
 
 def is_valid_output_file(p, arg):

@@ -1,19 +1,19 @@
 #!/bin/bash
 #
-#SBATCH --job-name=cf
-#SBATCH --output=logs/cf_7_14.out
+#SBATCH --job-name=CAGI_try
+#SBATCH --output=logs/CAGI_try.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
-#SBATCH --partition=express
+#SBATCH --partition=short
 ##SBATCH --partition=pascalnodes
 ##SBATCH --gres=gpu:1
 #
 # Number of CPUs allocated to each task.
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=10
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.
-#SBATCH --mem=6G
+#SBATCH --mem=70G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
@@ -50,14 +50,16 @@ module load Anaconda3
 
 #source activate opencravat
 
-#oc run /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/cf_list_7_14.txt -l hg38 -t csv --package mypackage -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/
+#zcat /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/interim/single_sample_vcf/train/homref_removed/CAGI6_RGP_TRAIN_22_PROBAND.vcf.gz  | grep -v "^#" | cut -d$'\t' -f1,2,4,5 | grep -v "*" | gzip > /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/cagi6/CAGI6_RGP_TRAIN_22_PROBAND.txt.gz
+
+#oc run /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/UDN249098.txt -l hg38 -t csv --package mypackage -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/
 
 source activate training
 
-python src/parse_predict.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/cf_list_7_14.txt.variant.csv -e parse_predict -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/cf_list_7_14.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/opencravat_test_config.json
+#python src/parse_predict.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/cagi6/CAGI6_RGP_TRAIN_22_PROBAND.txt.gz.variant.csv -e parse_predict -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/cagi6/CAGI6_RGP_TRAIN_22_PROBAND.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/opencravat_test_config.json
 
-#python src/annotation_parsing/parse.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/cf_list_7_14.txt.variant.csv -e parse -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/cf_list_7_14.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/opencravat_test_config.json
+python src/annotation_parsing/parse.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/cagi6/CAGI6_RGP_TRAIN_22_PROBAND.txt.gz.variant.csv.gz -e parse -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/cagi6/CAGI6_RGP_TRAIN_22_PROBAND.csv.gz -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/opencravat_test_config.json
 
 #source activate training
 #
-#python src/predict/predict.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/cf_list_7_14.csv.gz -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/cf_7_14_ditto_predictions.csv -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/
+python src/predict/predict.py -i /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/interim/cagi6/CAGI6_RGP_TRAIN_22_PROBAND.csv.gz -o /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/cagi6 -c /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/configs/col_config.yaml -d /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/train_data_3_star/
