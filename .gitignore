@@ -85,8 +85,10 @@ target/
 /data/
 cagi*/
 
-#snakemake
+#snakemake or nextflow
 .snakemake/
+.nextflow/
+.nextflow*
 # data/
 variant_annotation/data/
 
@@ -103,4 +105,3 @@ logs/
 # .java/fonts dir get created when creating fastqc conda env
 .java/
 
-/.vscode/settings.json
