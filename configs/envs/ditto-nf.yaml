@@ -11,4 +11,4 @@ dependencies:
   - pip=23.2.1
   - pip:
     - tensorflow==2.11
-    #- open-cravat==2.4.1
+    - open-cravat==2.2.9
