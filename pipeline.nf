@@ -22,8 +22,9 @@ log.info """\
          """
          .stripIndent()
 
+// Define the process to normalize a VCF file using bcftools
 process normalizeVCF {
-
+  publishDir output_dir, mode:'copy'
   // Define the conda environment file to be used
   conda 'configs/envs/bcftools.yaml'
 
@@ -43,6 +44,28 @@ process normalizeVCF {
   shell:
   """
   bcftools norm -m-any ${into_vcf} | bcftools norm --threads 2 --check-ref we --fasta-ref ${hg38} -Oz -o "normalized_${into_vcf.baseName}.gz"
+  """
+}
+
+// Define the process to remove homozygous reference sites using bcftools
+process removeHomRefSites {
+  publishDir output_dir, mode:'copy'
+
+  // Define the conda environment file to be used
+  conda 'configs/envs/bcftools.yaml'
+
+  // Define the input channel for the normalized VCF file
+  input:
+  path normalized_vcf
+
+  // Define the output channel for the VCF file with homozygous reference sites removed
+  output:
+  path "homref_removed_${normalized_vcf.baseName}.gz"
+
+  // Modify the path if necessary.
+  script:
+  """
+  bcftools view --include 'GT[*]="alt"' -Oz -o "homref_removed_${normalized_vcf.baseName}.gz" "${normalized_vcf}"
   """
 }
 
@@ -103,9 +126,18 @@ process runOC {
 // 'into_vcf' will be the channel containing the input VCF files
 // Each file in the channel will be processed through the steps defined above.
 workflow {
-  // Process to normalize VCF files
-  normalizeVCF(channel.fromPath(params.vcf_path), channel.fromPath(params.hg38))
 
+  // Define input channels for the VCF files
+  vcfFile = channel.fromPath(params.vcf_path)
+  hg38File = channel.fromPath(params.hg38)
+
+  // Process to normalize VCF files
+  normalizedVcfFile = normalizeVCF(vcfFile, hg38File)
+  // Process to remove homozygous reference sites using the output from normalizeVCF
+  normalizedVcfFile | flatten | removeHomRefSites
+  
+  // Process to remove homozygous reference sites using the output from normalizeVCF
+  // removeHomRefSites(normalizedVcfFile)
   // extractFromVCF(channel.fromPath(params.vcf_path))
   // runOC(extractFromVCF.out)
   // parseAnnotation()
