@@ -84,6 +84,7 @@ target/
 # exclude data from source control by default
 /data/
 cagi*/
+work
 
 #snakemake or nextflow
 .snakemake/
