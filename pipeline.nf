@@ -25,6 +25,7 @@ log.info """\
 // Define the process to normalize a VCF file using bcftools
 process normalizeVCF {
   publishDir output_dir, mode:'copy'
+
   // Define the conda environment file to be used
   conda 'configs/envs/bcftools.yaml'
 
@@ -73,17 +74,20 @@ process removeHomRefSites {
 process extractFromVCF {
   publishDir output_dir, mode:'copy'
 
+  // Define the conda environment file to be used
+  conda 'configs/envs/bcftools.yaml'
+
   // Define the input channel for the VCF files
   input:
-  path into_vcf
+  path homref_vcf
 
   output:
-    path("${into_vcf.baseName}.txt.gz")
+    path("${homref_vcf.baseName}.txt.gz")
 
   // Modify the path if necessary.
   shell:
   """
-  zcat ${into_vcf} | grep -v "^#" | cut -d\$'\t' -f1,2,4,5 | grep -v "*" | gzip > ${into_vcf.baseName}.txt.gz
+  zcat ${homref_vcf} | grep -v "^#" | cut -d\$'\t' -f1,2,4,5 | grep -v "*" | gzip > ${homref_vcf.baseName}.txt.gz
   """
 }
 
@@ -126,7 +130,6 @@ process runOC {
 // 'into_vcf' will be the channel containing the input VCF files
 // Each file in the channel will be processed through the steps defined above.
 workflow {
-
   // Define input channels for the VCF files
   vcfFile = channel.fromPath(params.vcf_path)
   hg38File = channel.fromPath(params.hg38)
@@ -134,11 +137,9 @@ workflow {
   // Process to normalize VCF files
   normalizedVcfFile = normalizeVCF(vcfFile, hg38File)
   // Process to remove homozygous reference sites using the output from normalizeVCF
-  normalizedVcfFile | flatten | removeHomRefSites
+  // and to extract the required information from VCF and convert to txt.gz
+  normalizedVcfFile | flatten | removeHomRefSites | flatten | extractFromVCF
   
-  // Process to remove homozygous reference sites using the output from normalizeVCF
-  // removeHomRefSites(normalizedVcfFile)
-  // extractFromVCF(channel.fromPath(params.vcf_path))
   // runOC(extractFromVCF.out)
   // parseAnnotation()
   // prediction()
