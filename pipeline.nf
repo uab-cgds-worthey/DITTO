@@ -10,8 +10,6 @@ def scratch_dir = System.getenv("USER_SCRATCH") ?: "/tmp"
 
 params.outdir = "${scratch_dir}"
 
-
-
 // Define the output directory for intermediate and final results
 output_dir = params.outdir
 
@@ -24,6 +22,29 @@ log.info """\
          """
          .stripIndent()
 
+process normalizeVCF {
+
+  // Define the conda environment file to be used
+  conda '/configs/envs/bcftools.yaml'
+
+  // Define the output directory for the normalized VCF files
+  publishDir 'output_dir', mode: 'copy'
+
+  // Define the input channel for the VCF files
+  input:
+  path into_vcf
+  path hg38
+
+  // Define the output channel for the normalized VCF files
+  output:
+  path "normalized_${into_vcf.baseName}.vcf.gz" into normalized_vcf
+
+  // Modify the path if necessary.
+  shell:
+  """
+  bcftools norm -m-any ${into_vcf} | bcftools norm --threads 2 --check-ref we --fasta-ref ${hg38} -Oz -o "${normalized_vcf}"
+  """
+}
 
 // Define the process to extract the required information from VCF and convert to txt.gz
 process extractFromVCF {
@@ -82,8 +103,9 @@ process runOC {
 // 'into_vcf' will be the channel containing the input VCF files
 // Each file in the channel will be processed through the steps defined above.
 workflow {
-  extractFromVCF(channel.fromPath(params.vcf_path))
-  runOC(extractFromVCF.out)
+  normalizeVCF()
+  // extractFromVCF(channel.fromPath(params.vcf_path))
+  // runOC(extractFromVCF.out)
   // parseAnnotation()
   // prediction()
 }
