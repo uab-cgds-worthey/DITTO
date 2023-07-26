@@ -25,7 +25,7 @@ log.info """\
 process normalizeVCF {
 
   // Define the conda environment file to be used
-  conda '/configs/envs/bcftools.yaml'
+  conda 'configs/envs/bcftools.yaml'
 
   // Define the output directory for the normalized VCF files
   publishDir 'output_dir', mode: 'copy'
@@ -37,12 +37,12 @@ process normalizeVCF {
 
   // Define the output channel for the normalized VCF files
   output:
-  path "normalized_${into_vcf.baseName}.vcf.gz" into normalized_vcf
+  path "normalized_${into_vcf.baseName}.gz"
 
   // Modify the path if necessary.
   shell:
   """
-  bcftools norm -m-any ${into_vcf} | bcftools norm --threads 2 --check-ref we --fasta-ref ${hg38} -Oz -o "${normalized_vcf}"
+  bcftools norm -m-any ${into_vcf} | bcftools norm --threads 2 --check-ref we --fasta-ref ${hg38} -Oz -o "normalized_${into_vcf.baseName}.gz"
   """
 }
 
@@ -103,7 +103,9 @@ process runOC {
 // 'into_vcf' will be the channel containing the input VCF files
 // Each file in the channel will be processed through the steps defined above.
 workflow {
-  normalizeVCF()
+  // Process to normalize VCF files
+  normalizeVCF(channel.fromPath(params.vcf_path), channel.fromPath(params.hg38))
+
   // extractFromVCF(channel.fromPath(params.vcf_path))
   // runOC(extractFromVCF.out)
   // parseAnnotation()
