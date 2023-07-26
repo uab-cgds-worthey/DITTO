@@ -690,4 +690,4 @@ Lines   total/split/realigned/skipped:  7992/0/1793/0
 creating nextflow pipeline
 
 ml Java/13.0.2
-/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf
+/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf --outdir /scratch/tmamidi/test
