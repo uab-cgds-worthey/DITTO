@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 // Define the command-line options to specify the path to VCF files
-params.vcf_path = '.test_data/testing_variants_hg38.vcf.gz'
+params.vcf_path = '.test_data/testing_variants_hg38.vcf'
 params.hg38 = "/data/project/worthey_lab/datasets_central/human_reference_genome/processed/GRCh38/no_alt_rel20190408/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
 params.oc_modules = '/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules'
 // Define the Scratch directory
@@ -29,8 +29,8 @@ log.info """\
 process normalizeVCF {
   publishDir output_dir, mode:'copy'
 
-  // Define the conda environment file to be used
-  conda 'configs/envs/bcftools.yaml'
+  // Define the conda environment to be used
+  conda "bioconda::bcftools=1.17"
 
   // Define the input channel for the VCF files
   input:
@@ -52,8 +52,8 @@ process normalizeVCF {
 process removeHomRefSites {
   publishDir output_dir, mode:'copy'
 
-  // Define the conda environment file to be used
-  conda 'configs/envs/bcftools.yaml'
+  // Define the conda environment to be used
+  conda "bioconda::bcftools=1.17"
 
   // Define the input channel for the normalized VCF file
   input:
@@ -73,9 +73,9 @@ process removeHomRefSites {
 process extractFromVCF {
   publishDir output_dir, mode:'copy'
 
-  // Define the conda environment file to be used
-  conda 'configs/envs/bcftools.yaml'
-  
+  // Define the conda environment to be used
+  conda "bioconda::bcftools=1.17"
+
   // Define the input channel for the VCF files
   input:
   path homref_vcf
@@ -107,7 +107,7 @@ process runOC {
   shell:
   """
   oc config md ${oc_mod_path}
-  oc run ${var_ch} -l hg38 -t csv --package mypackage -d ${output_dir}
+  oc run ${var_ch} -l hg38 -t csv --package configs/mypackage -d ${output_dir}
   cp ${output_dir}/${var_ch}.variant.csv .
   """
 }
@@ -115,6 +115,9 @@ process runOC {
 // Define the process to parse the annotation
 process parseAnnotation {
   publishDir output_dir, mode:'copy'
+
+  // Define the conda environment file to be used
+  conda 'configs/envs/open-cravat.yaml'
 
   input:
   path var_ann_ch
@@ -131,6 +134,9 @@ process parseAnnotation {
 // Define the process for prediction
 process prediction {
   publishDir output_dir, mode:'copy'
+
+  // Define the conda environment file to be used
+  conda 'configs/envs/open-cravat.yaml'
 
   input:
   path var_parse_ch
