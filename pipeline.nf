@@ -29,9 +29,6 @@ process normalizeVCF {
   // Define the conda environment file to be used
   conda 'configs/envs/bcftools.yaml'
 
-  // Define the output directory for the normalized VCF files
-  publishDir 'output_dir', mode: 'copy'
-
   // Define the input channel for the VCF files
   input:
   path into_vcf
@@ -151,7 +148,7 @@ workflow {
   // and to extract the required information from VCF and convert to txt.gz
   normalizedVcfFile | flatten | removeHomRefSites | flatten | extractFromVCF
   
-  runOC(extractFromVCF.out)
-  parseAnnotation(runOC.out)
-  prediction(parseAnnotation.out)
+  //runOC(extractFromVCF.out)
+  //parseAnnotation(runOC.out)
+  //prediction(parseAnnotation.out)
 }
