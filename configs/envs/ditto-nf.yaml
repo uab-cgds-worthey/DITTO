@@ -9,7 +9,7 @@ dependencies:
   - pyaml=23.7.0
   - bcftools=1.17
   - pytabix=0.1
+  - open-cravat=2.4.1
   - pip=23.2.1
   - pip:
     - tensorflow==2.11
-    - open-cravat==2.2.9
