@@ -26,9 +26,6 @@ log.info """\
 process normalizeVCF {
   publishDir output_dir, mode:'copy'
 
-  // Define the conda environment file to be used
-  conda 'configs/envs/bcftools.yaml'
-
   // Define the input channel for the VCF files
   input:
   path into_vcf
@@ -49,9 +46,6 @@ process normalizeVCF {
 process removeHomRefSites {
   publishDir output_dir, mode:'copy'
 
-  // Define the conda environment file to be used
-  conda 'configs/envs/bcftools.yaml'
-
   // Define the input channel for the normalized VCF file
   input:
   path normalized_vcf
@@ -70,9 +64,6 @@ process removeHomRefSites {
 // Define the process to extract the required information from VCF and convert to txt.gz
 process extractFromVCF {
   publishDir output_dir, mode:'copy'
-
-  // Define the conda environment file to be used
-  conda 'configs/envs/bcftools.yaml'
 
   // Define the input channel for the VCF files
   input:
