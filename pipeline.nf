@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 // Define the command-line options to specify the path to VCF files
 params.vcf_path = '.test_data/testing_variants_hg38.vcf.gz'
 params.hg38 = "/data/project/worthey_lab/datasets_central/human_reference_genome/processed/GRCh38/no_alt_rel20190408/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
-
+params.oc_modules = '/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules'
 // Define the Scratch directory
 def scratch_dir = System.getenv("USER_SCRATCH") ?: "/tmp"
 
@@ -14,11 +14,14 @@ params.outdir = "${scratch_dir}"
 output_dir = params.outdir
 
 log.info """\
+
          D I T T O - N F   P I P E L I N E
          ===================================
+         Parameters:
          hg38             : ${params.hg38}
          into_vcf         : ${params.vcf_path}
          output_dir       : ${output_dir}
+         oc_modules       : ${params.oc_modules}
          """
          .stripIndent()
 
@@ -38,7 +41,7 @@ process normalizeVCF {
   // Modify the path if necessary.
   shell:
   """
-  bcftools norm -m-any ${into_vcf} | bcftools norm --threads 2 --check-ref we --fasta-ref ${hg38} -Oz -o "normalized_${into_vcf.baseName}.gz"
+  bcftools norm -m-any ${into_vcf} | bcftools norm  --check-ref we --fasta-ref ${hg38} -Oz -o "normalized_${into_vcf.baseName}.gz"
   """
 }
 
@@ -54,10 +57,9 @@ process removeHomRefSites {
   output:
   path "homref_removed_${normalized_vcf.baseName}.gz"
 
-  // Modify the path if necessary.
   script:
   """
-  bcftools view --include 'GT[*]="alt"' -Oz -o "homref_removed_${normalized_vcf.baseName}.gz" "${normalized_vcf}"
+  bcftools view -e 'GT[*]="alt"' -Oz -o "homref_removed_${normalized_vcf.baseName}.gz" "${normalized_vcf}"
   """
 }
 
@@ -85,12 +87,14 @@ process runOC {
 
   input:
   path var_ch
+  path oc_mod_path
 
   output:
     path("${var_ch}.variant.csv")
 
   shell:
   """
+  oc config md ${oc_mod_path}
   oc run ${var_ch} -l hg38 -t csv --package mypackage -d ${output_dir}
   cp ${output_dir}/${var_ch}.variant.csv .
   """
@@ -132,10 +136,13 @@ workflow {
   // Define input channels for the VCF files
   vcfFile = channel.fromPath(params.vcf_path)
   hg38File = channel.fromPath(params.hg38)
+  oc_mod_path = channel.fromPath(params.oc_modules)
 
-  // Process to normalize VCF files
-  normalizedVcfFile = normalizeVCF(vcfFile, hg38File)
-  // Process to remove homozygous reference sites using the output from normalizeVCF
-  // and to extract the required information from VCF and convert to txt.gz
-  normalizedVcfFile | flatten | removeHomRefSites | flatten | extractFromVCF | flatten | runOC | flatten | parseAnnotation | flatten | prediction
+  // Run processes
+  normalizeVCF(vcfFile, hg38File)
+  removeHomRefSites(normalizeVCF.out)
+  extractFromVCF(removeHomRefSites.out)
+  runOC(extractFromVCF.out, oc_mod_path)
+  parseAnnotation(runOC.out)
+  prediction(parseAnnotation.out)
 }
