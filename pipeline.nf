@@ -39,7 +39,7 @@ process extractFromVCF {
   // Modify the path if necessary.
   shell:
   """
-  zcat ${into_vcf} | grep -v "^#" | cut -d\$'\t' -f1,2,4,5 | grep -v "*" | head -5 | gzip > ${into_vcf.baseName}.txt.gz
+  zcat ${into_vcf} | grep -v "^#" | cut -d\$'\t' -f1,2,4,5 | grep -v "*" | gzip > ${into_vcf.baseName}.txt.gz
   """
 }
 
