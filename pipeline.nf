@@ -26,6 +26,9 @@ log.info """\
 process normalizeVCF {
   publishDir output_dir, mode:'copy'
 
+  // Define the conda environment file to be used
+  conda 'configs/envs/bcftools.yaml'
+
   // Define the input channel for the VCF files
   input:
   path into_vcf
@@ -46,6 +49,9 @@ process normalizeVCF {
 process removeHomRefSites {
   publishDir output_dir, mode:'copy'
 
+  // Define the conda environment file to be used
+  conda 'configs/envs/bcftools.yaml'
+
   // Define the input channel for the normalized VCF file
   input:
   path normalized_vcf
@@ -65,6 +71,9 @@ process removeHomRefSites {
 process extractFromVCF {
   publishDir output_dir, mode:'copy'
 
+  // Define the conda environment file to be used
+  conda 'configs/envs/bcftools.yaml'
+  
   // Define the input channel for the VCF files
   input:
   path homref_vcf
@@ -82,6 +91,9 @@ process extractFromVCF {
 // Define the process to run 'oc' with the specified parameters
 process runOC {
   publishDir output_dir, mode:'copy'
+
+  // Define the conda environment file to be used
+  conda 'configs/envs/open-cravat.yaml'
 
   input:
   path var_ch
