@@ -137,9 +137,5 @@ workflow {
   normalizedVcfFile = normalizeVCF(vcfFile, hg38File)
   // Process to remove homozygous reference sites using the output from normalizeVCF
   // and to extract the required information from VCF and convert to txt.gz
-  normalizedVcfFile | flatten | removeHomRefSites | flatten | extractFromVCF
-  
-  //runOC(extractFromVCF.out)
-  //parseAnnotation(runOC.out)
-  //prediction(parseAnnotation.out)
+  normalizedVcfFile | flatten | removeHomRefSites | flatten | extractFromVCF | flatten | runOC | flatten | parseAnnotation | flatten | prediction
 }
