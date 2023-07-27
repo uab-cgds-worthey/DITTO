@@ -1,5 +1,5 @@
-channels:
-  - bioconda
 dependencies:
-  - pytabix=0.1
-  - open-cravat=2.4.1
+  - pip
+  - pip:
+    - pytabix==0.1
+    - open-cravat==2.4.1

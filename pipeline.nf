@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 // Define the command-line options to specify the path to VCF files
-params.vcf_path = '.test_data/testing_variants_hg38.vcf'
+params.vcf_path = '.test_data/testing_variants_hg38.vcf.gz'
 params.hg38 = "/data/project/worthey_lab/datasets_central/human_reference_genome/processed/GRCh38/no_alt_rel20190408/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
 params.oc_modules = '/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules'
 // Define the Scratch directory
@@ -107,7 +107,7 @@ process runOC {
   shell:
   """
   oc config md ${oc_mod_path}
-  oc run ${var_ch} -l hg38 -t csv --package configs/mypackage -d ${output_dir}
+  oc run ${var_ch} -l hg38 -t csv --package mypackage -d ${output_dir}
   cp ${output_dir}/${var_ch}.variant.csv .
   """
 }
