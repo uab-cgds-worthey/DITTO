@@ -127,6 +127,7 @@ if __name__ == "__main__":
 #
     #var = test_parsing(X, config_dict, clf)
     #var.to_csv(args.output, index=False)
+    basename = str(args.input).split('.')[0]
 
     df = pd.read_csv(args.input, chunksize=100000)
 
@@ -139,11 +140,11 @@ if __name__ == "__main__":
         header = i == 0
         #print('\nData shape (nsSNV) =', df2.shape)
         # Write it to a file
-        df2.to_csv(args.outdir + "/filtered_annots.csv.gz", index=False,
+        df2.to_csv(args.outdir + f"/{basename}_filtered_annots.csv.gz", index=False,
             header=header,
             mode=mode,
             compression='gzip')
-        ditto_scores.to_csv(args.outdir + "/DITTO_scores.csv.gz", index=False,
+        ditto_scores.to_csv(args.outdir + f"/{basename}_DITTO_scores.csv.gz", index=False,
         header=header,
             mode=mode,
                compression="gzip")
