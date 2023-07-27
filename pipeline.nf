@@ -98,33 +98,44 @@ process runOC {
   input:
   path var_ch
 
+  output:
+    path("${var_ch}.variant.csv")
+
   shell:
   """
   oc run ${var_ch} -l hg38 -t csv --package mypackage -d ${output_dir}
+  cp ${output_dir}/${var_ch}.variant.csv .
   """
 }
 
-// // Define the process to parse the annotation
-// process parseAnnotation {
-//   // Use the 'source' directive to activate the 'training' environment
-//   // Modify the path if necessary.
-//   script:
-//   """
-//   source activate training
-//   python ${baseDir}/src/annotation_parsing/parse.py -i ${output_dir}/${into_vcf.baseName}.txt.gz.variant.csv.gz -e parse -o ${output_dir}/${into_vcf.baseName}.csv.gz -c ${baseDir}/configs/opencravat_test_config.json
-//   """
-// }
+// Define the process to parse the annotation
+process parseAnnotation {
+  publishDir output_dir, mode:'copy'
 
-// // Define the process for prediction
-// process prediction {
-//   // Use the 'source' directive to activate the 'training' environment
-//   // Modify the path if necessary.
-//   script:
-//   """
-//   source activate training
-//   python ${baseDir}/src/predict/predict.py -i ${output_dir}/${into_vcf.baseName}.csv.gz -o ${output_dir} -c ${baseDir}/configs/col_config.yaml -d ${baseDir}/data/processed/train_data_3_star/
-//   """
-// }
+  input:
+  path var_ann_ch
+
+  output:
+    path("${var_ann_ch.baseName}.csv.gz")
+
+  script:
+  """
+  python ${baseDir}/src/annotation_parsing/parse.py -i ${var_ann_ch} -e parse -o ${var_ann_ch.baseName}.csv.gz -c ${baseDir}/configs/opencravat_test_config.json
+  """
+}
+
+// Define the process for prediction
+process prediction {
+  publishDir output_dir, mode:'copy'
+
+  input:
+  path var_parse_ch
+
+  script:
+  """
+  python ${baseDir}/src/predict/predict.py -i ${var_parse_ch} -o ${output_dir} -c ${baseDir}/configs/col_config.yaml -d ${baseDir}/data/processed/train_data_3_star/
+  """
+}
 
 // Define the workflow by connecting the processes
 // 'into_vcf' will be the channel containing the input VCF files
@@ -140,7 +151,7 @@ workflow {
   // and to extract the required information from VCF and convert to txt.gz
   normalizedVcfFile | flatten | removeHomRefSites | flatten | extractFromVCF
   
-  // runOC(extractFromVCF.out)
-  // parseAnnotation()
-  // prediction()
+  runOC(extractFromVCF.out)
+  parseAnnotation(runOC.out)
+  prediction(parseAnnotation.out)
 }
