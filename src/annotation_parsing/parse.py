@@ -12,6 +12,8 @@ import gzip
 csv.field_size_limit(int(ct.c_ulong(-1).value // 2))
 
 ALL_MAPPINGS_COLUMN_ID = "all_mappings"
+NUMBER_OF_SAMPLES_COLUMN_ID = "numsample"
+SAMPLES_COLUMN_ID = "samples"
 
 
 def create_data_config(annot_csv, outfile=None):
@@ -97,40 +99,80 @@ def parse_multicolumn_list_of_dicts(index_column, multi_column_config, data_cols
     return dict_of_dicts
 
 
-def parse_annotations(annot_csv, data_config_file, outfile):
+def parse_annotations(annot_csv, data_config_file, outdir):
     # reading data config for determination of parsing
     data_config = list()
     with open(data_config_file, "rt") as dcfp:
         # parse and filter for column configs that needing parsing
         data_config = json.load(dcfp)
 
-    # the column "all_mappings" is the key split-by column to separate results on a per variant + transcript
-    with gzip.open(outfile, "wt", newline="") if outfile.endswith(".gz") else open(outfile, 'w', newline="") as paserdcsv:
-        hardcoded_fieldnames = [
-            "transcript",
-            "gene",
-            "consequence",
-            "protein_hgvs",
-            "cdna_hgvs",
-        ]
-        parsed_fieldnames = list()
-        for colconf in data_config:
-            if "list" in colconf["parse_type"]:
-                parsed_fieldnames += colconf["parse_type"]["list"]["column_list"]
-            elif "list-o-dicts" in colconf["parse_type"]:
-                parsed_fieldnames += colconf["parse_type"]["list-o-dicts"][
-                    "dict_index"
-                ].values()
-            else:
-                parsed_fieldnames.append(colconf["col_id"])
+    # reading the number of samples to parse
+    # situations where the GT column for sample info is 0/0 or 0|0 will cause OpenCravat to not print
+    # the variant information to the output (it put the variant in the error output file instead) but
+    # this issue can't be accounted for in the parsing logic here
+    samples = set()
+    with open(annot_csv, "r", newline="") as csvfile:
+        reader = csv.DictReader(filter(lambda row: row[0] != "#", csvfile))
+        for row in reader:
+            if int(row[NUMBER_OF_SAMPLES_COLUMN_ID]) == 0:
+                samples.add(
+                    "_"
+                )  # use underscore to represent single sample VCF as a convention
+                break
 
-        predefined_keys = hardcoded_fieldnames + parsed_fieldnames
-        csvwriter = csv.DictWriter(
-            paserdcsv, fieldnames=predefined_keys
+            samples.update(row[SAMPLES_COLUMN_ID].split(";"))
+
+    samples = list(samples)
+
+    # create chunks of samples to process to limit number of open file handles and avoid OS open file handle errors
+    sample_groups = []
+    for group_index_start in range(0, len(samples), 2):
+        end = (
+            group_index_start + 2
+            if (group_index_start + 2) > len(samples)
+            else len(samples)
         )
-        csvwriter.writeheader()
+        sample_groups.append(samples[group_index_start:end])
 
-        with gzip.open(annot_csv, 'rt', newline="") if annot_csv.endswith(".gz") else open(annot_csv, 'r', newline="") as csvfile:
+    # the column "all_mappings" is the key split-by column to separate results on a per variant + transcript
+    hardcoded_fieldnames = [
+        "transcript",
+        "gene",
+        "consequence",
+        "protein_hgvs",
+        "cdna_hgvs",
+    ]
+    parsed_fieldnames = list()
+    for colconf in data_config:
+        if "list" in colconf["parse_type"]:
+            parsed_fieldnames += colconf["parse_type"]["list"]["column_list"]
+        elif "list-o-dicts" in colconf["parse_type"]:
+            parsed_fieldnames += colconf["parse_type"]["list-o-dicts"][
+                "dict_index"
+            ].values()
+        else:
+            parsed_fieldnames.append(colconf["col_id"])
+
+    predefined_keys = hardcoded_fieldnames + parsed_fieldnames
+
+    for sample_group in sample_groups:
+        # create dict of output writers for all samples in the group
+        sample_output_writers = dict()
+        sample_group_fh = []
+        for sample in sample_group:
+            # with open(outdir, "w", newline="") as paserdcsv:
+            samplepath = (
+                outdir / f"{sample}_parsed.csv.gz"
+                if sample != "_"
+                else outdir / f"{Path(annot_csv).stem}_parsed.csv.gz"
+            )
+            sample_fh = gzip.open(samplepath, "wt", newline="")
+            sample_group_fh.append(sample_fh)
+            csvwriter = csv.DictWriter(sample_fh, fieldnames=predefined_keys)
+            sample_output_writers[sample] = csvwriter
+            csvwriter.writeheader()
+
+        with open(annot_csv, "r", newline="") as csvfile:
             reader = csv.DictReader(filter(lambda row: row[0] != "#", csvfile))
             for row in reader:
                 # parse list of dict columns first since this only needs to be done once per row and cached
@@ -201,13 +243,24 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                                 continue
 
                     # print parsed variant + transcript annotations to csv file output
-                    csvwriter.writerow(annot_variant)
+                    samples = row[SAMPLES_COLUMN_ID].split(";")
+                    if len(samples) == 1 and samples[0] == "":
+                        sample_output_writers["_"].writerow(annot_variant)
+                    else:
+                        for sample in samples:
+                            if sample in sample_output_writers:
+                                sample_output_writers[sample].writerow(annot_variant)
 
-def is_valid_output_file(p, arg):
-    if os.access(Path(os.path.expandvars(arg)).parent, os.W_OK):
+        # don't forget to close all the open writer file handles for the group ;)
+        for sample_fh in sample_group_fh:
+            sample_fh.close()
+
+
+def is_valid_output_dir(p, arg):
+    if os.access(Path(os.path.expandvars(arg)), os.W_OK):
         return os.path.expandvars(arg)
     else:
-        p.error(f"Output file {arg} can't be accessed or is invalid!")
+        p.error(f"Output directory {arg} can't be accessed or is invalid!")
 
 
 def is_valid_file(p, arg):
@@ -250,8 +303,8 @@ if __name__ == "__main__":
     PARSER.add_argument(
         "-o",
         "--output",
-        help="Output from parsing",
-        type=lambda x: is_valid_output_file(PARSER, x),
+        help="Output directory for parsing",
+        type=lambda x: is_valid_output_dir(PARSER, x),
         metavar="\b",
     )
 
@@ -282,5 +335,5 @@ if __name__ == "__main__":
     if ARGS.exec == "config":
         create_data_config(ARGS.input_csv, f"opencravat_{ARGS.version}_config.json")
     else:
-        outfile = ARGS.output if ARGS.output else f"{Path(ARGS.input_csv).stem}.csv"
-        parse_annotations(ARGS.input_csv, ARGS.config, outfile)
+        outdir = Path(ARGS.output) if ARGS.output else Path(ARGS.input_csv).parent
+        parse_annotations(ARGS.input_csv, ARGS.config, outdir)
