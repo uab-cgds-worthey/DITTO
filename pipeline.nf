@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 // Define the command-line options to specify the path to VCF files
 params.vcf_path = '.test_data/testing_variants_hg38.vcf.gz'
 params.build = "hg38"
-params.oc_modules = '/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules'
+params.oc_modules = "/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules"
 // Define the Scratch directory
 def scratch_dir = System.getenv("USER_SCRATCH") ?: "/tmp"
 
@@ -41,9 +41,14 @@ process runOC {
   output:
   path "*.variant.csv"
 
+  // Specify memory and partition requirements for the process
+  memory = '10G'
+  cpus = 20
+  time = '2h'
+
   shell:
   """
-  oc config md /data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules
+  oc config md ${oc_mod_path}
   oc config md
   oc module install-base
   oc run ${var_ch} -l ${var_build} -t csv --package mypackage -d .
@@ -55,13 +60,18 @@ process runOC {
 process parseAnnotation {
 
   // Define the conda environment file to be used
-  conda 'conda-forge::python=3.10.11'
+  conda 'python=3.10'
 
   input:
   path var_ann_ch
 
   output:
   path "*_parsed.csv.gz"
+
+  // Specify memory and partition requirements for the process
+  memory = '1G'
+  cpus = 10
+  time = '2h'
 
   script:
   """
@@ -77,6 +87,11 @@ process prediction {
 
   input:
   path var_parse_ch
+
+  // Specify memory and partition requirements for the process
+  memory = '20G'
+  cpus = 10
+  time = '2h'
 
   script:
   """
@@ -94,13 +109,11 @@ workflow {
   vcfBuild = channel.fromPath(params.build)
   oc_mod_path = channel.fromPath(params.oc_modules)
 
+
   // Run processes
   runOC(vcfFile,vcfBuild, oc_mod_path)
   parseAnnotation(runOC.out)
   // Scatter the output of parseAnnotation to process each file separately
   parseAnnotation.out.flatten().set { files }
   prediction(files)
-
-
-
 }
