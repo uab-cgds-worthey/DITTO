@@ -35,16 +35,16 @@ process runOC {
 
   input:
   path var_ch
-  path var_build
-  path oc_mod_path
+  val var_build
+  val oc_mod_path
 
   output:
   path "*.variant.csv"
 
   // Specify memory and partition requirements for the process
-  memory = '10G'
+  memory = '75G'
   cpus = 20
-  time = '2h'
+  time = '50h'
 
   shell:
   """
@@ -106,8 +106,8 @@ workflow {
 
   // Define input channels for the VCF files
   vcfFile = channel.fromPath(params.vcf_path)
-  vcfBuild = channel.fromPath(params.build)
-  oc_mod_path = channel.fromPath(params.oc_modules)
+  vcfBuild = channel.from(params.build)
+  oc_mod_path = channel.from(params.oc_modules)
 
 
   // Run processes

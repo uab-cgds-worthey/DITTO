@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-#SBATCH --job-name=CAGI6
-#SBATCH --output=logs/CAGI6.out
+#SBATCH --job-name=udn_y
+#SBATCH --output=logs/udn_y.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
-#SBATCH --partition=express
+#SBATCH --partition=long
 ##SBATCH --partition=pascalnodes
 ##SBATCH --gres=gpu:1
 #
@@ -27,4 +27,4 @@ conda activate nextflow
 
 
 #Run your scripts here
-/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf --outdir /scratch/tmamidi/cagi6 -work-dir /scratch/tmamidi/cagi6 --vcf_path .test_data/*.vcf
+/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf --outdir /scratch/tmamidi/udn_y -work-dir /scratch/tmamidi/udn_y --vcf_path /data/project/worthey_lab/temp_datasets_central/tarun/UDN/files/UDN-all-sites-v1_chrY.ann.vcf.gz
