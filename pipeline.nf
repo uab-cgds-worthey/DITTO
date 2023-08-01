@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 // Define the command-line options to specify the path to VCF files
-params.vcf_path = '.test_data/testing_variants_hg38.vcf.gz'
+params.vcf_path = '.test_data/testing_variants_hg38.vcf'
 params.build = "hg38"
 params.oc_modules = "/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules"
 // Define the Scratch directory
@@ -46,10 +46,9 @@ process runOC {
   cpus = 20
   time = '50h'
 
-  shell:
+  script:
   """
-  oc config md ${oc_mod_path}
-  oc config md
+  oc config md /data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules/
   oc module install-base
   oc run ${var_ch} -l ${var_build} -t csv --package mypackage -d .
   """
@@ -69,7 +68,7 @@ process parseAnnotation {
   path "*_parsed.csv.gz"
 
   // Specify memory and partition requirements for the process
-  memory = '1G'
+  memory = '10G'
   cpus = 10
   time = '2h'
 
@@ -107,7 +106,7 @@ workflow {
   // Define input channels for the VCF files
   vcfFile = channel.fromPath(params.vcf_path)
   vcfBuild = channel.from(params.build)
-  oc_mod_path = channel.from(params.oc_modules)
+  oc_mod_path = channel.fromPath(params.oc_modules)
 
 
   // Run processes
