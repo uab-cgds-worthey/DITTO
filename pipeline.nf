@@ -43,7 +43,7 @@ process runOC {
 
   // Specify memory and partition requirements for the process
   memory = '75G'
-  cpus = 20
+  cpus = 10
   time = '50h'
 
   script:
@@ -69,7 +69,7 @@ process parseAnnotation {
 
   // Specify memory and partition requirements for the process
   memory = '10G'
-  cpus = 10
+  cpus = 5
   time = '2h'
 
   script:
@@ -89,7 +89,7 @@ process prediction {
 
   // Specify memory and partition requirements for the process
   memory = '20G'
-  cpus = 10
+  cpus = 5
   time = '2h'
 
   script:
