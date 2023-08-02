@@ -15,6 +15,7 @@ def parse_and_predict(dataframe, config_dict, clf):
     # Drop variant info columns so we can perform one-hot encoding
     dataframe["so"] = dataframe["consequence"]
     var = dataframe[config_dict["id_cols"]]
+    var["gnomad3.af"] = dataframe["gnomad3.af"]
     dataframe = dataframe.drop(config_dict["id_cols"], axis=1)
     dataframe = dataframe.replace(['.','-',''], np.nan)
     for key in dataframe.columns:
@@ -22,7 +23,7 @@ def parse_and_predict(dataframe, config_dict, clf):
             dataframe[key] = dataframe[key].astype("float64")
         except:
             pass
-
+    temp_df = dataframe.copy()
     # Perform one-hot encoding
     for key in config_dict["dummies_sep"]:
         if not dataframe[key].isnull().all():
@@ -51,8 +52,8 @@ def parse_and_predict(dataframe, config_dict, clf):
     y_score = pd.DataFrame(y_score, columns=["DITTO"])
 
     var = pd.concat([var.reset_index(drop=True), y_score.reset_index(drop=True)], axis=1)
-    dataframe = pd.concat([var.reset_index(drop=True), df2.reset_index(drop=True)], axis=1)
-    del df2
+    dataframe = pd.concat([var.reset_index(drop=True), temp_df.reset_index(drop=True)], axis=1)
+    del df2, temp_df
     return dataframe, var
 
 def is_valid_output_file(p, arg):

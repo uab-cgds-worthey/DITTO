@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-#SBATCH --job-name=CAGI_9
-#SBATCH --output=logs/CAGI_9.out
+#SBATCH --job-name=test
+#SBATCH --output=logs/test.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
-#SBATCH --partition=long
+#SBATCH --partition=express
 ##SBATCH --partition=pascalnodes
 ##SBATCH --gres=gpu:1
 #
@@ -27,4 +27,6 @@ conda activate nextflow
 
 
 #Run your scripts here
-/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf --outdir /scratch/tmamidi/CAGI_9 -work-dir /scratch/tmamidi/CAGI_9 --vcf_path /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/interim/single_sample_vcf/train/homref_removed/CAGI6_RGP_TRAIN_9_PROBAND.vcf.gz
+#/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf --outdir /scratch/tmamidi/CAGI_9 -work-dir /scratch/tmamidi/CAGI_9 --vcf_path /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/interim/single_sample_vcf/train/homref_removed/CAGI6_RGP_TRAIN_9_PROBAND.vcf.gz
+
+/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf --outdir /scratch/tmamidi/test -work-dir /scratch/tmamidi/test --vcf_path .test_data/\*

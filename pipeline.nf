@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 // Define the command-line options to specify the path to VCF files
-params.vcf_path = '.test_data/testing_variants_hg38.vcf'
+params.vcf_path = '.test_data/*'
 params.build = "hg38"
 params.oc_modules = "/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules"
 // Define the Scratch directory
@@ -18,14 +18,37 @@ log.info """\
          D I T T O - N F   P I P E L I N E
          ===================================
          Parameters:
-         hg38             : ${params.build}
-         into_vcf         : ${params.vcf_path}
+         build            : ${params.build}
+         vcf_file         : ${params.vcf_path}
          output_dir       : ${output_dir}
          oc_modules       : ${params.oc_modules}
          """
          .stripIndent()
 
+// Define the process to extract the required information from VCF and convert to txt.gz
+process extractFromVCF {
+  publishDir output_dir, mode:'copy'
 
+  // Define the conda environment file to be used
+  // conda 'configs/envs/bcftools.yaml'
+
+  // Define the input channel for the VCF files
+  input:
+  path homref_vcf
+
+  output:
+  path "${homref_vcf.baseName}.txt.gz"//, emit: extractedVCF
+
+  // Specify memory and partition requirements for the process
+  memory = '5G'
+  cpus = 1
+  time = '1h'
+
+  shell:
+  """
+  zcat ${homref_vcf} | grep -v "^#" | cut -d\$'\t' -f1,2,4,5 | grep -v "*" | gzip > ${homref_vcf.baseName}.txt.gz
+  """
+}
 
 // Define the process to run 'oc' with the specified parameters
 process runOC {
@@ -42,13 +65,14 @@ process runOC {
   path "*.variant.csv"
 
   // Specify memory and partition requirements for the process
-  memory = '75G'
+  memory = '20G'
   cpus = 10
-  time = '50h'
+  time = '1h'
 
   script:
   """
-  oc config md /data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules/
+  echo
+  oc config md ${oc_mod_path}
   oc module install-base
   oc run ${var_ch} -l ${var_build} -t csv --package mypackage -d .
   """
@@ -99,18 +123,18 @@ process prediction {
 }
 
 // Define the workflow by connecting the processes
-// 'into_vcf' will be the channel containing the input VCF files
+// 'vcfFile' will be the channel containing the input VCF files
 // Each file in the channel will be processed through the steps defined above.
 workflow {
 
   // Define input channels for the VCF files
-  vcfFile = channel.fromPath(params.vcf_path)
-  vcfBuild = channel.from(params.build)
-  oc_mod_path = channel.fromPath(params.oc_modules)
-
+  vcfFile = Channel.fromPath(params.vcf_path)
+  vcfBuild = params.build
+  oc_mod_path = params.oc_modules
 
   // Run processes
-  runOC(vcfFile,vcfBuild, oc_mod_path)
+  extractFromVCF(vcfFile)
+  runOC(extractFromVCF.out,vcfBuild,oc_mod_path )
   parseAnnotation(runOC.out)
   // Scatter the output of parseAnnotation to process each file separately
   parseAnnotation.out.flatten().set { files }

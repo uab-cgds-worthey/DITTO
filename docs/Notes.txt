@@ -689,6 +689,7 @@ Lines   total/split/realigned/skipped:  7992/0/1793/0
 ################### 7/26/23 ######################################################################
 creating nextflow pipeline
 
+srun --ntasks=1 --cpus-per-task=1 --mem-per-cpu=50G --partition=short --job-name=nf --pty /bin/bash
 ml Java/13.0.2
 ml Anaconda3
 conda activate nextflow
