@@ -65,9 +65,9 @@ process runOC {
   path "*.variant.csv"
 
   // Specify memory and partition requirements for the process
-  memory = '20G'
+  memory = '75G'
   cpus = 10
-  time = '1h'
+  time = '50h'
 
   script:
   """
