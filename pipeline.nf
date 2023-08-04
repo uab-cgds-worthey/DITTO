@@ -65,13 +65,12 @@ process runOC {
   path "*.variant.csv"
 
   // Specify memory and partition requirements for the process
-  memory = '75G'
-  cpus = 10
+  memory = '100G'
+  cpus = 20
   time = '50h'
 
   script:
   """
-  echo
   oc config md ${oc_mod_path}
   oc module install-base
   oc run ${var_ch} -l ${var_build} -t csv --package mypackage -d .
