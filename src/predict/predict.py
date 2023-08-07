@@ -15,7 +15,7 @@ def parse_and_predict(dataframe, config_dict, clf):
     # Drop variant info columns so we can perform one-hot encoding
     dataframe["so"] = dataframe["consequence"]
     var = dataframe[config_dict["id_cols"]]
-    var["gnomad3.af"] = dataframe["gnomad3.af"]
+    var["gnomad3.af"] = dataframe["gnomad3.af"].copy()
     dataframe = dataframe.drop(config_dict["id_cols"], axis=1)
     dataframe = dataframe.replace(['.','-',''], np.nan)
     for key in dataframe.columns:
