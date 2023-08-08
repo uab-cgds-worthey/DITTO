@@ -132,8 +132,8 @@ workflow {
   oc_mod_path = params.oc_modules
 
   // Run processes
-  extractFromVCF(vcfFile)
-  runOC(extractFromVCF.out,vcfBuild,oc_mod_path )
+  // extractFromVCF(vcfFile)
+  runOC(vcfFile,vcfBuild,oc_mod_path )
   parseAnnotation(runOC.out)
   // Scatter the output of parseAnnotation to process each file separately
   parseAnnotation.out.flatten().set { files }
