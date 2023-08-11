@@ -1,13 +1,11 @@
 #!/bin/bash
 #
-#SBATCH --job-name=CAGI_TE
-#SBATCH --output=logs/CAGI_TE.out
+#SBATCH --job-name=snvs
+#SBATCH --output=logs/snvs.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
 #SBATCH --partition=long
-##SBATCH --partition=pascalnodes
-##SBATCH --gres=gpu:1
 #
 # Number of CPUs allocated to each task.
 #SBATCH --cpus-per-task=1
@@ -28,8 +26,8 @@ ml Anaconda3
 
 #Modify paths and run the pipeline here
 /data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf \
-  --outdir /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/CAGI_TR \
-  -work-dir /scratch/tmamidi/CAGI_TR \
-  --vcf_path /data/project/worthey_lab/projects/experimental_pipelines/mana/small_tasks/cagi6/rgp/data/interim/single_sample_vcf/test/homref_removed/CAGI6_RGP_TEST_\*_PROBAND.vcf.gz \
-  --build hg38
+  --outdir /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snvs \
+  -work-dir /scratch/tmamidi/snvs \
+  --vcf_path /data/project/worthey_lab/temp_datasets_central/tarun/cadd/split/snvs/\* \
+  --build hg38 -c cheaha.config
 
