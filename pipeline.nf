@@ -65,7 +65,7 @@ process runOC {
   path "*.variant.csv"
 
   // Specify memory and partition requirements for the process
-  memory = '100G'
+  memory = '30G'
   cpus = 20
   time = '50h'
 
@@ -117,7 +117,7 @@ process prediction {
 
   script:
   """
-  python ${baseDir}/src/predict/predict.py -i ${var_parse_ch} -o ${output_dir} -c ${baseDir}/configs/col_config.yaml -d ${baseDir}/data/processed/train_data_3_star/
+  python ${baseDir}/src/predict/predict.py -i ${var_parse_ch} -o ${output_dir} -c ${baseDir}/configs/col_config.yaml -d ${baseDir}/model/
   """
 }
 
