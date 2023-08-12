@@ -17,17 +17,23 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=sdhutchins@uab.edu
 
-#Set your environment here
+# Set your environment here
 module reset
-ml Java/13.0.2
-ml Anaconda3
+module load Java/13.0.2
+module load Anaconda3
 #conda activate nextflow
 
+# Define variables for paths
+nextflow_dir="/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7"
+outdir="/data/project/worthey_lab/projects/PAH_RHamid/analysis/DITTO/pah-snvs-results"
+workdir="/scratch/shutchin/pah-snvs"
+vcfs="/data/project/worthey_lab/projects/PAH_RHamid/analysis/**/vcf/*.vcf.gz"
 
-#Modify paths and run the pipeline here
-/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf \
-  --outdir /data/project/worthey_lab/projects/PAH_RHamid/analysis/DITTO/pah-snvs-results \
-  -work-dir /scratch/shutchin/pah-snvs \
-  --vcf_path /data/project/worthey_lab/projects/PAH_RHamid/analysis/\**/vcf/\*.vcf.gz \
-  --build hg38 -c cheaha.config -resume
 
+# Run the pipeline with variables
+#"${nextflow_dir}/nextflow" run pipeline.nf --outdir "${outdir}" -work-dir "${workdir}" --vcf_path "${vcfs}" --build hg38 -c cheaha.config
+
+# Uncomment and run the below command should the pipeline time out or have errors.
+# Make sure you comment out the above command.
+# The below adds the -resume flag to continue the pipeline's progress
+"${nextflow_dir}/nextflow" run pipeline.nf --outdir "${outdir}" -work-dir "${workdir}" --vcf_path "${vcfs}" --build hg38 -c cheaha.config -resume
