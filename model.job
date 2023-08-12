@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-#SBATCH --job-name=snvs
-#SBATCH --output=logs/snvs.out
+#SBATCH --job-name=pah-snvs
+#SBATCH --output=logs/pah-snvs.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
@@ -15,7 +15,7 @@
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
-#SBATCH --mail-user=tmamidi@uab.edu
+#SBATCH --mail-user=sdhutchins@uab.edu
 
 #Set your environment here
 module reset
@@ -26,8 +26,8 @@ ml Anaconda3
 
 #Modify paths and run the pipeline here
 /data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf \
-  --outdir /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snvs \
-  -work-dir /scratch/tmamidi/snvs \
-  --vcf_path /data/project/worthey_lab/temp_datasets_central/tarun/cadd/split/snvs/\* \
-  --build hg38 -c cheaha.config
+  --outdir /data/project/worthey_lab/projects/PAH_RHamid/analysis/DITTO/pah-snvs-results \
+  -work-dir /scratch/shutchin/pah-snvs \
+  --vcf_path /data/project/worthey_lab/projects/PAH_RHamid/analysis/\**/vcf/\*.vcf.gz \
+  --build hg38 -c cheaha.config -resume
 
