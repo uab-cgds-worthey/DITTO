@@ -145,7 +145,7 @@ if __name__ == "__main__":
             header=header,
             mode=mode,
             compression='gzip')
-        ditto_scores.to_csv(args.outdir + f"/{basename}_DITTO_scores.csv.gz", index=False,
+        ditto_scores[["transcript","gene","consequence","chrom","pos","ref_base","alt_base","DITTO"]].to_csv(args.outdir + f"/{basename}_DITTO_scores.csv.gz", index=False,
         header=header,
             mode=mode,
                compression="gzip")

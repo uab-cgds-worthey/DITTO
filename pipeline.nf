@@ -27,7 +27,6 @@ log.info """\
 
 // Define the process to extract the required information from VCF and convert to txt.gz
 process extractFromVCF {
-  publishDir output_dir, mode:'copy'
 
   // Define the conda environment file to be used
   // conda 'configs/envs/bcftools.yaml'
@@ -37,16 +36,16 @@ process extractFromVCF {
   path homref_vcf
 
   output:
-  path "${homref_vcf.baseName}.txt.gz"//, emit: extractedVCF
+  path "${homref_vcf}_*"//, emit: extractedVCF
 
   // Specify memory and partition requirements for the process
-  memory = '5G'
+  memory = '1G'
   cpus = 1
   time = '1h'
 
   shell:
   """
-  zcat ${homref_vcf} | grep -v "^#" | cut -d\$'\t' -f1,2,4,5 | grep -v "*" | gzip > ${homref_vcf.baseName}.txt.gz
+  split -l 1000000 --numeric-suffixes --suffix-length=3 ${homref_vcf} ${homref_vcf}_
   """
 }
 
@@ -54,7 +53,7 @@ process extractFromVCF {
 process runOC {
 
   // Define the conda environment file to be used
-  conda 'configs/envs/open-cravat.yaml'
+  conda '/home/tmamidi/.conda/envs/nextflow'
 
   input:
   path var_ch
@@ -65,15 +64,16 @@ process runOC {
   path "*.variant.csv"
 
   // Specify memory and partition requirements for the process
-  memory = '30G'
-  cpus = 20
-  time = '50h'
+  memory = '5G'
+  cpus = 5
+  time = '2h'
 
   script:
   """
   oc config md ${oc_mod_path}
   oc module install-base
-  oc run ${var_ch} -l ${var_build} -t csv --package mypackage -d .
+  oc run ${var_ch} -l ${var_build} -t csv -mp 5 --package mypackage -d .
+  rm -rf *.err *.sqlite
   """
 
 }
@@ -91,8 +91,8 @@ process parseAnnotation {
   path "*_parsed.csv.gz"
 
   // Specify memory and partition requirements for the process
-  memory = '10G'
-  cpus = 5
+  memory = '1G'
+  cpus = 1
   time = '2h'
 
   script:
@@ -112,7 +112,7 @@ process prediction {
 
   // Specify memory and partition requirements for the process
   memory = '20G'
-  cpus = 5
+  cpus = 1
   time = '2h'
 
   script:
@@ -132,8 +132,9 @@ workflow {
   oc_mod_path = params.oc_modules
 
   // Run processes
-  // extractFromVCF(vcfFile)
-  runOC(vcfFile,vcfBuild,oc_mod_path )
+  extractFromVCF(vcfFile)
+  extractFromVCF.out.flatten().set { vcffiles }
+  runOC(vcffiles,vcfBuild,oc_mod_path )
   parseAnnotation(runOC.out)
   // Scatter the output of parseAnnotation to process each file separately
   parseAnnotation.out.flatten().set { files }
