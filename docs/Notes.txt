@@ -694,3 +694,10 @@ ml Java/13.0.2
 ml Anaconda3
 conda activate nextflow
 /data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf --outdir /scratch/tmamidi/test -work-dir /scratch/tmamidi/test
+
+################### 8/18/23 ######################################################################
+cohort level analysis.
+
+Use the `get_sample_info.py` script to extract the numsample and sample columns. 
+
+Then use the `parse_single_sample.py` file to parse annotated file.
