@@ -28,6 +28,6 @@ ml Anaconda3
 /data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf \
   --outdir /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snvs \
   -work-dir ${USER_SCRATCH}/snvs \
-  --vcf_path /data/project/worthey_lab/temp_datasets_central/tarun/cadd/split/snvs/xza\* \
+  --vcf_path /data/project/worthey_lab/temp_datasets_central/tarun/cadd/split/snvs/f_xza/\* \
   --build hg38 -c cheaha.config
 
