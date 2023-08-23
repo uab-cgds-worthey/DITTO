@@ -36,7 +36,7 @@ process extractFromVCF {
   path homref_vcf
 
   output:
-  path "${homref_vcf}5_*"//, emit: extractedVCF
+  path "${homref_vcf}_*"//, emit: extractedVCF
 
   // Specify memory and partition requirements for the process
   memory = '1G'
@@ -45,7 +45,7 @@ process extractFromVCF {
 
   shell:
   """
-  split -l 500000 --numeric-suffixes --suffix-length=3 ${homref_vcf} ${homref_vcf}5_
+  split -l 50000 --numeric-suffixes --suffix-length=3 ${homref_vcf} ${homref_vcf}_
   """
 }
 
@@ -61,19 +61,19 @@ process runOC {
   val oc_mod_path
 
   output:
-  path "*.variant.csv"
+  path "${var_ch}.variant.csv"
 
   // Specify memory and partition requirements for the process
-  memory = '5G'
+  memory = '2G'
   cpus = 1
-  time = '4h'
+  time = '1h'
 
   script:
   """
   oc config md ${oc_mod_path}
   oc module install-base
   oc run ${var_ch} -l ${var_build} -t csv --package mypackage -d .
-  rm -rf *.err *.sqlite
+  rm -rf ${var_ch}.err ${var_ch}.sqlite
   """
 
 }
@@ -91,9 +91,9 @@ process parseAnnotation {
   path "*_parsed.csv.gz"
 
   // Specify memory and partition requirements for the process
-  memory = '10G'
+  memory = '1G'
   cpus = 1
-  time = '2h'
+  time = '1h'
 
   script:
   """
@@ -111,7 +111,7 @@ process prediction {
   path var_parse_ch
 
   // Specify memory and partition requirements for the process
-  memory = '20G'
+  memory = '1.5G'
   cpus = 1
   time = '2h'
 
