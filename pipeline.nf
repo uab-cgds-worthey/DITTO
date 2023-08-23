@@ -36,7 +36,7 @@ process extractFromVCF {
   path homref_vcf
 
   output:
-  path "${homref_vcf}_*"//, emit: extractedVCF
+  path "${homref_vcf}5_*"//, emit: extractedVCF
 
   // Specify memory and partition requirements for the process
   memory = '1G'
@@ -45,7 +45,7 @@ process extractFromVCF {
 
   shell:
   """
-  split -l 1000000 --numeric-suffixes --suffix-length=3 ${homref_vcf} ${homref_vcf}_
+  split -l 500000 --numeric-suffixes --suffix-length=3 ${homref_vcf} ${homref_vcf}5_
   """
 }
 
@@ -53,7 +53,7 @@ process extractFromVCF {
 process runOC {
 
   // Define the conda environment file to be used
-  conda '/home/tmamidi/.conda/envs/nextflow'
+  conda 'configs/envs/open-cravat.yaml'
 
   input:
   path var_ch
@@ -65,14 +65,14 @@ process runOC {
 
   // Specify memory and partition requirements for the process
   memory = '5G'
-  cpus = 5
-  time = '2h'
+  cpus = 1
+  time = '4h'
 
   script:
   """
   oc config md ${oc_mod_path}
   oc module install-base
-  oc run ${var_ch} -l ${var_build} -t csv -mp 5 --package mypackage -d .
+  oc run ${var_ch} -l ${var_build} -t csv --package mypackage -d .
   rm -rf *.err *.sqlite
   """
 
@@ -91,7 +91,7 @@ process parseAnnotation {
   path "*_parsed.csv.gz"
 
   // Specify memory and partition requirements for the process
-  memory = '1G'
+  memory = '10G'
   cpus = 1
   time = '2h'
 
