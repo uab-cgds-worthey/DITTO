@@ -64,16 +64,16 @@ process runOC {
   path "${var_ch}.variant.csv"
 
   // Specify memory and partition requirements for the process
-  memory = '2G'
-  cpus = 1
-  time = '1h'
+  memory = '4G'
+  cpus = 2
+  time = '2h'
 
   script:
   """
   oc config md ${oc_mod_path}
   oc module install-base
-  oc run ${var_ch} -l ${var_build} -t csv --package mypackage -d .
-  rm -rf ${var_ch}.err ${var_ch}.sqlite
+  oc run ${var_ch} -l ${var_build} -t csv --mp 2 --package mypackage -d .
+  rm -rf ${var_ch}.sqlite
   """
 
 }
@@ -93,7 +93,7 @@ process parseAnnotation {
   // Specify memory and partition requirements for the process
   memory = '1G'
   cpus = 1
-  time = '1h'
+  time = '2h'
 
   script:
   """

@@ -1,17 +1,17 @@
 #!/bin/bash
 #
-#SBATCH --job-name=snvs
-#SBATCH --output=logs/snvs.out
+#SBATCH --job-name=snv
+#SBATCH --output=logs/snv2.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
-#SBATCH --partition=long
+#SBATCH --partition=short
 #
 # Number of CPUs allocated to each task.
 #SBATCH --cpus-per-task=1
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.
-#SBATCH --mem=5G
+#SBATCH --mem=6G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
@@ -26,8 +26,8 @@ ml Anaconda3
 
 #Modify paths and run the pipeline here
 /data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf \
-  --outdir /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snvs \
-  -work-dir ${USER_SCRATCH}/snvs \
-  --vcf_path /data/project/worthey_lab/temp_datasets_central/tarun/cadd/split/snvs/f_xza/\* \
-  --build hg38 -c cheaha.config
+  --outdir /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snv \
+  -work-dir ${USER_SCRATCH}/snv \
+  --vcf_path /data/project/worthey_lab/temp_datasets_central/tarun/cadd/split/snvs/f_xza/xzazr \
+  --build hg38 -c cheaha.config  -with-report
 
