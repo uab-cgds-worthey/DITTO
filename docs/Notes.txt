@@ -701,3 +701,10 @@ cohort level analysis.
 Use the `get_sample_info.py` script to extract the numsample and sample columns. 
 
 Then use the `parse_single_sample.py` file to parse annotated file.
+
+################### 8/29/23 ######################################################################
+
+Extract all variants from CADD file
+
+`zcat /data/project/worthey_lab/temp_datasets_central/tarun/cadd/raw/GRCh38/v1.6_rel20220331/whole_genome_SNVs_inclAnno.tsv.gz | grep -v "^#" | cut -d$'\t' -f1,2,3,4 > data/interim/all_snvs`
+

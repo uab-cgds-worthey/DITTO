@@ -52,6 +52,9 @@ process extractFromVCF {
 // Define the process to run 'oc' with the specified parameters
 process runOC {
 
+  errorStrategy 'retry'
+  maxRetries 2
+
   // Define the conda environment file to be used
   conda 'configs/envs/open-cravat.yaml'
 
@@ -73,7 +76,7 @@ process runOC {
   oc config md ${oc_mod_path}
   oc module install-base
   oc run ${var_ch} -l ${var_build} -t csv --mp 2 --package mypackage -d .
-  rm -rf ${var_ch}.sqlite
+  rm -rf ${var_ch}.sqlite ${var_ch}.err
   """
 
 }

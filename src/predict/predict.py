@@ -141,10 +141,10 @@ if __name__ == "__main__":
         header = i == 0
         #print('\nData shape (nsSNV) =', df2.shape)
         # Write it to a file
-        df2.to_csv(args.outdir + f"/{basename}_filtered_annots.csv.gz", index=False,
-            header=header,
-            mode=mode,
-            compression='gzip')
+        # df2.to_csv(args.outdir + f"/{basename}_filtered_annots.csv.gz", index=False,
+        #     header=header,
+        #     mode=mode,
+        #     compression='gzip')
         ditto_scores[["transcript","gene","consequence","chrom","pos","ref_base","alt_base","DITTO"]].to_csv(args.outdir + f"/{basename}_DITTO_scores.csv.gz", index=False,
         header=header,
             mode=mode,
