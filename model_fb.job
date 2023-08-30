@@ -28,5 +28,5 @@ ml Anaconda3
   --outdir /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snv \
   -work-dir ${USER_SCRATCH}/snv \
   --vcf_path /data/project/worthey_lab/temp_datasets_central/tarun/cadd/split/snvs/f_xzb/\* \
-  --build hg38 -c cheaha.config  -with-report -resume
+  --build hg38 -c cheaha.config  -with-report
 
