@@ -28,20 +28,12 @@ log.info """\
 // Define the process to extract the required information from VCF and convert to txt.gz
 process extractFromVCF {
 
-  // Define the conda environment file to be used
-  // conda 'configs/envs/bcftools.yaml'
-
   // Define the input channel for the VCF files
   input:
   path homref_vcf
 
   output:
   path "${homref_vcf}_*"//, emit: extractedVCF
-
-  // Specify memory and partition requirements for the process
-  memory = '1G'
-  cpus = 1
-  time = '1h'
 
   shell:
   """
@@ -51,9 +43,6 @@ process extractFromVCF {
 
 // Define the process to run 'oc' with the specified parameters
 process runOC {
-
-  errorStrategy 'retry'
-  maxRetries 2
 
   // Define the conda environment file to be used
   conda 'configs/envs/open-cravat.yaml'
@@ -65,11 +54,6 @@ process runOC {
 
   output:
   path "${var_ch}.variant.csv"
-
-  // Specify memory and partition requirements for the process
-  memory = '4G'
-  cpus = 2
-  time = '2h'
 
   script:
   """
@@ -93,11 +77,6 @@ process parseAnnotation {
   output:
   path "*_parsed.csv.gz"
 
-  // Specify memory and partition requirements for the process
-  memory = '1G'
-  cpus = 1
-  time = '2h'
-
   script:
   """
   python ${baseDir}/src/annotation_parsing/parse.py -i ${var_ann_ch} -e parse -o . -c ${baseDir}/configs/opencravat_test_config.json
@@ -112,11 +91,6 @@ process prediction {
 
   input:
   path var_parse_ch
-
-  // Specify memory and partition requirements for the process
-  memory = '1.5G'
-  cpus = 1
-  time = '2h'
 
   script:
   """
