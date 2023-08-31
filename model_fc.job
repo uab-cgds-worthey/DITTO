@@ -11,7 +11,7 @@
 #SBATCH --cpus-per-task=1
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.
-#SBATCH --mem=6G
+#SBATCH --mem=10G
 #
 # Send mail to the email address when the job fails
 #SBATCH --mail-type=FAIL
@@ -28,5 +28,5 @@ ml Anaconda3
   --outdir /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snv \
   -work-dir ${USER_SCRATCH}/snv \
   --vcf_path /data/project/worthey_lab/temp_datasets_central/tarun/cadd/split/snvs/f_xzc/\* \
-  --build hg38 -c cheaha.config  -with-report
+  --build hg38 -c cheaha.config  -with-report -resume
 
