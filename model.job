@@ -30,3 +30,4 @@ ml Anaconda3
   --vcf_path /data/project/worthey_lab/temp_datasets_central/tarun/cadd/split/snvs/f_xza/\* \
   --build hg38 -c cheaha.config  -with-report -resume
 
+#https://training.nextflow.io/basic_training/cache_and_resume/#how-to-organize-in-silico-experiments
