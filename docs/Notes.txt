@@ -689,22 +689,29 @@ Lines   total/split/realigned/skipped:  7992/0/1793/0
 ################### 7/26/23 ######################################################################
 creating nextflow pipeline
 
-srun --ntasks=1 --cpus-per-task=1 --mem-per-cpu=50G --partition=short --job-name=nf --pty /bin/bash
+srun --ntasks=1 --cpus-per-task=2 --mem=50G --partition=interactive --job-name=nf --pty /bin/bash
 ml Java/13.0.2
 ml Anaconda3
-conda activate nextflow
-/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf --outdir /scratch/tmamidi/test -work-dir /scratch/tmamidi/test
+conda activate ditto
+/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf --outdir /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snvs -work-dir ${USER_SCRATCH}/snv --build hg38
 
 ################### 8/18/23 ######################################################################
 cohort level analysis.
 
-Use the `get_sample_info.py` script to extract the numsample and sample columns. 
+Use the `get_sample_info.py` script to extract the numsample and sample columns.
 
 Then use the `parse_single_sample.py` file to parse annotated file.
 
-################### 8/29/23 ######################################################################
+################### 8/29/23 & 9/12/23 ######################################################################
 
 Extract all variants from CADD file
 
-`zcat /data/project/worthey_lab/temp_datasets_central/tarun/cadd/raw/GRCh38/v1.6_rel20220331/whole_genome_SNVs_inclAnno.tsv.gz | grep -v "^#" | cut -d$'\t' -f1,2,3,4 > data/interim/all_snvs`
+`zcat /data/project/worthey_lab/temp_datasets_central/tarun/cadd/raw/GRCh38/v1.6_rel20220331/whole_genome_SNVs_inclAnno.tsv.gz | grep -v "^#" | cut -d$'\t' -f1,2,3,4 | split -l 50000`
 
+copy all file names and split them to 9 samplesheets for folks to run
+
+```
+find /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/splits/ -type f > ../file_list.txt
+
+split -n l/9 file_list.txt file_list_part
+```

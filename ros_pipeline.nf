@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 // Define the command-line options to specify the path to VCF files
-params.vcf_path = '.test_data/file_list_partaa'
+params.vcf_path = '.test_data/*'
 params.build = "hg38"
 params.oc_modules = "/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules"
 // Define the Scratch directory
@@ -25,6 +25,21 @@ log.info """\
          """
          .stripIndent()
 
+// Define the process to extract the required information from VCF and convert to txt.gz
+process extractFromVCF {
+
+  // Define the input channel for the VCF files
+  input:
+  path homref_vcf
+
+  output:
+  path "${homref_vcf}_*"//, emit: extractedVCF
+
+  shell:
+  """
+  split -l 50000 --numeric-suffixes --suffix-length=3 ${homref_vcf} ${homref_vcf}_
+  """
+}
 
 // Define the process to run 'oc' with the specified parameters
 process runOC {
@@ -89,11 +104,13 @@ process prediction {
 workflow {
 
   // Define input channels for the VCF files
-  vcfFile = Channel.fromPath(params.vcf_path).splitCsv(header: false)
+  vcfFile = Channel.fromPath(params.vcf_path)
   vcfBuild = params.build
   oc_mod_path = params.oc_modules
 
-  // Run processes
+  // // Run processes
+  // extractFromVCF(vcfFile)
+  // extractFromVCF.out.flatten().set { vcffiles }
   runOC(vcfFile,vcfBuild,oc_mod_path )
   parseAnnotation(runOC.out)
   // Scatter the output of parseAnnotation to process each file separately
