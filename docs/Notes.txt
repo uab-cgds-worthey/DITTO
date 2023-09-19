@@ -689,7 +689,7 @@ Lines   total/split/realigned/skipped:  7992/0/1793/0
 ################### 7/26/23 ######################################################################
 creating nextflow pipeline
 
-srun --ntasks=1 --cpus-per-task=2 --mem=50G --partition=interactive --job-name=nf --pty /bin/bash
+srun --ntasks=1 --cpus-per-task=2 --mem=50G --partition=amd-hdr100 --job-name=nf --pty /bin/bash
 ml Java/13.0.2
 ml Anaconda3
 conda activate ditto
@@ -711,7 +711,7 @@ Extract all variants from CADD file
 copy all file names and split them to 9 samplesheets for folks to run
 
 ```
-find /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/splits/ -type f > ../file_list.txt
+find /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/external/splits/ -type f > file_list.txt
 
 split -n l/9 file_list.txt file_list_part
 ```

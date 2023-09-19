@@ -93,6 +93,7 @@ work
 .nextflow*
 # data/
 variant_annotation/data/
+report*
 
 # exclude test data used for development
 to_be_deleted/test_data/data/ref
