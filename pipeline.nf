@@ -59,7 +59,7 @@ process runOC {
   """
   oc config md ${oc_mod_path}
   oc module install-base
-  oc run ${var_ch} -l ${var_build} -t csv --mp 2 --package mypackage -d .
+  oc run ${var_ch} -l ${var_build} -t csv --mp ${task.cpus} --package mypackage -d .
   rm -rf ${var_ch}.sqlite ${var_ch}.err
   """
 
