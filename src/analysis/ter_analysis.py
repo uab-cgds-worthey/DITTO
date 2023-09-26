@@ -1,8 +1,6 @@
 import pandas as pd
-from csv import DictReader
 import obonet
 import networkx as nx
-import numpy as np
 import argparse
 import matplotlib.pyplot as plt
 plt.rcParams.update({'figure.max_open_warning': 0})
@@ -59,7 +57,7 @@ def parse_terms(alt_terms, in_terms):
 
 def hpo_file():
     # Specify the path to your JSON file
-    file_path = '../../data/external/train_test_metadata_nonGeneticHPOsRemoved.json'
+    file_path = 'data/external/train_test_metadata_nonGeneticHPOsRemoved.json'
 
     # Open the JSON file for reading
     with open(file_path, 'r') as json_file:
@@ -85,17 +83,32 @@ def hazel(alt_id,gene_2_hpo,hpo_terms):
                 )
     return ranked_genes
 
+
 print("Generating Gene-Phene vectors from HPO...")
 gene_2_hpo, graph, alt_id = get_gene_df()
 metadata = hpo_file()
 print("done!")
 # Filter the dictionary to keep only dictionaries containing "pro" in keys or values
+# probands = {key: subdict for key, subdict in {**metadata['test']}.items() if 'PROBAND' in key} # only test probands
 probands = {key: subdict for key, subdict in {**metadata['train'], **metadata['test']}.items() if 'PROBAND' in key}
-ranked_genes = hazel(alt_id,gene_2_hpo,probands['CAGI6_RGP_TRAIN_4_PROBAND']['hpo'].keys())
-p1 = pd.read_csv('../../data/external/CAGI_TR/CAGI6_RGP_TRAIN_4_PROBAND_DITTO_scores.csv.gz')
-p1 = p1.sort_values(by="DITTO", ascending=False).drop_duplicates(subset=['chrom', 'pos', 'ref_base', 'alt_base'], keep='first').reset_index(drop=True)
-merged = p1.merge(ranked_genes, left_on='gene', right_on = 'Genes', how='left')
-merged['combined'] = merged['DITTO'] + merged['score']
-merged = merged.sort_values(by="combined", ascending=False).reset_index(drop=True)
-merged[merged['protein_hgvs']==p_var]
-merged.loc[(merged['clinvar.sig'].isin(['Likely pathogenic', 'Pathogenic', 'Pathogenic/Likely pathogenic','risk factor', 'drug response','Likely risk allele', 'association|drug response|risk factor', 'association|drug response', 'Pathogenic/Likely pathogenic|other','protective|risk factor', 'Pathogenic|risk factor'])) & (merged['combined']>=0.9)][['chrom', 'pos', 'ref_base', 'alt_base','protein_hgvs','consequence','clinvar.sig','clingen.disease','clingen.classification','Genes', 'score','gnomad3.af', 'DITTO', 'combined']]
+for proband in tqdm(probands):
+    #print(f"Analysing {proband}...")
+    ranked_genes = hazel(alt_id,gene_2_hpo,probands[proband]['hpo'].keys())
+    p1 = pd.read_csv(f'data/external/CAGI_TR/{proband}_DITTO_scores.csv.gz',low_memory=False)
+    p1 = p1.sort_values(by="DITTO", ascending=False).drop_duplicates(subset=['chrom', 'pos', 'ref_base', 'alt_base'], keep='first').reset_index(drop=True)
+    p1['gnomad3.af'].fillna(0,inplace=True)
+    merged = p1.merge(ranked_genes, left_on='gene', right_on = 'Genes', how='left')
+    del p1, ranked_genes
+    merged['combined'] = merged['DITTO'] + merged['score']
+    merged = merged.sort_values(by="combined", ascending=False).reset_index(drop=True)
+    ditto_sorted = merged.sort_values(by="DITTO", ascending=False).reset_index(drop=True)
+
+    ditto_sorted[(ditto_sorted['gnomad3.af']<0.0005)].head(99).to_csv(f'data/processed/CAGI_analysis/{proband}_ditto100_vars.csv', index=False)
+    del ditto_sorted
+
+    merged[(merged['gnomad3.af']<0.0005)].head(99).to_csv(f'data/processed/CAGI_analysis/{proband}_top100_vars.csv', index=False)
+
+    merged[(merged['combined']>0.9) & (merged['DITTO']>0.9) & (merged['gnomad3.af']<0.0005)].to_csv(f'data/processed/CAGI_analysis/{proband}_rare_filter.csv', index=False)
+
+    merged.loc[(merged['clinvar.sig'].isin(['Likely pathogenic', 'Pathogenic', 'Pathogenic/Likely pathogenic', 'Pathogenic/Likely pathogenic|other', 'Pathogenic|risk factor']))].to_csv(f'data/processed/CAGI_analysis/{proband}_interesting_vars.csv', index=False)
+    #merged.loc[(merged['clinvar.sig'].isin(['Likely pathogenic', 'Pathogenic', 'Pathogenic/Likely pathogenic','risk factor', 'drug response','Likely risk allele', 'association|drug response|risk factor', 'association|drug response', 'Pathogenic/Likely pathogenic|other','protective|risk factor', 'Pathogenic|risk factor']))][['chrom', 'pos', 'ref_base', 'alt_base','protein_hgvs','consequence','clinvar.sig','clingen.disease','clingen.classification','Genes', 'score','gnomad3.af', 'DITTO', 'combined']].to_csv(f'data/processed/CAGI_analysis/{proband}_interesting_vars.csv', index=False)
