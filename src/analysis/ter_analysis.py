@@ -102,13 +102,14 @@ for proband in tqdm(probands):
     merged['combined'] = merged['DITTO'] + merged['score']
     merged = merged.sort_values(by="combined", ascending=False).reset_index(drop=True)
     ditto_sorted = merged.sort_values(by="DITTO", ascending=False).reset_index(drop=True)
+    ditto_sorted = ditto_sorted[ditto_sorted['gene'].notna()]
 
-    ditto_sorted[(ditto_sorted['gnomad3.af']<0.0005)].head(99).to_csv(f'data/processed/CAGI_analysis/{proband}_ditto100_vars.csv', index=False)
+    ditto_sorted[(ditto_sorted['gnomad3.af']<0.0005)].head(999).to_csv(f'data/processed/CAGI_analysis/{proband}_ditto100_vars.csv', index=False)
     del ditto_sorted
 
-    merged[(merged['gnomad3.af']<0.0005)].head(99).to_csv(f'data/processed/CAGI_analysis/{proband}_top100_vars.csv', index=False)
-
-    merged[(merged['combined']>0.9) & (merged['DITTO']>0.9) & (merged['gnomad3.af']<0.0005)].to_csv(f'data/processed/CAGI_analysis/{proband}_rare_filter.csv', index=False)
-
-    merged.loc[(merged['clinvar.sig'].isin(['Likely pathogenic', 'Pathogenic', 'Pathogenic/Likely pathogenic', 'Pathogenic/Likely pathogenic|other', 'Pathogenic|risk factor']))].to_csv(f'data/processed/CAGI_analysis/{proband}_interesting_vars.csv', index=False)
+    #merged[(merged['gnomad3.af']<0.0005)].head(99).to_csv(f'data/processed/CAGI_analysis/{proband}_top100_vars.csv', index=False)
+#
+    #merged[(merged['combined']>0.9) & (merged['DITTO']>0.9) & (merged['gnomad3.af']<0.0005)].to_csv(f'data/processed/CAGI_analysis/{proband}_rare_filter.csv', index=False)
+#
+    #merged.loc[(merged['clinvar.sig'].isin(['Likely pathogenic', 'Pathogenic', 'Pathogenic/Likely pathogenic', 'Pathogenic/Likely pathogenic|other', 'Pathogenic|risk factor']))].to_csv(f'data/processed/CAGI_analysis/{proband}_interesting_vars.csv', index=False)
     #merged.loc[(merged['clinvar.sig'].isin(['Likely pathogenic', 'Pathogenic', 'Pathogenic/Likely pathogenic','risk factor', 'drug response','Likely risk allele', 'association|drug response|risk factor', 'association|drug response', 'Pathogenic/Likely pathogenic|other','protective|risk factor', 'Pathogenic|risk factor']))][['chrom', 'pos', 'ref_base', 'alt_base','protein_hgvs','consequence','clinvar.sig','clingen.disease','clingen.classification','Genes', 'score','gnomad3.af', 'DITTO', 'combined']].to_csv(f'data/processed/CAGI_analysis/{proband}_interesting_vars.csv', index=False)
