@@ -11,7 +11,7 @@
 
 ## Data
 
-Input for this project is a single sample VCF file. This will be annotated using openCravat and given to Ditto for predictions.
+Input for this project is a VCF file. This will be annotated using openCravat and given to Ditto for predictions.
 
 ## Usage
 
@@ -44,11 +44,11 @@ Change in to root directory and run the commands below:
 
 ```sh
 # create conda environment. Needed only the first time.
-conda env create -n nextflow
+conda env create -n ditto
 
 
 # activate conda environment
-conda activate nextflow
+conda activate ditto
 
 # Install nextflow
 conda install -c bioconda nextflow
@@ -62,7 +62,7 @@ variants with `*` in `ALT Allele` column. More on these variants [here](https://
 
 #### Run DITTO pipeline
 
-Please modify the sample in the `model.job` file and submit cheaha job using the command below
+Please make a samplesheet with VCF files and add it in the `model.job` file. submit cheaha job using the command below
 
 `sbatch model.job`
 

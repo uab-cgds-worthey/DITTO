@@ -31,6 +31,7 @@ dask-worker-space/
 *.csv
 .DS_Store
 example_runs
+file_parts
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -108,3 +109,4 @@ logs/
 # .java/fonts dir get created when creating fastqc conda env
 .java/
 
+part*/**
