@@ -7,7 +7,7 @@
 > Github in April 2023, and the Gitlab version has been archived.
 
 
-**Aim:** We aim to develop a pipeline for accurate and rapid prioritization of variants using patient’s genotype (VCF) and/or phenotype (HPO) information.
+**Aim:** We aim to develop a pipeline for accurate and rapid prioritization of likely pathogenic variants using patient’s genotype (VCF) information.
 
 ## Data
 
@@ -31,7 +31,7 @@ git clone https://github.com/uab-cgds-worthey/DITTO.git
 
 *OS:*
 
-Currently works only in Linux OS. Docker versions may need to be explored later to make it useable in Mac (and
+Currently works only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it useable in Mac (and
 potentially Windows).
 
 *Tools:*
@@ -62,7 +62,8 @@ variants with `*` in `ALT Allele` column. More on these variants [here](https://
 
 #### Run DITTO pipeline
 
-Please make a samplesheet with VCF files and add it in the `model.job` file. submit cheaha job using the command below
+Please make a samplesheet with VCF files and add its path in the `model.job` file. Please make sure to edit the
+directory for output files and the modules from openCravat. Please submit cheaha (UAB HPC) job using the command below
 
 `sbatch model.job`
 
