@@ -51,7 +51,7 @@ process runOC {
 
   oc config md /local/modules
   oc module install-base
-  oc run ${var_ch} -l ${var_build} -t csv --mp 2 --package mypackage -d .
+  oc run ${var_ch} -l ${var_build} -t csv --mp 6 --package mypackage -d .
   rm -rf ${var_ch}.sqlite ${var_ch}.err
   """
 
@@ -67,11 +67,11 @@ process parseAnnotation {
   path var_ann_ch
 
   output:
-  path "*_parsed.csv.gz"
+  path "${var_ann_ch}_parsed.csv.gz"
 
   script:
   """
-  python ${baseDir}/src/annotation_parsing/parse.py -i ${var_ann_ch} -e parse -o . -c ${baseDir}/configs/opencravat_test_config.json
+  python ${baseDir}/src/annotation_parsing/parse_single_sample.py -i ${var_ann_ch} -e parse -o ${var_ann_ch}_parsed.csv.gz -c ${baseDir}/configs/opencravat_test_config.json
   """
 }
 

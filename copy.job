@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-#SBATCH --job-name=c0235_copyDB
-#SBATCH --output=logs/copyDB_c0235.out
+#SBATCH --job-name=c0231_copyDB
+#SBATCH --output=logs/copyDB_c0231.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
@@ -9,8 +9,8 @@
 #
 # Number of CPUs allocated to each task.
 #SBATCH --cpus-per-task=1
-#SBATCH --nodelist=c0235
-#SBATCH --reservation=wortheylab
+#SBATCH --nodelist=c0231
+#SBATCH --reservation=wortheylab-stage
 #SBATCH --time=10:30:00
 #
 # Mimimum memory required per allocated  CPU  in  MegaBytes.

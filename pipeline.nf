@@ -30,7 +30,7 @@ log.info """\
 process runOC {
 
   // Define the conda environment file to be used
-  conda 'configs/envs/open-cravat.yaml'
+  conda '../configs/envs/open-cravat.yaml'
 
   input:
   path var_ch
@@ -43,7 +43,6 @@ process runOC {
   script:
   """
   oc config md ${oc_mod_path}
-  oc module install-base
   oc run ${var_ch} -l ${var_build} -t csv --mp 2 --package mypackage -d .
   rm -rf ${var_ch}.sqlite ${var_ch}.err
   """
@@ -72,7 +71,7 @@ process parseAnnotation {
 process prediction {
 
   // Define the conda environment file to be used
-  conda 'configs/envs/ditto-nf.yaml'
+  conda '../configs/envs/ditto-nf.yaml'
 
   input:
   path var_parse_ch
