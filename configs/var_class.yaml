@@ -1,20 +1,20 @@
  NMD_transcript_variant,synonymous_variant: NMD
  synonymous_variant: synonymous
  2kb_downstream_variant,NMD_transcript_variant: NMD
- frameshift_elongation: frameshift_elongation
+ frameshift_elongation: frameshift elongation
  processed_transcript: other RNA
- stop_gained: stop_gained
+ stop_gained: stop gained
  2kb_downstream_variant,miRNA: other RNA
  2kb_downstream_variant,lnc_RNA: other RNA
- intron_variant: intron_variant
- intron_variant,processed_transcript: intron_variant
- missense_variant: missense_variant
- frameshift_truncation: frameshift_truncation
+ intron_variant: intron
+ intron_variant,processed_transcript: intron
+ missense_variant: missense
+ frameshift_truncation: frameshift truncation
  NMD_transcript_variant,3_prime_UTR_variant: NMD
- 3_prime_UTR_variant: 3_prime_UTR_variant
- 5_prime_UTR_variant: 5_prime_UTR_variant
+ 3_prime_UTR_variant: 3 prime UTR
+ 5_prime_UTR_variant: 5 prime UTR
  2kb_downstream_variant,processed_transcript: other RNA
- intron_variant,splice_site_variant: canonical intronic splice
+ intron_variant,splice_site_variant: splice site
  intron_variant,lnc_RNA: other RNA
  2kb_upstream_variant,lnc_RNA: other RNA
  2kb_upstream_variant: intergenic
@@ -25,25 +25,25 @@
  missense_variant,NMD_transcript_variant: NMD
  2kb_downstream_variant,NSD_transcript: NMD
  2kb_downstream_variant: intergenic
- complex_substitution,missense_variant: missense_variant
- complex_substitution,frameshift_truncation: frameshift_truncation
+ complex_substitution,missense_variant: missense
+ complex_substitution,frameshift_truncation: frameshift truncation
  complex_substitution,frameshift_truncation,NMD_transcript_variant: NMD
  intron_variant,NMD_transcript_variant,splice_site_variant: NMD
  2kb_upstream_variant,NMD_transcript_variant: NMD
  2kb_upstream_variant,misc_RNA: other RNA
- complex_substitution,frameshift_elongation,intron_variant: frameshift_elongation
+ complex_substitution,frameshift_elongation,intron_variant: frameshift elongation
  2kb_downstream_variant,misc_RNA: other RNA
- missense_variant,start_lost: start_lost
+ missense_variant,start_lost: start lost
  NSD_transcript: NMD
  NMD_transcript_variant,5_prime_UTR_variant: NMD
- splice_site_variant: canonical splice
- stop_retained_variant: stop_retained_variant
+ splice_site_variant: splice site
+ stop_retained_variant: stop retained
  2kb_upstream_variant,miRNA: other RNA
- inframe_insertion: inframe_insertion
+ inframe_insertion: inframe insertion
  frameshift_truncation,NMD_transcript_variant: NMD
  frameshift_elongation,NMD_transcript_variant: NMD
- frameshift_truncation,stop_gained: frameshift_truncation
- inframe_deletion: inframe_deletion
+ frameshift_truncation,stop_gained: frameshift truncation
+ inframe_deletion: inframe deletion
  2kb_downstream_variant,snRNA: other RNA
  2kb_upstream_variant,NSD_transcript: NMD
  inframe_deletion,NMD_transcript_variant: NMD
@@ -51,55 +51,55 @@
  missense_variant,start_lost,NMD_transcript_variant: NMD
  2kb_upstream_variant,snRNA: other RNA
  intron_variant,NSD_transcript: NMD
- frameshift_elongation,stop_gained: frameshift_elongation
+ frameshift_elongation,stop_gained: frameshift elongation
  NMD_transcript_variant,splice_site_variant: NMD
- frameshift_truncation,stop_lost: frameshift_truncation
+ frameshift_truncation,stop_lost: frameshift truncation
  2kb_downstream_variant,snoRNA: other RNA
- inframe_insertion,stop_gained: stop_gained
+ inframe_insertion,stop_gained: stop gained
  ribozyme: other RNA
  NSD_transcript,5_prime_UTR_variant: NMD
- complex_substitution,frameshift_elongation: frameshift_elongation
- polymorphic_pseudogene,5_prime_UTR_variant: 5_prime_UTR_variant
- polymorphic_pseudogene: polymorphic_pseudogene
+ complex_substitution,frameshift_elongation: frameshift elongation
+ polymorphic_pseudogene,5_prime_UTR_variant: other RNA
+ polymorphic_pseudogene: other RNA
  NMD_transcript_variant: NMD
- frameshift_truncation,stop_lost,stop_retained_variant,3_prime_UTR_variant: frameshift_truncation
- 2kb_downstream_variant,stop_lost: stop_lost
- complex_substitution,inframe_deletion: inframe_deletion
- complex_substitution: complex_substitution
+ frameshift_truncation,stop_lost,stop_retained_variant,3_prime_UTR_variant: frameshift truncation
+ 2kb_downstream_variant,stop_lost: stop lost
+ complex_substitution,inframe_deletion: inframe deletion
+ complex_substitution: complex substitution
  NMD_transcript_variant,stop_lost: NMD
  inframe_insertion,NMD_transcript_variant: NMD
  2kb_upstream_variant,ribozyme: other RNA
  frameshift_elongation,NMD_transcript_variant,stop_gained: NMD
- complex_substitution,stop_gained: stop_gained
- exon_loss_variant,frameshift_truncation: frameshift_truncation
- 2kb_downstream_variant,stop_lost,3_prime_UTR_variant: 3_prime_UTR_variant
- inframe_deletion,stop_gained: stop_gained
- polymorphic_pseudogene,3_prime_UTR_variant: 3_prime_UTR_variant
+ complex_substitution,stop_gained: stop gained
+ exon_loss_variant,frameshift_truncation: frameshift truncation
+ 2kb_downstream_variant,stop_lost,3_prime_UTR_variant: stop lost
+ inframe_deletion,stop_gained: stop gained
+ polymorphic_pseudogene,3_prime_UTR_variant: other RNA
  complex_substitution,missense_variant,NMD_transcript_variant: NMD
  snRNA: other RNA
  2kb_upstream_variant,snoRNA: other RNA
  exon_loss_variant,frameshift_truncation,NMD_transcript_variant: NMD
  miRNA: other RNA
- complex_substitution,inframe_insertion,intron_variant: intron_variant
- stop_lost: stop_lost
+ complex_substitution,inframe_insertion,intron_variant: complex substitution
+ stop_lost: stop lost
  complex_substitution,frameshift_elongation,NMD_transcript_variant: NMD
- exon_loss_variant,inframe_deletion: inframe_deletion
- frameshift_truncation,start_lost: start_lost
- complex_substitution,inframe_insertion,stop_gained: stop_gained
+ exon_loss_variant,inframe_deletion: exon loss variant
+ frameshift_truncation,start_lost: frameshift truncation
+ complex_substitution,inframe_insertion,stop_gained: stop gained
  misc_RNA: other RNA
  NMD_transcript_variant,stop_retained_variant: NMD
- start_lost,5_prime_UTR_variant: 5_prime_UTR_variant
- complex_substitution,inframe_insertion,intron_variant,missense_variant: missense_variant
+ start_lost,5_prime_UTR_variant: start lost
+ complex_substitution,inframe_insertion,intron_variant,missense_variant: complex substitution
  complex_substitution,frameshift_elongation,intron_variant,NMD_transcript_variant: NMD
  complex_substitution,inframe_insertion,intron_variant,NMD_transcript_variant: NMD
- intron_variant,polymorphic_pseudogene: intron_variant
- 2kb_downstream_variant,intron_variant,stop_lost,3_prime_UTR_variant: 3_prime_UTR_variant
- complex_substitution,inframe_insertion: inframe_insertion
- start_retained_variant: start_retained_variant
+ intron_variant,polymorphic_pseudogene: other RNA
+ 2kb_downstream_variant,intron_variant,stop_lost,3_prime_UTR_variant: stop lost
+ complex_substitution,inframe_insertion: complex substitution
+ start_retained_variant: start retained
  2kb_upstream_variant,rRNA: other RNA
- complex_substitution,inframe_deletion,missense_variant: missense_variant
+ complex_substitution,inframe_deletion,missense_variant: complex substitution
  snoRNA: other RNA
  inframe_insertion,NMD_transcript_variant,stop_gained: NMD
- complex_substitution,synonymous_variant: synonymous
+ complex_substitution,synonymous_variant: complex substitution
  NMD_transcript_variant,stop_lost,3_prime_UTR_variant: NMD
- frameshift_elongation,stop_lost: frameshift_elongation
+ frameshift_elongation,stop_lost: frameshift elongation
