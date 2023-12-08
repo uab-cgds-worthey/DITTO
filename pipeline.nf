@@ -59,11 +59,11 @@ process parseAnnotation {
   path var_ann_ch
 
   output:
-  path "*_parsed.csv.gz"
+  path "${var_ann_ch}_parsed.csv.gz"
 
   script:
   """
-  python ${baseDir}/src/annotation_parsing/parse.py -i ${var_ann_ch} -e parse -o . -c ${baseDir}/configs/opencravat_test_config.json
+  python ${baseDir}/src/annotation_parsing/parse_single_sample.py -i ${var_ann_ch} -e parse -o ${var_ann_ch}_parsed.csv.gz -c ${baseDir}/configs/opencravat_test_config.json
   """
 }
 

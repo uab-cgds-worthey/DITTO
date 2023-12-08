@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+#SBATCH --job-name=post_process_gnomad_indel
+#SBATCH --output=logs/post_process_gnomad_indel.out
+#
+# Number of tasks needed for this job. Generally, used with MPI jobs
+#SBATCH --ntasks=1
+#SBATCH --partition=amd-hdr100
+#
+# Number of CPUs allocated to each task.
+#SBATCH --cpus-per-task=1
+#SBATCH --time=06-06:00:00
+#
+# Mimimum memory required per allocated  CPU  in  MegaBytes.
+#SBATCH --mem=10G
+#
+# Send mail to the email address when the job fails
+#SBATCH --mail-type=FAIL
+
+#Set your environment here
+module reset
+#conda activate nextflow
+
+#Modify paths and run the pipeline here
+set -euo pipefail
+
+find /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/gnomad_indel -name "*.csv.gz" -print0 | xargs -0 zcat | sed '1d' >/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/gnomad_indel_merged.csv
+
+echo "merging files successful!"
+
+sort -t ',' -k4,4 -k5,5n -T $USER_SCRATCH /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/gnomad_indel_merged.csv >/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/gnomad_indel_merged_sorted.csv
+
+echo "sorting successful!"
