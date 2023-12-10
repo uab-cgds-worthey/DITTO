@@ -19,15 +19,16 @@
 
 #Set your environment here
 module reset
-#conda activate nextflow
+ml Anaconda3
+conda activate ditto
 
 #Modify paths and run the pipeline here
 set -euo pipefail
 
-find /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/gnomad_indel -name "*.csv.gz" -print0 | xargs -0 zcat | sed '1d' >/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/gnomad_indel_merged.csv
-
+# find /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/gnomad_indel -name "*.csv.gz" -print0 | xargs -0 zcat | csvformat -T | sed '1d' | awk '{print >> ("/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/gnomad_indel_"$4"_merged.csv")}'
+python /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/src/analysis/post_process.py
 echo "merging files successful!"
 
-sort -t ',' -k4,4 -k5,5n -T $USER_SCRATCH /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/gnomad_indel_merged.csv >/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/gnomad_indel_merged_sorted.csv
+# sort -t '\t' -k4,4 -k5,5n -T $USER_SCRATCH /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/gnomad_indel_merged.csv >/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/gnomad_indel_merged_sorted.csv
 
-echo "sorting successful!"
+# echo "sorting successful!"
