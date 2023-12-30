@@ -1,2 +1,2 @@
-/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/.test_data/oc_test_data.vcf.gz
-/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/.test_data/testing_variants_hg38.vcf.gz
+.test_data/oc_test_data.vcf.gz
+.test_data/testing_variants_hg38.vcf.gz

@@ -49,4 +49,4 @@ Install reporters
 Add package as described [here](https://open-cravat.readthedocs.io/en/latest/Package.html)
 
 Here's the package for DITTO
-`/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules/packages/mypackage/mypackage.yml`
+`configs/mypackage/mypackage.yml`
