@@ -25,7 +25,6 @@ dask-worker-space/
 *.egg
 *.err
 *.out
-*.db
 *.py*.sh
 *.tsv
 *.csv
@@ -73,9 +72,6 @@ target/
 # conda
 .conda
 
-# Database
-*.db
-*.rdb
 
 # Pycharm
 .idea
