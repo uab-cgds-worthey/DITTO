@@ -1,13 +1,12 @@
 #!/bin/bash
 #
-#SBATCH --job-name=snv
-#SBATCH --output=samplesheet.out
+#SBATCH --job-name=DITTO
+#SBATCH --output=DITTO_logs.out
 #
 # Number of tasks needed for this job. Generally, used with MPI jobs
 #SBATCH --ntasks=1
 #SBATCH --partition=amd-hdr100-res
-#SBATCH --time=06-06:00:00
-#SBATCH --reservation=wortheylab
+#SBATCH --time=06:00:00
 #
 # Number of CPUs allocated to each task.
 #SBATCH --cpus-per-task=1
@@ -19,18 +18,17 @@
 #SBATCH --mail-type=FAIL
 
 #Set your environment here
-export LMOD_CACHED_LOADS=yes
 module reset
-ml Java/13.0.2
-ml Anaconda3
+module load Java/13.0.2
+module load Anaconda3
 #conda activate nextflow
 
 #Modify paths and run the pipeline here
-/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf \
-  --outdir /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/ \
-  -work-dir /rstore/share/wortheylab_wf_test/wor_dir \
+nextflow run pipeline.nf \
+  --outdir /data/processed/ \
+  -work-dir ./wor_dir \
   --build hg38 -c cheaha.config -with-report \
-  --oc_modules /local/modules
+  --oc_modules /data/external/modules
 #--sample_sheet /rstore/share/wortheylab_wf_test/file_list.txt
 
 #https://training.nextflow.io/basic_training/cache_and_resume/#how-to-organize-in-silico-experiments
