@@ -1,0 +1,1 @@
+NeuralNetwork:  {'activation': 'elu', 'activation_l0': 'elu', 'batch_size': 267, 'dropout_l0': 0.8082860537327723, 'kernel_initializer': 'glorot_normal', 'kernel_initializer_l0': 'he_normal', 'n_layers': 1, 'n_units_l0': 161, 'optimizer': 'Adamax'}
