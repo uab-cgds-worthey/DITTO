@@ -31,12 +31,12 @@ Modules are saved in this location by default when you install them
 Moved the modules to CGDS space on cheaha using the command below
 
 `mv /home/tmamidi/.local/lib/python3.9/site-packages/cravat/modules
-/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat`
+/data/opencravat`
 
 
 Change the location to use openCravat from using the below command
 
-`oc config md /data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules`
+`oc config md /data/opencravat/modules`
 
 List of reporters
 

@@ -43,7 +43,7 @@ process runOC {
   script:
   """
   oc config md ${oc_mod_path}
-  oc run ${var_ch} -l ${var_build} -t csv --mp 7 --package mypackage -d .
+  oc run ${var_ch} -l ${var_build} -t csv --mp 2 --package mypackage -d .
   rm -rf ${var_ch}.sqlite ${var_ch}.err
   cp ${var_ch}.variant.csv ${output_dir}/${var_ch}.variant.csv
   """

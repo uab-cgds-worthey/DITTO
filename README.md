@@ -7,11 +7,11 @@
 > Github in April 2023, and the Gitlab version has been archived.
 
 
-**Aim:** We aim to develop a pipeline for accurate and rapid prioritization of likely pathogenic variants using patient’s genotype (VCF) information.
+**Aim:** We aim to develop a pipeline for accurate and rapid interpretation of genetic variants for pathogenicity using patient’s genotype (VCF) information.
 
 ## Data
 
-Input for this project is a VCF file. This will be annotated using openCravat and given to Ditto for predictions.
+Input for this project is a samplesheet with VCF filepaths. They will be annotated using openCravat and given to Ditto for predictions.
 
 ## Usage
 
@@ -56,14 +56,28 @@ conda install -c bioconda nextflow
 
 ### Steps to run DITTO predictions
 
+#### Setup OpenCravat (only one-time installation)
 
-**Note**: Current version of openCravat that we're using doesn't support "Spanning or overlapping deletions" variants i.e.
+Please follow the steps mentioned [here](docs/install_openCravat.md).
+
+**Note**: Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions" variants i.e.
 variants with `*` in `ALT Allele` column. More on these variants [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele-). These will be ignored when running the pipeline.
 
 #### Run DITTO pipeline
 
-Please make a samplesheet with VCF files and add its path in the `model.job` file. Please make sure to edit the
-directory for output files and the modules from openCravat. Please submit cheaha (UAB HPC) job using the command below
+Please make a samplesheet with VCF files. Please make sure to edit the directories as needed.
+
+```sh
+nextflow run pipeline.nf \
+  --outdir /data/processed/ \
+  -work-dir ./wor_dir \
+  --build hg38 -with-report \
+  --oc_modules /data/opencravat/modules \
+  --sample_sheet .test_data/file_list_partaa
+```
+
+##### Run on UAB cheaha
+Please update the below file and submit cheaha (UAB HPC) job using the command below
 
 `sbatch model.job`
 

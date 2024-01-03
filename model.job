@@ -24,11 +24,10 @@ module load Anaconda3
 #conda activate nextflow
 
 #Modify paths and run the pipeline here
-nextflow run pipeline.nf \
-  --outdir /data/processed/ \
-  -work-dir ./wor_dir \
+/data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run ../pipeline.nf \
+  --outdir /data/results \
+  -work-dir .work_dir/ \
   --build hg38 -c cheaha.config -with-report \
-  --oc_modules /data/external/modules
-#--sample_sheet /rstore/share/wortheylab_wf_test/file_list.txt
+  --sample_sheet .test_data/file_list_partaa -resume
 
 #https://training.nextflow.io/basic_training/cache_and_resume/#how-to-organize-in-silico-experiments
