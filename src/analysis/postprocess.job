@@ -20,17 +20,16 @@
 #Set your environment here
 # module reset
 # ml Anaconda3
-# conda activate csvkit
+conda activate csvkit
 
 #Modify paths and run the pipeline here
 set -euo pipefail
 
-# find /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snvs -name "*.csv.gz" -print0 | xargs -0 zcat | sed '1d' | awk -v OFS='\t' '{print $4,$5,$6,$7,$1,$2,$3,$8 >> ("/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/DITTO_"$4"_merged.csv")}'
+# Merge all the files after DITTO pipeline
+find /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snvs -name "*.csv.gz" -print0 | xargs -0 zcat | csvcut -c chrom,pos,ref_base,alt_base,transcript,gene,consequence,DITTO | csvformat -T | awk -v OFS='\t' '{print > "/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/DITTO_"$1"_merged.tsv"}'
 
-# find /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/snvs -name "*.csv.gz" -print0 | xargs -0 zcat | csvcut -c chrom,pos,ref_base,alt_base,transcript,gene,consequence,DITTO | csvformat -T | awk -v OFS='\t' '{print > "/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/DITTO_"$1"_merged.tsv"}'
-
-#python /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/src/analysis/post_process.py
-# echo "merging files successful!"
+echo "merging files successful!"
 
 sort -t$'\t' -k1,1 -k2,2n -T $USER_SCRATCH /data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/DITTO_chrY_merged.tsv >/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/all_snv/DITTO_chrY_merged.tsv_sorted.tsv
+
 echo "sorting successful!"

@@ -1,3 +1,6 @@
+# This script is used to benchmark DITTO. This script outputs roc/prc plots, confusion matrices, and SHAP plots for each
+# consequence. This is replacement for the script `src/analysis/opencravat_latest_benchmarking-Consequence_80_20.ipynb`.
+
 import pandas as pd
 pd.set_option('display.max_rows', None)
 import warnings

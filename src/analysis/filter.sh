@@ -1,5 +1,4 @@
-
-
+# Filter the DITTO scores and other annotations after running the pipeline. Example tested on CAGI project
 
 #!/bin/bash
 

@@ -1,3 +1,5 @@
+# This script is used to train the traditional ML models and save them in the models folder along with testing metrics,
+# roc/prc plots and SHAP explanation plots.
 # python slurm-launch.py --exp-name Training --command "python training/ML_models.py" --partition largemem --mem 500G
 
 import numpy as np

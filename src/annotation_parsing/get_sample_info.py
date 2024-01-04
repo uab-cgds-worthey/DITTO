@@ -1,3 +1,5 @@
+# Script to extract sample information from the OpenCRAVAT annotated file
+
 import csv
 import ctypes as ct
 

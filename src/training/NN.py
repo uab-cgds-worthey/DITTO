@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Oct  1 01:11:09 2020
+Started working on Thu Oct  1 01:11:09 2020
 
 @author: tarunmamidi
+
+This script is used to train and tune a neural network using Optuna. It can tune itself and save the best model,
+parameters in the models folder along with testing metrics, and SHAP explanation plot.
 """
 import time
 import numpy as np
