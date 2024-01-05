@@ -82,7 +82,6 @@ Please update the below file and submit cheaha (UAB HPC) job using the command b
 
 `sbatch model.job`
 
-
 ## Contact information
 
 For issues, please send an email with clear description to
