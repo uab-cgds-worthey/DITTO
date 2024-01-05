@@ -33,7 +33,7 @@ like
 
 *Tools:*
 
-- Anaconda3
+- Anaconda3 or pip3
 - OpenCravat
 - Git
 
@@ -45,7 +45,7 @@ like
 
 #### Installation
 
-Installation requires the following:
+Requirements:
 
 - DITTO repo from GitHub
 - OpenCravat with databases to annotate
@@ -57,8 +57,9 @@ To fetch DITTO source code, change in to directory of your choice and run:
 git clone https://github.com/uab-cgds-worthey/DITTO.git
 ```
 
-
 Create an environment via conda or pip. Below is an example to install `nextflow` and `OpenCravat` using `pipenv`:
+
+- [Python virtual environment](https://docs.python.org/3/tutorial/venv.html)
 
 ```sh
 # create environment. Needed only the first time. Please use the above link if you're not using Mac.
@@ -66,37 +67,40 @@ python -m venv ditto-env
 
 source ditto-env/bin/activate
 
-# Install nextflow
+# Install nextflow and OpenCravat
 pip install nextflow open-cravat
 ```
 
-##### Setup OpenCravat (only one-time installation)
+Setup OpenCravat (only one-time installation).
 
-Please follow the steps mentioned [here](docs/install_openCravat.md).
+Please follow the steps mentioned in [install_openCravat.md](docs/install_openCravat.md).
 
 **Note**: Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions" variants i.e.
 variants with `*` in `ALT Allele` column. More on these variants [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele-). These will be ignored when running the pipeline.
 
+
+
 #### Run DITTO pipeline
 
-Please make a samplesheet with VCF files. Please make sure to edit the directories as needed.
+Please make a samplesheet with VCF files (incl. path). Please make sure to edit the directory paths as needed.
 
 ```sh
 nextflow run pipeline.nf \
-  --outdir /data/processed/ \
+  --outdir /data/ \
   -work-dir ./wor_dir \
   --build hg38 -with-report \
   --oc_modules /data/opencravat/modules \
   --sample_sheet .test_data/file_list_partaa
 ```
 
-##### Run on UAB cheaha
-Please update the below file and submit cheaha (UAB HPC) job using the command below
+To run on UAB cheaha, please update the `model.job` file and submit a slurm job using the command below
 
 `sbatch model.job`
 
 
 ## Reproducing the DITTO model
+
+Detailed instructions on reproducing the model is explained in [build_DITTO.md](docs/build_DITTO.md)
 
 
 ## Contact information
