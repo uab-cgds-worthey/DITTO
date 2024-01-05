@@ -1,9 +1,15 @@
 # DITTO
 
-:fire: DITTO (inspired by pokemon) is a tool for exploring any type of genetic variant and their predicted functional impact on transcript(s).
-:fire: DITTO uses an explainable neural network model to predict the functional impact of variants and utilizes SHAP to explain the model's predictions.
-:fire: DITTO provides annotations from OpenCravat, a tool for annotating variants with information from multiple data sources.
-:tada: DITTO is currently trained on variants from ClinVar and is not intended for clinical use.
+:fire: DITTO (inspired by pokemon) is a tool for exploring any type of genetic variant and their predicted functional
+impact on transcript(s).
+
+:fire: DITTO uses an explainable neural network model to predict the functional impact of variants and utilizes SHAP to
+explain the model's predictions.
+
+:fire: DITTO provides annotations from OpenCravat, a tool for annotating variants with information from multiple data
+sources.
+
+:fire: DITTO is currently trained on variants from ClinVar and is not intended for clinical use.
 
 ![GIF Placeholder](https://media.giphy.com/media/pMFmBkBTsDMOY/giphy.gif)
 
