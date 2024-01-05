@@ -1,52 +1,51 @@
-# openCravat
-Documentation can be found [here](https://open-cravat.readthedocs.io/en/latest/index.html)
+# OpenCravat
+Original documentation for OpenCravat can be found [here](https://open-cravat.readthedocs.io/en/latest/index.html).
 
 ## Installation
 
 ### Create conda environment
-```
+```sh
+# create conda environment. Needed only the first time.
 conda create -n opencravat
 
+# activate environment
 conda activate opencravat
 ```
 
-### Install openCravat and necessary modules for DITTO
-```
+### Install openCravat
+```sh
 pip3 install open-cravat
+```
+### Set Modules Directory
 
+Use `oc config md` to see where modules directory is currently pointed to. To change the modules directory, use `oc
+config md [new directory]` to point OpencRAVAT to the new directory.
+
+Test it by using `oc config md` command. It should output the new modules directory.
+
+### Install necessary modules for DITTO
+```sh
 oc module install-base
 
 oc module  install aloft cadd cadd_exome cancer_genome_interpreter ccre_screen chasmplus civic clingen clinpred clinvar cosmic cosmic_gene cscape dann dann_coding dbscsnv dbsnp dgi ensembl_regulatory_build ess_gene exac_gene fathmm fathmm_xf_coding funseq2 genehancer gerp ghis gnomad gnomad3 gnomad_gene gtex gwas_catalog linsight loftool lrt mavedb metalr metasvm mutation_assessor mutationtaster mutpred1 mutpred_indel ncbigene ndex ndex_chd ndex_signor omim pangalodb phastcons phdsnpg phi phylop polyphen2 prec provean repeat revel rvis segway sift siphy spliceai uniprot vest cgc cgd varity_r
 ```
 
-## Moving Modules Directory
+### Install reporter modules for DITTO
 
-Use `oc config md` to see where modules are currently stored. To change the modules directory, copy data from the old
-modules directory to the new one, then use `oc config md [new directory]` to point OpencRAVAT to the new directory.
+#### List available reporters
 
-Modules are saved in this location by default when you install them
+```sh
+oc module ls -a -t reporter
+```
 
-`/home/tmamidi/.local/lib/python3.9/site-packages/cravat/modules`
+#### Install reporters
 
-Moved the modules to CGDS space on cheaha using the command below
+```sh
+oc module install vcfreporter csvreporter tsvreporter -y
+```
 
-`mv /home/tmamidi/.local/lib/python3.9/site-packages/cravat/modules
-/data/opencravat`
+## Setup modules package for DITTO pipeline
 
+Package is a module which defines module installation and job parameters. To learn more about OpenCravat's package, please click [here](https://open-cravat.readthedocs.io/en/latest/Package.html).
 
-Change the location to use openCravat from using the below command
-
-`oc config md /data/opencravat/modules`
-
-List of reporters
-
-`oc module ls -a -t reporter`
-
-Install reporters
-
-`oc module install vcfreporter csvreporter tsvreporter -y`
-
-Add package as described [here](https://open-cravat.readthedocs.io/en/latest/Package.html)
-
-Here's the package for DITTO
-`configs/mypackage/mypackage.yml`
+Here's the package for DITTO - `configs/mypackage/mypackage.yml`

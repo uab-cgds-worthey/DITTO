@@ -31,12 +31,13 @@ git clone https://github.com/uab-cgds-worthey/DITTO.git
 
 *OS:*
 
-Currently works only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it useable in Mac (and
+Currently tested only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it useable in Mac (and
 potentially Windows).
 
 *Tools:*
 
 - Anaconda3
+- OpenCravat
 
 ### Activate conda environment (optional)
 
