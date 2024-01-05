@@ -1,6 +1,10 @@
-# DITTO
+<table border="0">
+ <tr>
+    <td><b style="font-size:30px">DITTO</b></td>
+    <td><img src="https://media.giphy.com/media/pMFmBkBTsDMOY/giphy.gif" alt="DITTO GIF"> </img></td>
 
-![GIF Placeholder](https://media.giphy.com/media/pMFmBkBTsDMOY/giphy.gif)
+ </tr>
+</table>
 
 - DITTO (inspired by pokemon) is a tool for exploring any type of genetic variant and their predicted functional impact on transcript(s).
 - DITTO uses an explainable neural network model to predict the functional impact of variants and utilizes SHAP to explain the model's predictions.
