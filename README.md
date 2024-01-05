@@ -9,55 +9,68 @@
 
 **Aim:** We aim to develop a pipeline for accurate and rapid interpretation of genetic variants for pathogenicity using patient’s genotype (VCF) information.
 
-## Data
-
-Input for this project is a samplesheet with VCF filepaths. They will be annotated using openCravat and given to Ditto for predictions.
 
 ## Usage
 
-### Installation
+### Webapp
 
-Installation simply requires fetching the source code. Following are required:
+DITTO is available for public use at this [site](https://cgds-ditto.streamlit.app/). Here's an example on how it looks
+like
 
-- Git
+![Screenshot](data/webapp.png)
 
-To fetch source code, change in to directory of your choice and run:
+### Setting up to use locally
 
-```sh
-git clone https://github.com/uab-cgds-worthey/DITTO.git
-```
+> **_NOTE:_** Currently tested only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it
+> useable in Mac and Windows.
 
-### Requirements
+#### System Requirements
 
 *OS:*
 
-Currently tested only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it useable in Mac (and
-potentially Windows).
+> **_NOTE:_** Currently tested only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it
+> useable in Mac and Windows.
 
 *Tools:*
 
 - Anaconda3
 - OpenCravat
+- Git
 
-### Activate conda environment (optional)
+*Resources:*
 
-Change in to root directory and run the commands below:
+- CPU: > 2
+- Storage: ~1TB
+- RAM: ~25GB for a WGS VCF sample
+
+#### Installation
+
+Installation requires the following:
+
+- DITTO repo from GitHub
+- OpenCravat with databases to annotate
+- Nextflow
+
+To fetch DITTO source code, change in to directory of your choice and run:
 
 ```sh
-# create conda environment. Needed only the first time.
-conda env create -n ditto
-
-
-# activate conda environment
-conda activate ditto
-
-# Install nextflow
-conda install -c bioconda nextflow
+git clone https://github.com/uab-cgds-worthey/DITTO.git
 ```
 
-### Steps to run DITTO predictions
 
-#### Setup OpenCravat (only one-time installation)
+Create an environment via conda or pip. Below is an example to install `nextflow` and `OpenCravat` using `pipenv`:
+
+```sh
+# create environment. Needed only the first time. Please use the above link if you're not using Mac.
+python -m venv ditto-env
+
+source ditto-env/bin/activate
+
+# Install nextflow
+pip install nextflow open-cravat
+```
+
+##### Setup OpenCravat (only one-time installation)
 
 Please follow the steps mentioned [here](docs/install_openCravat.md).
 
@@ -81,6 +94,10 @@ nextflow run pipeline.nf \
 Please update the below file and submit cheaha (UAB HPC) job using the command below
 
 `sbatch model.job`
+
+
+## Reproducing the DITTO model
+
 
 ## Contact information
 
