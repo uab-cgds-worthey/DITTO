@@ -11,7 +11,6 @@ sources.
 
 :fire: DITTO is currently trained on variants from ClinVar and is not intended for clinical use.
 
-![GIF Placeholder](https://media.giphy.com/media/pMFmBkBTsDMOY/giphy.gif)
 
 ## System Requirements
 
@@ -32,7 +31,7 @@ sources.
 - RAM: ~50GB
 
 > **_NOTE:_** We used 10 CPU cores, 50GB memory for training DITTO. The tuning and training process took ~16 hrs. Since
-> DITTO uses tensorflow architecture, this process can potentially be accelerated using GPUs.
+> DITTO uses tensorflow architecture, this process can be potentially accelerated using GPUs.
 
 
 ## Installation
@@ -66,4 +65,53 @@ conda activate training
 
 Please follow the steps mentioned in [install_openCravat.md](docs/install_openCravat.md).
 
+## Data
 
+Download the latest clinVar variants: [Download VCF](https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz)
+
+## Annotation
+
+```sh
+oc run clinvar.vcf.gz -l hg38 -t csv --package mypackage -d path/to/output/directory/
+```
+
+> **_NOTE:_** By default OpenCravat uses all available CPUs. Please specify the number of CPU cores using this parameter
+> in the above command `--mp 2`. Minimum number of CPUs to use is 2.
+
+## Preprocessing
+
+By default, OpenCravat annotates all transcript level annotations for each variant in a single row. DITTO makes transcript level
+predictions for each variant. To parse out each transcript level annotations to different rows, use the below command
+
+```sh
+python src/annotation_parsing/parse_single_sample.py -i clinvar.vcf.gz.variant.csv -e parse -o clinvar.vcf.gz.variant.csv_parsed.csv.gz -c configs/opencravat_train_config.json
+```
+
+Filter and process the annotations as shown in this [python
+notebook](src/annotation_parsing/opencravat_clinvar_filtering_80-20-20.ipynb). This will output training and testing
+data to train the neural network.
+
+## Tune and Train DITTO
+
+The below script uses the training data to tune the neural network by splitting it to train and validation data. It then
+uses the testing data to calculate accuracy, roc, and prc metrics along with a SHAP plot showing the top features used
+to train the model.
+
+```sh
+python training/NN.py --train_x /data/train_class_data_80.csv.gz --test_x /data/test_class_data_20.csv.gz -c configs/col_config.yaml -o /data/
+```
+
+This script took 10 CPU cores, 100 GB memory and ~17 hrs to tune and train DITTO.
+
+## Adding more databases (features) to DITTO
+
+Follow the below steps to install and add more databases for annotation and before training:
+
+1. Install the database using OpenCravat.
+
+2. Add the annotator to `mypackage/mypackage.yml` and reannotate the clinvar VCF file.
+
+3. Add the annotator to the [train config](configs/opencravat_train_config.json) and specify how to parse the
+   annotation.
+
+4. Follow the steps from Preprocessing above to parse, filter, process, tune and train DITTO.

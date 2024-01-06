@@ -46,6 +46,17 @@ oc module install vcfreporter csvreporter tsvreporter -y
 
 ## Setup modules package for DITTO pipeline
 
-Package is a module which defines module installation and job parameters. To learn more about OpenCravat's package, please click [here](https://open-cravat.readthedocs.io/en/latest/Package.html).
+Package is a module which defines module installation and job parameters. To learn more about OpenCravat's package,
+please click [here](https://open-cravat.readthedocs.io/en/latest/Package.html).
 
 Here's the package for DITTO - `configs/mypackage/mypackage.yml`
+
+Copy the package directory to the modules directory.
+
+```sh
+# Use this to check the modules directory
+oc config md
+
+# copy the package to the modules directory
+cp -r configs/mypackage path/to/modules/directory/
+```

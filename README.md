@@ -26,11 +26,6 @@ like
 
 #### System Requirements
 
-*OS:*
-
-> **_NOTE:_** Currently tested only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it
-> useable in Mac and Windows.
-
 *Tools:*
 
 - Anaconda3 or pip3
@@ -71,12 +66,15 @@ source ditto-env/bin/activate
 pip install nextflow open-cravat
 ```
 
-Setup OpenCravat (only one-time installation).
+
+#### Setup OpenCravat (only one-time installation)
 
 Please follow the steps mentioned in [install_openCravat.md](docs/install_openCravat.md).
 
-**Note**: Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions" variants i.e.
-variants with `*` in `ALT Allele` column. More on these variants [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele-). These will be ignored when running the pipeline.
+> **_NOTE:_** Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions"
+> variants i.e. variants with `*` in `ALT Allele` column. More on these variants
+> [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele-).
+> These will be ignored when running the pipeline.
 
 
 
@@ -95,7 +93,9 @@ nextflow run pipeline.nf \
 
 To run on UAB cheaha, please update the `model.job` file and submit a slurm job using the command below
 
-`sbatch model.job`
+```sh
+sbatch model.job
+```
 
 
 ## Reproducing the DITTO model
@@ -105,6 +105,6 @@ Detailed instructions on reproducing the model is explained in [build_DITTO.md](
 
 ## Contact information
 
-For issues, please send an email with clear description to
+For queries, send an email with clear description to
 
 Tarun Mamidi    -   tmamidi@uab.edu
