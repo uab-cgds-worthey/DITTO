@@ -7,6 +7,9 @@ Started working on Thu Oct  1 01:11:09 2020
 
 This script is used to train and tune a neural network using Optuna. It can tune itself and save the best model,
 parameters in the models folder along with testing metrics, and SHAP explanation plot.
+
+python src/training/NN.py --train_x ./data/processed/train_data_3_star/train_class_data_80.csv.gz --test_x ./data/processed/train_data_3_star/test_class_data_20.csv.gz -c ./configs/col_config.yaml -o ./data/processed/train_data_3_star
+
 """
 import time
 import numpy as np

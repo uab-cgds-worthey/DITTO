@@ -14,7 +14,7 @@
 
 ### Webapp
 
-DITTO is available for public use at this [site](https://cgds-ditto.streamlit.app/). Here's an example on how it looks
+DITTO is available for public use at this [website](https://cgds-ditto.streamlit.app/). Here's an example on how it looks
 like
 
 ![Screenshot](data/webapp.png)
