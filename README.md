@@ -17,9 +17,9 @@ We aim to develop a pipeline for accurate and rapid interpretation of genetic va
 ## Usage
 
 ### Webapp
-
+<!-- markdown-link-check-disable -->
 DITTO is available for public use at this [website](https://cgds-ditto.streamlit.app/).
-
+<!-- markdown-link-check-enable -->
 ### API
 
 DITTO is not hosted as a public API but one can serve up locally to query DITTO scores. Please follow the instructions
@@ -65,7 +65,9 @@ Please follow the steps mentioned in [install_openCravat.md](docs/install_openCr
 
 > ***NOTE:*** Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions"
 > variants i.e. variants with `*` in `ALT Allele` column. More on these variants
+<!-- markdown-link-check-disable -->
 > [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele-).
+<!-- markdown-link-check-enable -->
 > These will be ignored when running the pipeline.
 
 #### Run DITTO pipeline
