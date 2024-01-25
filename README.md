@@ -1,5 +1,10 @@
 # DITTO
 
+<!-- markdown-link-check-disable -->
+[![Perform linting -
+Markdown](https://github.com/uab-cgds-worthey/DITTO/actions/workflows/linting.yml/badge.svg)](https://github.com/uab-cgds-worthey/DITTO/actions/workflows/linting.yml)
+<!-- markdown-link-check-enable -->
+
 ***!!! For research purposes only !!!***
 
 > **_NOTE:_**  In a past life, DITTO used a different remote Git management provider, [UAB
