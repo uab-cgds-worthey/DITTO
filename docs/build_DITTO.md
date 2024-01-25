@@ -1,6 +1,6 @@
 # DITTO
 
-:fire: DITTO (inspired by pokemon) is a tool for exploring any type of genetic variant and their predicted functional
+:fire: DITTO (inspired by pokemon) is a tool for exploring any type of small genetic variant and their predicted functional
 impact on transcript(s).
 
 :fire: DITTO uses an explainable neural network model to predict the functional impact of variants and utilizes SHAP to
@@ -20,8 +20,8 @@ sources.
 
 *Tools:*
 
-- Anaconda3 or pip3
-- OpenCravat
+- Anaconda3
+- OpenCravat-2.4.1
 - Git
 
 *Resources:*
@@ -63,7 +63,7 @@ conda activate training
 
 ### Setup OpenCravat (ignore if already installed)
 
-Please follow the steps mentioned in [install_openCravat.md](docs/install_openCravat.md).
+Please follow the steps mentioned in [install_openCravat.md](../docs/install_openCravat.md).
 
 ## Data
 
@@ -111,7 +111,7 @@ Follow the below steps to install and add more databases for annotation and befo
 
 2. Add the annotator to `mypackage/mypackage.yml` and reannotate the clinvar VCF file.
 
-3. Add the annotator to the [train config](configs/opencravat_train_config.json) and specify how to parse the
+3. Add the annotator to the [train config](../configs/opencravat_train_config.json) and specify how to parse the
    annotation.
 
 4. Follow the steps from Preprocessing above to parse, filter, process, tune and train DITTO.
@@ -119,5 +119,5 @@ Follow the below steps to install and add more databases for annotation and befo
 
 ## Benchmarking
 
-Please follow the [python notebook](src/analysis/opencravat_latest_benchmarking-Consequence_80_20.ipynb) to benchmark
+Please follow the [python notebook](../src/analysis/opencravat_latest_benchmarking-Consequence_80_20.ipynb) to benchmark
 DITTO with other pathogenicity predition tools. It also has code snippets to generate testing metrics and SHAP plots.

@@ -30,7 +30,7 @@ in this [GitHub repo](https://github.com/uab-cgds-worthey/DITTO-API).
 
 *Tools:*
 
-- Anaconda3 or pip3
+- Anaconda3
 - OpenCravat
 - Git
 
@@ -68,16 +68,16 @@ Please follow the steps mentioned in [install_openCravat.md](docs/install_openCr
 
 Create an environment via conda or pip. Below is an example to install `nextflow`.
 
-- [Python virtual environment](https://docs.python.org/3/tutorial/venv.html)
+- [Anaconda virtual environment](https://docs.anaconda.com/free/anaconda/install/index.html)
 
 ```sh
 # create environment. Needed only the first time. Please use the above link if you're not using Mac.
-python -m venv ditto-env
+conda create --name envi ditto-env
 
-source ditto-env/bin/activate
+conda activate ditto-env
 
-# Install nextflow and OpenCravat
-pip install nextflow
+# Install nextflow
+conda install bioconda::nextflow
 ```
 
 
