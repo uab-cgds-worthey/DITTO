@@ -14,14 +14,16 @@
 
 ### Webapp
 
-DITTO is available for public use at this [website](https://cgds-ditto.streamlit.app/). Here's an example on how it looks
-like
+DITTO is available for public use at this [website](https://cgds-ditto.streamlit.app/).
 
-![Screenshot](data/webapp.png)
+### API
+
+DITTO is not hosted as a public API but one can serve up locally to query DITTO scores. Please follow the instructions
+in this [GitHub repo](https://github.com/uab-cgds-worthey/DITTO-API).
 
 ### Setting up to use locally
 
-> **_NOTE:_** Currently tested only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it
+> **_NOTE:_** This setup will allow one to annotate a VCF sample and make DITTO predictions. Currently tested only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it
 > useable in Mac and Windows.
 
 #### System Requirements
@@ -52,21 +54,6 @@ To fetch DITTO source code, change in to directory of your choice and run:
 git clone https://github.com/uab-cgds-worthey/DITTO.git
 ```
 
-Create an environment via conda or pip. Below is an example to install `nextflow` and `OpenCravat` using `pipenv`:
-
-- [Python virtual environment](https://docs.python.org/3/tutorial/venv.html)
-
-```sh
-# create environment. Needed only the first time. Please use the above link if you're not using Mac.
-python -m venv ditto-env
-
-source ditto-env/bin/activate
-
-# Install nextflow and OpenCravat
-pip install nextflow open-cravat
-```
-
-
 #### Setup OpenCravat (only one-time installation)
 
 Please follow the steps mentioned in [install_openCravat.md](docs/install_openCravat.md).
@@ -77,8 +64,22 @@ Please follow the steps mentioned in [install_openCravat.md](docs/install_openCr
 > These will be ignored when running the pipeline.
 
 
-
 #### Run DITTO pipeline
+
+Create an environment via conda or pip. Below is an example to install `nextflow`.
+
+- [Python virtual environment](https://docs.python.org/3/tutorial/venv.html)
+
+```sh
+# create environment. Needed only the first time. Please use the above link if you're not using Mac.
+python -m venv ditto-env
+
+source ditto-env/bin/activate
+
+# Install nextflow and OpenCravat
+pip install nextflow
+```
+
 
 Please make a samplesheet with VCF files (incl. path). Please make sure to edit the directory paths as needed.
 

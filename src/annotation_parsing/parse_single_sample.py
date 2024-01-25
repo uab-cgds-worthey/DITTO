@@ -105,7 +105,9 @@ def parse_annotations(annot_csv, data_config_file, outfile):
         data_config = json.load(dcfp)
 
     # the column "all_mappings" is the key split-by column to separate results on a per variant + transcript
-    with gzip.open(outfile, "wt", newline="") if outfile.endswith(".gz") else open(outfile, 'w', newline="") as paserdcsv:
+    with gzip.open(outfile, "wt", newline="") if outfile.endswith(".gz") else open(
+        outfile, "w", newline=""
+    ) as paserdcsv:
         hardcoded_fieldnames = [
             "transcript",
             "gene",
@@ -125,12 +127,12 @@ def parse_annotations(annot_csv, data_config_file, outfile):
                 parsed_fieldnames.append(colconf["col_id"])
 
         predefined_keys = hardcoded_fieldnames + parsed_fieldnames
-        csvwriter = csv.DictWriter(
-            paserdcsv, fieldnames=predefined_keys
-        )
+        csvwriter = csv.DictWriter(paserdcsv, fieldnames=predefined_keys)
         csvwriter.writeheader()
 
-        with gzip.open(annot_csv, 'rt', newline="") if annot_csv.endswith(".gz") else open(annot_csv, 'r', newline="") as csvfile:
+        with gzip.open(annot_csv, "rt", newline="") if annot_csv.endswith(
+            ".gz"
+        ) else open(annot_csv, "r", newline="") as csvfile:
             reader = csv.DictReader(filter(lambda row: row[0] != "#", csvfile))
             for row in reader:
                 # parse list of dict columns first since this only needs to be done once per row and cached
@@ -202,6 +204,7 @@ def parse_annotations(annot_csv, data_config_file, outfile):
 
                     # print parsed variant + transcript annotations to csv file output
                     csvwriter.writerow(annot_variant)
+
 
 def is_valid_output_file(p, arg):
     if os.access(Path(os.path.expandvars(arg)).parent, os.W_OK):

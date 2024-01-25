@@ -14,7 +14,7 @@ conda activate opencravat
 
 ### Install openCravat
 ```sh
-pip3 install open-cravat
+pip3 install open-cravat==2.4.1
 ```
 ### Set Modules Directory
 

@@ -25,12 +25,14 @@ import argparse
 import os
 from sklearn.preprocessing import label_binarize
 from sklearn.utils import class_weight
+
 try:
     tf.get_logger().setLevel("INFO")
 except Exception as exc:
     print(exc)
 import pickle
 import warnings
+
 warnings.simplefilter("ignore")
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
@@ -176,7 +178,7 @@ class Objective(object):
             callbacks=callbacks,
             batch_size=config.suggest_int("batch_size", 10, 1000),
             epochs=500,
-            class_weight = self.class_weights
+            class_weight=self.class_weights,
         )
         return history.history["val_accuracy"][-1]
         # Evaluate the model accuracy on the validation set.
@@ -226,15 +228,19 @@ class Objective(object):
             verbose=2,
             batch_size=config["batch_size"],
             epochs=500,
-            class_weight = self.class_weights
+            class_weight=self.class_weights,
         )
         # Evaluate the model accuracy on the validation set.
         # score = model.evaluate(test_x, test_y, verbose=0)
         return model
 
     def show_result(self, study, out_dir, output, feature_names):
-        pruned_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED]
-        complete_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE]
+        pruned_trials = [
+            t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED
+        ]
+        complete_trials = [
+            t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE
+        ]
         print("Study statistics: ")
         print("  Number of finished trials: ", len(study.trials))
         print("  Number of pruned trials: ", len(pruned_trials))
@@ -259,7 +265,7 @@ class Objective(object):
         roc_auc = roc_auc_score(self.test_y, y_score.round())
         accuracy = accuracy_score(self.test_y, y_score.round())
         # prc_micro = average_precision_score(self.test_y, y_score, average='micro')
-        #matrix = confusion_matrix(np.argmax(self.test_y.values, axis=1), np.argmax(y_score, axis=1))
+        # matrix = confusion_matrix(np.argmax(self.test_y.values, axis=1), np.argmax(y_score, axis=1))
         matrix = confusion_matrix(self.test_y, y_score.round())
         print(
             f"Model\tTest_loss\tTest_accuracy\tPrecision\tRecall\troc_auc\tAccuracy\tConfusion_matrix[low_impact, high_impact]",
@@ -276,13 +282,15 @@ class Objective(object):
         # explain predictions
         background = shap.kmeans(self.train_x, 10)
 
-        output = open(out_dir +'background.pkl', 'wb')
+        output = open(out_dir + "background.pkl", "wb")
         # Pickle dictionary using HIGHEST_PROTOCOL.
         pickle.dump(background, output, protocol=pickle.HIGHEST_PROTOCOL)
         output.close()
 
         explainer = shap.KernelExplainer(model.predict, background)
-        background = self.test_x[np.random.choice(self.test_x.shape[0], 10000, replace=False)]
+        background = self.test_x[
+            np.random.choice(self.test_x.shape[0], 10000, replace=False)
+        ]
         shap_values = explainer.shap_values(background)
         plt.figure()
         shap.summary_plot(shap_values, background, feature_names, show=False)
@@ -298,12 +306,12 @@ class Objective(object):
         return None
 
 
-def data_parsing(train_x,  test_x, config_dict):
+def data_parsing(train_x, test_x, config_dict):
     # Load data
     # print(f'\nUsing merged_data-train_{var}..', file=open(output, 'a'))
     X_train = pd.read_csv(train_x)
     # var = X_train[config_dict['ML_VAR']]
-    Y_train = X_train['class']
+    Y_train = X_train["class"]
     X_train = X_train.drop(config_dict["train_cols"], axis=1)
     X_train = X_train.drop("class", axis=1)
     X_train.replace([np.inf, -np.inf], np.nan, inplace=True)
@@ -311,28 +319,29 @@ def data_parsing(train_x,  test_x, config_dict):
     feature_names = X_train.columns.tolist()
     X_train = X_train.values
 
-    Y_train = label_binarize(
-        Y_train.values, classes=list(np.unique(Y_train))
-    ).ravel()
-    class_weights = class_weight.compute_class_weight(class_weight='balanced',classes=np.unique(Y_train),y=Y_train)
-    class_weights = {i:w for i,w in enumerate(class_weights)}
+    Y_train = label_binarize(Y_train.values, classes=list(np.unique(Y_train))).ravel()
+    class_weights = class_weight.compute_class_weight(
+        class_weight="balanced", classes=np.unique(Y_train), y=Y_train
+    )
+    class_weights = {i: w for i, w in enumerate(class_weights)}
     Y_train = Y_train.reshape(-1, 1)
-    #Y_train = pd.get_dummies(Y_train)
-
+    # Y_train = pd.get_dummies(Y_train)
 
     X_test = pd.read_csv(test_x)
     # var = X_train[config_dict['ML_VAR']]
-    Y_test = X_test['class']
+    Y_test = X_test["class"]
     X_test = X_test.drop(config_dict["train_cols"], axis=1)
     X_test = X_test.drop("class", axis=1)
     X_test.replace([np.inf, -np.inf], np.nan, inplace=True)
     X_test.fillna(0, inplace=True)
     X_test = X_test.values
 
-    #Y_test = pd.get_dummies(Y_test)
-    Y_test = label_binarize(
-        Y_test.values, classes=list(np.unique(Y_test))
-    ).ravel().reshape(-1, 1)
+    # Y_test = pd.get_dummies(Y_test)
+    Y_test = (
+        label_binarize(Y_test.values, classes=list(np.unique(Y_test)))
+        .ravel()
+        .reshape(-1, 1)
+    )
 
     print(f"Shape: {Y_train.shape}")
     print("Data Loaded!")
