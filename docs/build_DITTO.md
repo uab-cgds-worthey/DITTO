@@ -11,7 +11,6 @@ sources.
 
 :fire: DITTO is currently trained on variants from ClinVar and is not intended for clinical use.
 
-
 ## System Requirements
 
 *OS:*
@@ -30,17 +29,15 @@ sources.
 - Storage: ~1TB (includes annotation databases from OpenCravat)
 - RAM: ~50GB
 
-> **_NOTE:_** We used 10 CPU cores, 50GB memory for training DITTO. The tuning and training process took ~16 hrs. Since
+> ***NOTE:*** We used 10 CPU cores, 50GB memory for training DITTO. The tuning and training process took ~16 hrs. Since
 > DITTO uses tensorflow architecture, this process can be potentially accelerated using GPUs.
-
 
 ## Installation
 
-### Requirements:
+### Requirements
 
 - DITTO repo from GitHub
 - OpenCravat with databases to annotate
-
 
 To fetch DITTO source code, change in to directory of your choice and run:
 
@@ -75,7 +72,7 @@ Download the latest clinVar variants: [Download VCF](https://ftp.ncbi.nlm.nih.go
 oc run clinvar.vcf.gz -l hg38 -t csv --package mypackage -d path/to/output/directory/
 ```
 
-> **_NOTE:_** By default OpenCravat uses all available CPUs. Please specify the number of CPU cores using this parameter
+> ***NOTE:*** By default OpenCravat uses all available CPUs. Please specify the number of CPU cores using this parameter
 > in the above command `--mp 2`. Minimum number of CPUs to use is 2.
 
 ## Preprocessing
@@ -115,7 +112,6 @@ Follow the below steps to install and add more databases for annotation and befo
    annotation.
 
 4. Follow the steps from Preprocessing above to parse, filter, process, tune and train DITTO.
-
 
 ## Benchmarking
 

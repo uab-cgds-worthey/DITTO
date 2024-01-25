@@ -1,6 +1,6 @@
-# Filter the DITTO scores and other annotations after running the pipeline. Example tested on CAGI project
-
 #!/bin/bash
+
+# Filter the DITTO scores and other annotations after running the pipeline. Example tested on CAGI project
 
 # Specify the input folder containing the CSV files
 input_folder="/data/project/worthey_lab/projects/experimental_pipelines/tarun/DITTO/data/processed/CAGI_TR/"

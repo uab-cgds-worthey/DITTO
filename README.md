@@ -7,13 +7,11 @@ Markdown](https://github.com/uab-cgds-worthey/DITTO/actions/workflows/linting.ym
 
 ***!!! For research purposes only !!!***
 
-> **_NOTE:_**  In a past life, DITTO used a different remote Git management provider, [UAB
+> ***NOTE:***  In a past life, DITTO used a different remote Git management provider, [UAB
 > Gitlab](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/ditto). It was migrated to
 > Github in April 2023, and the Gitlab version has been archived.
 
-
-**Aim:** We aim to develop a pipeline for accurate and rapid interpretation of genetic variants for pathogenicity using patient’s genotype (VCF) information.
-
+We aim to develop a pipeline for accurate and rapid interpretation of genetic variants for pathogenicity using patient’s genotype (VCF) information.
 
 ## Usage
 
@@ -28,7 +26,7 @@ in this [GitHub repo](https://github.com/uab-cgds-worthey/DITTO-API).
 
 ### Setting up to use locally
 
-> **_NOTE:_** This setup will allow one to annotate a VCF sample and make DITTO predictions. Currently tested only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it
+> ***NOTE:*** This setup will allow one to annotate a VCF sample and make DITTO predictions. Currently tested only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it
 > useable in Mac and Windows.
 
 #### System Requirements
@@ -63,11 +61,10 @@ git clone https://github.com/uab-cgds-worthey/DITTO.git
 
 Please follow the steps mentioned in [install_openCravat.md](docs/install_openCravat.md).
 
-> **_NOTE:_** Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions"
+> ***NOTE:*** Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions"
 > variants i.e. variants with `*` in `ALT Allele` column. More on these variants
 > [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele-).
 > These will be ignored when running the pipeline.
-
 
 #### Run DITTO pipeline
 
@@ -84,7 +81,6 @@ conda activate ditto-env
 # Install nextflow
 conda install bioconda::nextflow
 ```
-
 
 Please make a samplesheet with VCF files (incl. path). Please make sure to edit the directory paths as needed.
 
@@ -103,14 +99,12 @@ To run on UAB cheaha, please update the `model.job` file and submit a slurm job 
 sbatch model.job
 ```
 
-
 ## Reproducing the DITTO model
 
 Detailed instructions on reproducing the model is explained in [build_DITTO.md](docs/build_DITTO.md)
-
 
 ## Contact information
 
 For queries, send an email with clear description to
 
-Tarun Mamidi    -   tmamidi@uab.edu
+Tarun Mamidi    -   <tmamidi@uab.edu>

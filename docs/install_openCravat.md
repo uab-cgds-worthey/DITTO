@@ -1,9 +1,11 @@
 # OpenCravat
+
 Original documentation for OpenCravat can be found [here](https://open-cravat.readthedocs.io/en/latest/index.html).
 
 ## Installation
 
 ### Create conda environment
+
 ```sh
 # create conda environment. Needed only the first time.
 conda create -n opencravat
@@ -13,9 +15,11 @@ conda activate opencravat
 ```
 
 ### Install openCravat
+
 ```sh
 pip3 install open-cravat==2.4.1
 ```
+
 ### Set Modules Directory
 
 Use `oc config md` to see where modules directory is currently pointed to. To change the modules directory, use `oc
@@ -24,6 +28,7 @@ config md [new directory]` to point OpencRAVAT to the new directory.
 Test it by using `oc config md` command. It should output the new modules directory.
 
 ### Install necessary modules for DITTO
+
 ```sh
 oc module install-base
 
