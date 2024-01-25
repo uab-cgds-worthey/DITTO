@@ -32,7 +32,12 @@ Test it by using `oc config md` command. It should output the new modules direct
 ```sh
 oc module install-base
 
-oc module  install aloft cadd cadd_exome cancer_genome_interpreter ccre_screen chasmplus civic clingen clinpred clinvar cosmic cosmic_gene cscape dann dann_coding dbscsnv dbsnp dgi ensembl_regulatory_build ess_gene exac_gene fathmm fathmm_xf_coding funseq2 genehancer gerp ghis gnomad gnomad3 gnomad_gene gtex gwas_catalog linsight loftool lrt mavedb metalr metasvm mutation_assessor mutationtaster mutpred1 mutpred_indel ncbigene ndex ndex_chd ndex_signor omim pangalodb phastcons phdsnpg phi phylop polyphen2 prec provean repeat revel rvis segway sift siphy spliceai uniprot vest cgc cgd varity_r
+oc module  install aloft cadd cadd_exome cancer_genome_interpreter ccre_screen chasmplus civic clingen clinpred clinvar \
+cosmic cosmic_gene cscape dann dann_coding dbscsnv dbsnp dgi ensembl_regulatory_build ess_gene exac_gene fathmm \
+fathmm_xf_coding funseq2 genehancer gerp ghis gnomad gnomad3 gnomad_gene gtex gwas_catalog linsight loftool lrt mavedb \
+metalr metasvm mutation_assessor mutationtaster mutpred1 mutpred_indel ncbigene ndex ndex_chd ndex_signor omim \
+pangalodb phastcons phdsnpg phi phylop polyphen2 prec provean repeat revel rvis segway sift siphy spliceai uniprot \
+vest cgc cgd varity_r
 ```
 
 Please look at the [install logs](../docs/install_openCravat.logfile) for the versions of all the above annotators used to

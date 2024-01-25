@@ -11,7 +11,8 @@ Markdown](https://github.com/uab-cgds-worthey/DITTO/actions/workflows/linting.ym
 > Gitlab](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/ditto). It was migrated to
 > Github in April 2023, and the Gitlab version has been archived.
 
-We aim to develop a pipeline for accurate and rapid interpretation of genetic variants for pathogenicity using patient’s genotype (VCF) information.
+We aim to develop a pipeline for accurate and rapid interpretation of genetic variants for pathogenicity using patient’s
+ genotype (VCF) information.
 
 ## Usage
 
@@ -26,7 +27,8 @@ in this [GitHub repo](https://github.com/uab-cgds-worthey/DITTO-API).
 
 ### Setting up to use locally
 
-> ***NOTE:*** This setup will allow one to annotate a VCF sample and make DITTO predictions. Currently tested only in Cheaha (UAB HPC). Docker versions may need to be explored later to make it
+> ***NOTE:*** This setup will allow one to annotate a VCF sample and make DITTO predictions. Currently tested only in
+> Cheaha (UAB HPC). Docker versions may need to be explored later to make it
 > useable in Mac and Windows.
 
 #### System Requirements

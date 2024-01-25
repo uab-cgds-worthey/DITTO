@@ -77,11 +77,13 @@ oc run clinvar.vcf.gz -l hg38 -t csv --package mypackage -d path/to/output/direc
 
 ## Preprocessing
 
-By default, OpenCravat annotates all transcript level annotations for each variant in a single row. DITTO makes transcript level
-predictions for each variant. To parse out each transcript level annotations to different rows, use the below command
+By default, OpenCravat annotates all transcript level annotations for each variant in a single row. DITTO makes
+transcript level predictions for each variant. To parse out each transcript level annotations to different rows, use
+the below command
 
 ```sh
-python src/annotation_parsing/parse_single_sample.py -i clinvar.vcf.gz.variant.csv -e parse -o clinvar.vcf.gz.variant.csv_parsed.csv.gz -c configs/opencravat_train_config.json
+python src/annotation_parsing/parse_single_sample.py -i clinvar.vcf.gz.variant.csv -e parse \
+-o clinvar.vcf.gz.variant.csv_parsed.csv.gz -c configs/opencravat_train_config.json
 ```
 
 Filter and process the annotations as shown in this [python
@@ -95,7 +97,8 @@ uses the testing data to calculate accuracy, roc, and prc metrics along with a S
 to train the model.
 
 ```sh
-python training/NN.py --train_x /data/train_class_data_80.csv.gz --test_x /data/test_class_data_20.csv.gz -c configs/col_config.yaml -o /data/
+python training/NN.py --train_x /data/train_class_data_80.csv.gz \
+--test_x /data/test_class_data_20.csv.gz -c configs/col_config.yaml -o /data/
 ```
 
 This script took 10 CPU cores, 100 GB memory and ~17 hrs to tune and train DITTO.
