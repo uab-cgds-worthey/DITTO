@@ -118,5 +118,5 @@ Follow the below steps to install and add more databases for annotation and befo
 
 ## Benchmarking
 
-Please follow the [python notebook](../src/analysis/opencravat_latest_benchmarking-Consequence_80_20.ipynb) to benchmark
+Please follow the [python notebook](../../src/analysis/opencravat_latest_benchmarking-Consequence_80_20.ipynb) to benchmark
 DITTO with other pathogenicity predition tools. It also has code snippets to generate testing metrics and SHAP plots.
