@@ -11,8 +11,8 @@ Markdown](https://github.com/uab-cgds-worthey/DITTO/actions/workflows/linting.ym
 > Gitlab](https://gitlab.rc.uab.edu/center-for-computational-genomics-and-data-science/sciops/ditto). It was migrated to
 > Github in April 2023, and the Gitlab version has been archived.
 
-We aim to develop a pipeline for accurate and rapid interpretation of genetic variants for pathogenicity using patient’s
- genotype (VCF) information.
+DITTO is an explainable neural network that can be helpful for accurate and rapid interpretation of small
+genetic variants for pathogenicity using patient’s genotype (VCF) information.
 
 ## Usage
 
@@ -28,15 +28,15 @@ in this [GitHub repo](https://github.com/uab-cgds-worthey/DITTO-API).
 ### Setting up to use locally
 
 > ***NOTE:*** This setup will allow one to annotate a VCF sample and make DITTO predictions. Currently tested only in
-> Cheaha (UAB HPC). Docker versions may need to be explored later to make it
-> useable in Mac and Windows.
+> Cheaha (UAB HPC) because of resource limitations to download datasets from OpenCRAVAT.
+> Docker versions may need to be explored later to make it useable in Mac and Windows.
 
 #### System Requirements
 
 *Tools:*
 
 - Anaconda3
-- OpenCravat
+- OpenCravat-2.4.1
 - Git
 
 *Resources:*
@@ -51,7 +51,7 @@ Requirements:
 
 - DITTO repo from GitHub
 - OpenCravat with databases to annotate
-- Nextflow
+- Nextflow >=22.10.7
 
 To fetch DITTO source code, change in to directory of your choice and run:
 
@@ -94,7 +94,7 @@ nextflow run pipeline.nf \
   -work-dir ./wor_dir \
   --build hg38 -with-report \
   --oc_modules /data/opencravat/modules \
-  --sample_sheet .test_data/file_list_partaa
+  --sample_sheet .test_data/file_list
 ```
 
 To run on UAB cheaha, please update the `model.job` file and submit a slurm job using the command below
@@ -109,6 +109,8 @@ Detailed instructions on reproducing the model is explained in [build_DITTO.md](
 
 ## Contact information
 
-For queries, send an email with clear description to
+For queries, please open a GitHub issue.
+
+For urgent queries, send an email with clear description to
 
 Tarun Mamidi    -   <tmamidi@uab.edu>

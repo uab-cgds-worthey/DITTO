@@ -1,0 +1,7 @@
+This directory has 3 files -
+
+`oc_test_data.vcf.gz` - test multi-sample VCF data from OpenCRAVAT
+
+`testing_variants_hg38.vcf.gz` - We custom made a test VCF file with few variants from every chromosome (1-22,X,Y)
+
+`file_list` - contains list of above 2 test vcf files with relative path. This file is used to test nextflow pipeline

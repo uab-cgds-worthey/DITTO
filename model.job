@@ -28,6 +28,6 @@ module load Anaconda3
   --outdir /data/results \
   -work-dir .work_dir/ \
   --build hg38 -c cheaha.config -with-report \
-  --sample_sheet .test_data/file_list_partaa -resume
+  --sample_sheet .test_data/file_list -resume
 
 #https://training.nextflow.io/basic_training/cache_and_resume/#how-to-organize-in-silico-experiments

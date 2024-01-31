@@ -96,7 +96,7 @@ data to train the neural network.
 
 The below script uses the training data to tune the neural network by splitting it to train and validation data. It then
 uses the testing data to calculate accuracy, roc, and prc metrics along with a SHAP plot showing the top features used
-to train the model.
+to train the model. Please modify the data path accordingly or use the published training and testing data from this repo.
 
 ```sh
 python training/NN.py --train_x /data/train_class_data_80.csv.gz \
@@ -109,7 +109,7 @@ This script took 10 CPU cores, 100 GB memory and ~17 hrs to tune and train DITTO
 
 Follow the below steps to install and add more databases for annotation and before training:
 
-1. Install the database using OpenCravat.
+1. Install the annotator/database using OpenCravat.
 
 2. Add the annotator to `mypackage/mypackage.yml` and reannotate the clinvar VCF file.
 
