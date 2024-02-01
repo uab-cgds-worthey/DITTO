@@ -101,7 +101,7 @@ to train the model. Please modify the data path accordingly or use the published
 
 ```sh
 python training/NN.py --train_x /data/train_class_data_80.csv.gz \
---test_x /data/test_class_data_20.csv.gz -c configs/col_config.yaml -o /data/
+    --test_x /data/test_class_data_20.csv.gz -c configs/col_config.yaml -o /data/
 ```
 
 This script took 10 CPU cores, 100 GB memory and ~17 hrs to tune and train DITTO.
