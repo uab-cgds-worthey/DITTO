@@ -113,4 +113,7 @@ For queries, please open a GitHub issue.
 
 For urgent queries, send an email with clear description to
 
-Tarun Mamidi    -   <tmamidi@uab.edu>
+|Name | Email |
+------|--------|
+Tarun Mamidi | <tmamidi@uab.edu>
+Liz Worthey | <lworthey@uab.edu>

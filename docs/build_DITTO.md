@@ -73,7 +73,8 @@ oc run clinvar.vcf.gz -l hg38 -t csv --package mypackage -d path/to/output/direc
 ```
 
 > ***NOTE:*** By default OpenCravat uses all available CPUs. Please specify the number of CPU cores using this parameter
-> in the above command `--mp 2`. Minimum number of CPUs to use is 2.
+> in the above command `--mp 2`. Minimum number of CPUs to use is 2. Also, please make sure to setup `mypackage` from
+> `configs` directory to your modules directory. To learn more about it, please review [OpenCravat's package](https://open-cravat.readthedocs.io/en/latest/Package.html).
 
 ## Preprocessing
 
