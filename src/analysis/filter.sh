@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -euo pipefail
 # Filter the DITTO scores and other annotations after running the pipeline. Example tested on CAGI project
 
 # Specify the input folder containing the CSV files

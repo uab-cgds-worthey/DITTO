@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 // Define the command-line options to specify the path to VCF files
-params.sample_sheet = '.test_data/file_list'
+params.sample_sheet = '.test_data/file_list.txt'
 params.build = "hg38"
 params.oc_modules = "/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules"
 // Define the Scratch directory

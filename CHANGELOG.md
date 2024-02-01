@@ -10,3 +10,11 @@ YYYY-MM-DD  John Doe
 ```
 
 ---
+
+```txt
+2024-02-01  Tarun Mamidi
+
+* Uses OpenCRAVAT for annotations
+* Uses Neural Networks from keras instead of traditional scikit-learn models
+* Nextflow pipeline to annotate, parse and DITTO predictions
+```

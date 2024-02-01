@@ -14,12 +14,16 @@ Markdown](https://github.com/uab-cgds-worthey/DITTO/actions/workflows/linting.ym
 DITTO is an explainable neural network that can be helpful for accurate and rapid interpretation of small
 genetic variants for pathogenicity using patient’s genotype (VCF) information.
 
-## Usage
+## Using DITTO
+
+DITTO scores for variants can be obtained by the below 3 ways. Webapp and API are for single variant analysis and the
+local setup is for batch/bulk variant predictions.
 
 ### Webapp
 <!-- markdown-link-check-disable -->
 DITTO is available for public use at this [website](https://cgds-ditto.streamlit.app/).
 <!-- markdown-link-check-enable -->
+
 ### API
 
 DITTO is not hosted as a public API but one can serve up locally to query DITTO scores. Please follow the instructions
@@ -72,13 +76,13 @@ Please follow the steps mentioned in [install_openCravat.md](docs/install_openCr
 
 #### Run DITTO pipeline
 
-Create an environment via conda or pip. Below is an example to install `nextflow`.
+Create an environment via conda. Below is an example to install `nextflow`.
 
 - [Anaconda virtual environment](https://docs.anaconda.com/free/anaconda/install/index.html)
 
 ```sh
 # create environment. Needed only the first time. Please use the above link if you're not using Mac.
-conda create --name envi ditto-env
+conda create --name ditto-env
 
 conda activate ditto-env
 
@@ -86,11 +90,12 @@ conda activate ditto-env
 conda install bioconda::nextflow
 ```
 
-Please make a samplesheet with VCF files (incl. path). Please make sure to edit the directory paths as needed.
+Please make a samplesheet with VCF files (incl. path). Please make sure to edit the directory paths as needed and run
+the pipeline as shown below.
 
 ```sh
 nextflow run pipeline.nf \
-  --outdir /data/ \
+  --outdir ./data/ \
   -work-dir ./wor_dir \
   --build hg38 -with-report \
   --oc_modules /data/opencravat/modules \
@@ -114,6 +119,6 @@ For queries, please open a GitHub issue.
 For urgent queries, send an email with clear description to
 
 |Name | Email |
-------|--------|
-Tarun Mamidi | <tmamidi@uab.edu>
-Liz Worthey | <lworthey@uab.edu>
+|------|--------|
+|Tarun Mamidi | <tmamidi@uab.edu>|
+|Liz Worthey | <lworthey@uab.edu>|
