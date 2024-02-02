@@ -21,7 +21,7 @@ local setup is for batch/bulk variant predictions.
 
 ### Webapp
 
-DITTO is available for public use at this [website](https://cgds-ditto.streamlit.app/).
+DITTO is available for public use at this [website](https://cgds-ditto.streamlit.app).
 
 ### API
 
@@ -68,7 +68,7 @@ Please follow the steps mentioned in [install_openCravat.md](docs/install_openCr
 
 > ***NOTE:*** Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions"
 > variants i.e. variants with `*` in `ALT Allele` column. More on these variants
-> [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele-).
+> [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele).
 > These will be ignored when running the pipeline.
 
 #### Run DITTO pipeline
