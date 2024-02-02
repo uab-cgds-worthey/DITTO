@@ -84,14 +84,12 @@ the below command
 
 ```sh
 python src/annotation_parsing/parse_single_sample.py -i clinvar.vcf.gz.variant.csv -e parse \
--o clinvar.vcf.gz.variant.csv_parsed.csv.gz -c configs/opencravat_train_config.json
+    -o clinvar.vcf.gz.variant.csv_parsed.csv.gz -c configs/opencravat_train_config.json
 ```
 
-<!-- markdown-link-check-disable -->
 Filter and process the annotations as shown in this [python
 notebook](../src/annotation_parsing/opencravat_clinvar_filtering_80-20-20.ipynb). This will output training and testing
 data to train the neural network.
-<!-- markdown-link-check-enable -->
 
 ## Tune and Train DITTO
 
@@ -120,7 +118,6 @@ Follow the below steps to install and add more databases for annotation and befo
 4. Follow the steps from Preprocessing above to parse, filter, process, tune and train DITTO.
 
 ## Benchmarking
-<!-- markdown-link-check-disable -->
+
 Please follow the [python notebook](../src/analysis/opencravat_latest_benchmarking-Consequence_80_20.ipynb) to benchmark
 DITTO with other pathogenicity predition tools. It also has code snippets to generate testing metrics and SHAP plots.
-<!-- markdown-link-check-enable -->

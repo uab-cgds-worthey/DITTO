@@ -20,9 +20,8 @@ DITTO scores for variants can be obtained by the below 3 ways. Webapp and API ar
 local setup is for batch/bulk variant predictions.
 
 ### Webapp
-<!-- markdown-link-check-disable -->
+
 DITTO is available for public use at this [website](https://cgds-ditto.streamlit.app/).
-<!-- markdown-link-check-enable -->
 
 ### API
 
@@ -69,9 +68,7 @@ Please follow the steps mentioned in [install_openCravat.md](docs/install_openCr
 
 > ***NOTE:*** Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions"
 > variants i.e. variants with `*` in `ALT Allele` column. More on these variants
-<!-- markdown-link-check-disable -->
 > [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele-).
-<!-- markdown-link-check-enable -->
 > These will be ignored when running the pipeline.
 
 #### Run DITTO pipeline
