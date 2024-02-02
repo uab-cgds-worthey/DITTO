@@ -1,0 +1,10 @@
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10.11
+  - pandas=2.0.1
+  - numpy=1.23.5
+  - pyaml=23.7.0
+  - pip=23.2.1
+  - pip:
+    - tensorflow==2.11

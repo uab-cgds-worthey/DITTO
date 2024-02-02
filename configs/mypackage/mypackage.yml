@@ -1,0 +1,153 @@
+title: DITTO Package
+description: Annotating variants with aloft cadd cadd_exome cancer_genome_interpreter ccre_screen chasmplus civic clingen clinpred clinvar cosmic cosmic_gene cscape dann dann_coding dbscsnv dbsnp dgi ensembl_regulatory_build ess_gene exac_gene fathmm fathmm_xf_coding funseq2 genehancer gerp ghis gnomad gnomad3 gnomad_gene gtex gwas_catalog linsight loftool lrt mavedb metalr metasvm mutation_assessor mutationtaster mutpred1 mutpred_indel ncbigene ndex ndex_chd ndex_signor omim pangalodb phastcons phdsnpg phi phylop polyphen2 prec provean repeat revel rvis segway sift siphy spliceai uniprot vest cgc cgd varity_r
+type: package
+version: 0.0.1
+# Modules for this package
+requires:
+- aloft
+- cadd
+- cadd_exome
+- cancer_genome_interpreter
+- ccre_screen
+- chasmplus
+- civic
+- clingen
+- clinpred
+- clinvar
+- cosmic
+- cosmic_gene
+- cscape
+- dann
+- dann_coding
+- dbscsnv
+- dbsnp
+- dgi
+- ensembl_regulatory_build
+- ess_gene
+- exac_gene
+- fathmm
+- fathmm_xf_coding
+- funseq2
+- genehancer
+- gerp
+- ghis
+- gnomad
+- gnomad3
+- gnomad_gene
+- gtex
+- gwas_catalog
+- linsight
+- loftool
+- lrt
+- mavedb
+- metalr
+- metasvm
+- mutation_assessor
+- mutationtaster
+- mutpred1
+- mutpred_indel
+- ncbigene
+- ndex
+- ndex_chd
+- ndex_signor
+- omim
+- pangalodb
+- phastcons
+- phdsnpg
+- phi
+- phylop
+- polyphen2
+- prec
+- provean
+- repeat
+- revel
+- rvis
+- segway
+- sift
+- siphy
+- spliceai
+- uniprot
+- vest
+- cgc
+- cgd
+- varity_r
+# oc run and oc report settings
+run:
+    # Annotators
+    annotators:
+    - aloft
+    - cadd
+    - cadd_exome
+    - cancer_genome_interpreter
+    - ccre_screen
+    - chasmplus
+    - civic
+    - clingen
+    - clinpred
+    - clinvar
+    - cosmic
+    - cosmic_gene
+    - cscape
+    - dann
+    - dann_coding
+    - dbscsnv
+    - dbsnp
+    - dgi
+    - ensembl_regulatory_build
+    - ess_gene
+    - exac_gene
+    - fathmm
+    - fathmm_xf_coding
+    - funseq2
+    - genehancer
+    - gerp
+    - ghis
+    - gnomad
+    - gnomad3
+    - gnomad_gene
+    - gtex
+    - gwas_catalog
+    - linsight
+    - loftool
+    - lrt
+    - mavedb
+    - metalr
+    - metasvm
+    - mutation_assessor
+    - mutationtaster
+    - mutpred1
+    - mutpred_indel
+    - ncbigene
+    - ndex
+    - ndex_chd
+    - ndex_signor
+    - omim
+    - pangalodb
+    - phastcons
+    - phdsnpg
+    - phi
+    - phylop
+    - polyphen2
+    - prec
+    - provean
+    - repeat
+    - revel
+    - rvis
+    - segway
+    - sift
+    - siphy
+    - spliceai
+    - uniprot
+    - vest
+    - cgc
+    - cgd
+    - varity_r
+    # Reports
+    reports:
+    - csv
+    # Filters
+    #filtersql:
+    #includesample:
+    #- sample1
+    #excludesample:
+    #- sample2
