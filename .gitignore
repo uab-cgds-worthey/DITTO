@@ -26,6 +26,7 @@ dask-worker-space/
 *.err
 *.out
 .DS_Store
+*chr.csv
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
