@@ -25,6 +25,7 @@ dask-worker-space/
 *.egg
 *.err
 *.out
+*.pdf
 .DS_Store
 *chr.csv
 
