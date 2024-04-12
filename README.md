@@ -113,6 +113,10 @@ sbatch model.job
 
 Detailed instructions on reproducing the model is explained in [build_DITTO.md](docs/build_DITTO.md)
 
+## Download DITTO DB (Precomputed scores)
+
+Precomputed scores for all possible SNVs and known Indels from gnomADv3.0 in main chromosomes in hg38 reference genome are available to download here - https://s3.lts.rc.uab.edu/cgds-public/dittodb/dittodb.html
+
 ## How to cite?
 
 Mamidi, T.K.K.; Wilk, B.M.; Gajapathy, M.; Worthey, E.A. DITTO: An Explainable Machine-Learning Model for Transcript-Specific Variant Pathogenicity Prediction. Preprints 2024, 2024040837. https://doi.org/10.20944/preprints202404.0837.v1
