@@ -113,6 +113,10 @@ sbatch model.job
 
 Detailed instructions on reproducing the model is explained in [build_DITTO.md](docs/build_DITTO.md)
 
+## How to cite?
+
+Mamidi, T.K.K.; Wilk, B.M.; Gajapathy, M.; Worthey, E.A. DITTO: An Explainable Machine-Learning Model for Transcript-Specific Variant Pathogenicity Prediction. Preprints 2024, 2024040837. https://doi.org/10.20944/preprints202404.0837.v1
+
 ## Contact information
 
 For queries, please open a GitHub issue.
