@@ -28,6 +28,10 @@ dask-worker-space/
 *.pdf
 .DS_Store
 *chr.csv
+*.csv
+*.csv.gz
+*.xlsx
+*.vcf
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
