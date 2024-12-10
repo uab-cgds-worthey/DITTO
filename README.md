@@ -66,8 +66,8 @@ git clone https://github.com/uab-cgds-worthey/DITTO.git
 
 #### Run DITTO pipeline on UAB Cheaha
 
-To run on UAB cheaha, please update the `model.job` and `.test_data/file_list.txt` files with complete file paths for all
-necessary files and tools and submit a slurm job using the command below
+To run on UAB cheaha, please update the `model.job` (outdir and samplesheet) and `.test_data/file_list.txt` (inout vcfs)
+ files with complete file paths and submit a slurm job using the command below
 
 ```sh
 sbatch model.job
