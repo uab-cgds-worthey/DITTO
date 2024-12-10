@@ -64,7 +64,18 @@ To fetch DITTO source code, change in to directory of your choice and run:
 git clone https://github.com/uab-cgds-worthey/DITTO.git
 ```
 
-#### Setup OpenCravat (only one-time installation)
+#### Run DITTO pipeline on UAB Cheaha
+
+To run on UAB cheaha, please update the `model.job` and `.test_data/file_list.txt` files with complete file paths for all
+necessary files and tools and submit a slurm job using the command below
+
+```sh
+sbatch model.job
+```
+
+#### Run DITTO pipeline outside of UAB Cheaha
+
+***Setup OpenCravat (only one-time installation)***
 
 Please follow the steps mentioned in [install_openCravat.md](docs/install_openCravat.md).
 
@@ -75,7 +86,7 @@ Please follow the steps mentioned in [install_openCravat.md](docs/install_openCr
 <!-- markdown-link-check-enable -->
 > These will be ignored when running the pipeline.
 
-#### Run DITTO pipeline
+***Setup Nextflow***
 
 Create an environment via conda. Below is an example to install `nextflow`.
 
@@ -91,7 +102,8 @@ conda activate ditto-env
 conda install bioconda::nextflow
 ```
 
-Please make a samplesheet with VCF files (incl. path). Please make sure to edit the directory paths as needed and run
+Please make a samplesheet `.test_data/file_list.txt` with VCF files (incl. path).
+Please make sure to edit the directory paths as needed and run
 the pipeline as shown below.
 
 ```sh
@@ -103,24 +115,18 @@ nextflow run pipeline.nf \
   --sample_sheet .test_data/file_list
 ```
 
-To run on UAB cheaha, please update the `model.job` file and submit a slurm job using the command below
-
-```sh
-sbatch model.job
-```
-
 ## Reproducing the DITTO model
 
 Detailed instructions on reproducing the model is explained in [build_DITTO.md](docs/build_DITTO.md)
 
 ## Download DITTO DB (Precomputed scores)
 
-Precomputed scores for all possible SNVs and known Indels from gnomADv3.0 in main chromosomes in hg38 reference genome 
+Precomputed scores for all possible SNVs and known Indels from gnomADv3.0 in main chromosomes in hg38 reference genome
 are available to download here - <https://s3.lts.rc.uab.edu/cgds-public/dittodb/dittodb.html>
 
 ## How to cite?
 <!-- markdown-link-check-disable -->
-Mamidi, T.K.K.; Wilk, B.M.; Gajapathy, M.; Worthey, E.A. DITTO: An Explainable Machine-Learning Model for 
+Mamidi, T.K.K.; Wilk, B.M.; Gajapathy, M.; Worthey, E.A. DITTO: An Explainable Machine-Learning Model for
 Transcript-Specific Variant Pathogenicity Prediction. Preprints 2024, 2024040837. <https://doi.org/10.20944/preprints202404.0837.v1>
 <!-- markdown-link-check-enable -->
 ## Contact information

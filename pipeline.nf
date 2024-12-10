@@ -30,7 +30,7 @@ log.info """\
 process runOC {
 
   // Define the conda environment file to be used
-  conda '../configs/envs/open-cravat.yaml'
+  conda './configs/envs/open-cravat.yaml'
 
   input:
   path var_ch
@@ -72,7 +72,7 @@ process parseAnnotation {
 process prediction {
 
   // Define the conda environment file to be used
-  conda '../configs/envs/ditto-nf.yaml'
+  conda './configs/envs/ditto-nf.yaml'
 
   input:
   path var_parse_ch
