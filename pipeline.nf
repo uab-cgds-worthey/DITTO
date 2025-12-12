@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 // Define the command-line options to specify the path to VCF files
 params.sample_sheet = '.test_data/file_list.txt'
 params.build = "hg38"
-params.oc_modules = "/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules"
+params.oc_modules = "/Volumes/my_book/james/opencravat/modules"
 // Define the Scratch directory
 def scratch_dir = System.getenv("USER_SCRATCH") ?: "/tmp"
 
@@ -30,7 +30,7 @@ log.info """\
 process runOC {
 
   // Define the conda environment file to be used
-  conda './configs/envs/open-cravat.yaml'
+  conda './configs/conda/open-cravat.yaml'
 
   input:
   path var_ch
@@ -64,7 +64,7 @@ process parseAnnotation {
 
   script:
   """
-  python ${baseDir}/src/annotation_parsing/parse_single_sample.py -i ${var_ann_ch} -e parse -o ${var_ann_ch}_parsed.csv.gz -c ${baseDir}/configs/opencravat_test_config.json
+  python ${baseDir}/src/annotation_parsing/parse_single_sample.py -i ${var_ann_ch} -e parse -o ${var_ann_ch}_parsed.csv.gz -c ${baseDir}/configs/opencravat/opencravat_test_config.json
   """
 }
 
@@ -72,7 +72,7 @@ process parseAnnotation {
 process prediction {
 
   // Define the conda environment file to be used
-  conda './configs/envs/ditto-nf.yaml'
+  conda './configs/conda/ditto-nf.yaml'
 
   input:
   path var_parse_ch

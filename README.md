@@ -99,7 +99,7 @@ conda create --name ditto-env
 conda activate ditto-env
 
 # Install nextflow
-conda install bioconda::nextflow
+conda install bioconda::nextflow=22.10 conda-forge::conda=23.1
 ```
 
 Please make a samplesheet `.test_data/file_list.txt` with VCF files (incl. path).
@@ -109,7 +109,7 @@ the pipeline as shown below.
 ```sh
 nextflow run pipeline.nf \
   --outdir ./data/ \
-  -work-dir ./wor_dir \
+  --work-dir ./wor_dir \
   --build hg38 -with-report \
   --oc_modules /data/opencravat/modules \
   --sample_sheet .test_data/file_list
