@@ -24,9 +24,10 @@ module load Anaconda3
 #conda activate nextflow
 
 #Modify paths to include full paths and run the pipeline here
+#Note: -work-dir is correct with one dash
 /data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf \
-  --outdir /data \
   -work-dir $USER_SCRATCH \
+  --outdir /data \
   --build hg38 -c ./configs/nextflow/cheaha.config -with-report \
   --sample_sheet .test_data/file_list.txt -resume
 

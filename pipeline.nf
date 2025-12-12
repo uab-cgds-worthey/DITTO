@@ -1,14 +1,14 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-// Define the command-line options to specify the path to VCF files
-params.sample_sheet = '.test_data/file_list.txt'
-params.build = "hg38"
-params.oc_modules = "/Volumes/my_book/james/opencravat/modules"
 // Define the Scratch directory
 def scratch_dir = System.getenv("USER_SCRATCH") ?: "/tmp"
 
+// Define the command-line options to specify the path to VCF files
 params.outdir = "${scratch_dir}"
+params.sample_sheet = '.test_data/file_list.txt'
+params.build = "hg38"
+params.oc_modules = "/Volumes/my_book/james/opencravat/modules"
 
 // Define the output directory for intermediate and final results
 output_dir = params.outdir
@@ -25,10 +25,8 @@ log.info """\
          """
          .stripIndent()
 
-
 // Define the process to run 'oc' with the specified parameters
 process runOC {
-
   // Define the conda environment file to be used
   conda './configs/conda/open-cravat.yaml'
 
@@ -52,7 +50,6 @@ process runOC {
 
 // Define the process to parse the annotation
 process parseAnnotation {
-
   // Define the conda environment file to be used
   conda 'python=3.10'
 
@@ -70,7 +67,6 @@ process parseAnnotation {
 
 // Define the process for prediction
 process prediction {
-
   // Define the conda environment file to be used
   conda './configs/conda/ditto-nf.yaml'
 
@@ -87,7 +83,6 @@ process prediction {
 // 'vcfFile' will be the channel containing the input VCF files
 // Each file in the channel will be processed through the steps defined above.
 workflow {
-
   // Define input channels for the VCF files
   vcfFile = Channel.fromPath(params.sample_sheet).splitCsv(header: false)
   vcfBuild = params.build
@@ -96,6 +91,7 @@ workflow {
   // Run processes
   runOC(vcfFile,vcfBuild,oc_mod_path )
   parseAnnotation(runOC.out)
+  
   // Scatter the output of parseAnnotation to process each file separately
   parseAnnotation.out.flatten().set { parsed_files }
   prediction(parsed_files)
