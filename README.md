@@ -114,7 +114,7 @@ nextflow run pipeline.nf \
   --outdir ./data/ \
   --build hg38 -with-report \
   --oc_modules /data/opencravat/modules \
-  --sample_sheet .test_data/file_list
+  --sample_sheet .test_data/file_list.txt
 ```
 
 ## Reproducing the DITTO model
@@ -127,12 +127,13 @@ Precomputed scores for all possible SNVs and known Indels from gnomADv3.0 in mai
 are available to download here - <https://s3.lts.rc.uab.edu/cgds-public/dittodb/dittodb.html>
 
 ## How to cite?
+
 <!-- markdown-link-check-disable -->
 Mamidi, T.K.K.; Wilk, B.M.; Gajapathy, M.; Worthey, E.A. DITTO: An Explainable Machine-Learning Model for
 Transcript-Specific Variant Pathogenicity Prediction. Preprints 2024, 2024040837. <https://doi.org/10.20944/preprints202404.0837.v1>
 <!-- markdown-link-check-enable -->
-## Contact information
 
+## Contact information
 For queries, please open a GitHub issue.
 
 For urgent queries, send an email with clear description to
