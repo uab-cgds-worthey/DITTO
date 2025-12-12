@@ -107,9 +107,11 @@ Please make sure to edit the directory paths as needed and run
 the pipeline as shown below.
 
 ```sh
+# Note: NextFlow work directory is defined as `-work-dir` in the run command parameters
+
 nextflow run pipeline.nf \
+  -work-dir ./work_dir \
   --outdir ./data/ \
-  --work-dir ./wor_dir \
   --build hg38 -with-report \
   --oc_modules /data/opencravat/modules \
   --sample_sheet .test_data/file_list

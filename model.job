@@ -27,7 +27,7 @@ module load Anaconda3
 /data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf \
   --outdir /data \
   -work-dir $USER_SCRATCH \
-  --build hg38 -c cheaha.config -with-report \
+  --build hg38 -c ./configs/nextflow/cheaha.config -with-report \
   --sample_sheet .test_data/file_list.txt -resume
 
 #https://training.nextflow.io/basic_training/cache_and_resume/#how-to-organize-in-silico-experiments
