@@ -81,6 +81,7 @@ work
 .nextflow/
 .nextflow*
 report*
+work_dir/
 
 #logs
 logs/

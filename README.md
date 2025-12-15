@@ -135,8 +135,8 @@ cd DITTO
 
   nextflow run pipeline.nf \
     -work-dir ./work_dir \
-    --outdir ./data/ \
-    --build hg38 -with-report \
+    --outdir ./data \
+    --build hg38 -c ./configs/nextflow/local.config -with-report \
     --oc_modules /<path-to>/opencravat/modules \
     --sample_sheet .test_data/file_list.txt
   ```
