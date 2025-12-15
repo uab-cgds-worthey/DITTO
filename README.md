@@ -145,7 +145,8 @@ cd DITTO
 
 To run on UAB cheaha, see the [installation](#installation) step to clone the DITTO repository into a Cheaha directory.
 
-- Update the `.test_data/file_list.txt` (inout vcfs) files with complete file paths and submit a slurm job using the command below
+- Update the `.test_data/file_list.txt` (inout vcfs) files with complete file paths and submit a slurm job using the
+command below
 
 ```bash
 /home/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
