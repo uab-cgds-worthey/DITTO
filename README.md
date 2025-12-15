@@ -30,7 +30,7 @@ genetic variants for pathogenicity using patient’s genotype (VCF) information.
 
 ## Prerequisites
 
-The following prerequisites are required to be installed in the target envrionment for deploying and running DITTO 
+The following prerequisites are required to be installed in the target envrionment for deploying and running DITTO
 prediction model.
 
 ### Tools
@@ -43,6 +43,13 @@ prediction model.
   - Setup with your favorite git client. Here is a [GitHub Guide](https://github.com/git-guides/install-git)
   for different platforms.
 - [Nextflow 22.10.7+](https://www.nextflow.io/) - [install](https://www.nextflow.io/docs/latest/install.html)
+
+> ***NOTE:*** Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions"
+> variants i.e. variants with `*` in `ALT Allele` column. More on these variants
+<!-- markdown-link-check-disable -->
+> [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele).
+<!-- markdown-link-check-enable -->
+> These will be ignored when running the pipeline.
 
 ### System Requirements
 
@@ -86,74 +93,66 @@ cd DITTO
 
 #### Setup Steps
 
-1. ***Setup OpenCravat (only one-time installation)***
+- ***Setup OpenCravat (only one-time installation)***
 
-Please follow the steps mentioned in [install_openCravat.md](docs/install_openCravat.md).
+  Please follow the steps mentioned in [install_openCravat.md](docs/install_openCravat.md).
 
-> ***NOTE:*** Current version of OpenCravat that we're using doesn't support "Spanning or overlapping deletions"
-> variants i.e. variants with `*` in `ALT Allele` column. More on these variants
-<!-- markdown-link-check-disable -->
-> [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035531912-Spanning-or-overlapping-deletions-allele).
-<!-- markdown-link-check-enable -->
-> These will be ignored when running the pipeline.
+- ***Setup Nextflow***
 
-2. ***Setup Nextflow***
+  Create an environment via conda. Below is an example to install `nextflow`.
+  
+  ```sh
+  # create environment. Needed only the first time. Please use the above link if you're not using Mac.
+  conda create --name ditto-env
 
-Create an environment via conda. Below is an example to install `nextflow`.
+  conda activate ditto-env
 
-- [Anaconda virtual environment](https://docs.anaconda.com/free/anaconda/install/index.html)
+  # Install nextflow
+  conda install bioconda::nextflow=22.10 conda-forge::conda=23.1
+  ```
 
-```sh
-# create environment. Needed only the first time. Please use the above link if you're not using Mac.
-conda create --name ditto-env
+- ***Sample Sheet***
 
-conda activate ditto-env
+  Please make a samplesheet `.test_data/file_list.txt` with VCF files (incl. path).
 
-# Install nextflow
-conda install bioconda::nextflow=22.10 conda-forge::conda=23.1
-```
+  Example `file_list.txt`:
 
-3. ***Sample Sheet*** 
+  ```bash
+  # Example is using MacOS home folder
 
-Please make a samplesheet `.test_data/file_list.txt` with VCF files (incl. path).
+  /Users/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
+  /Users/<username>/Workspace/DITTO/.test_data/testing_variants_hg38.vcf.gz
+  ```
 
-Example `file_list.txt`:
-```bash
-# Example is using MacOS home folder
+  This will run DITTO prediction for both vcf files in the `file_list.txt`.
 
-/Users/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
-/Users/<username>/Workspace/DITTO/.test_data/testing_variants_hg38.vcf.gz
-```
+- ***Run the NextFlow pipeline***
 
-This will run DITTO prediction for both vcf files in the `file_list.txt`.
+  Please make sure to edit the directory paths as needed and run the pipeline as shown below.
 
-4. ***Run the NextFlow pipeline***
+  ```sh
+  # Note: NextFlow work directory is defined as `-work-dir` in the run command parameters
 
-Please make sure to edit the directory paths as needed and run the pipeline as shown below.
-
-```sh
-# Note: NextFlow work directory is defined as `-work-dir` in the run command parameters
-
-nextflow run pipeline.nf \
-  -work-dir ./work_dir \
-  --outdir ./data/ \
-  --build hg38 -with-report \
-  --oc_modules /<path-to>/opencravat/modules \
-  --sample_sheet .test_data/file_list.txt
-```
+  nextflow run pipeline.nf \
+    -work-dir ./work_dir \
+    --outdir ./data/ \
+    --build hg38 -with-report \
+    --oc_modules /<path-to>/opencravat/modules \
+    --sample_sheet .test_data/file_list.txt
+  ```
 
 ### HPC Prediction with Cheaha
 
-To run on UAB cheaha, see the [installation](#installation) step to clone the DITTO repository into a Cheaha directory. 
+To run on UAB cheaha, see the [installation](#installation) step to clone the DITTO repository into a Cheaha directory.
 
-1. Update the `.test_data/file_list.txt` (inout vcfs) files with complete file paths and submit a slurm job using the command below
+- Update the `.test_data/file_list.txt` (inout vcfs) files with complete file paths and submit a slurm job using the command below
 
 ```bash
 /home/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
 /home/<username>/Workspace/DITTO/.test_data/testing_variants_hg38.vcf.gz
 ```
 
-2. Update `model.job` (outdir and samplesheet)
+- Update `model.job` (outdir and samplesheet)
 
 ```sh
 sbatch model.job
@@ -176,6 +175,7 @@ Transcript-Specific Variant Pathogenicity Prediction. Preprints 2024, 2024040837
 <!-- markdown-link-check-enable -->
 
 ## Contact information
+
 For queries, please open a GitHub issue.
 
 For urgent queries, send an email with clear description to
