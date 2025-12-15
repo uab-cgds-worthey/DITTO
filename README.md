@@ -14,6 +14,37 @@ Markdown](https://github.com/uab-cgds-worthey/DITTO/actions/workflows/linting.ym
 DITTO is an explainable neural network that can be helpful for accurate and rapid interpretation of small
 genetic variants for pathogenicity using patient’s genotype (VCF) information.
 
+## Getting Started
+
+- [Prerequisites](#prerequisites)
+- [Using DITTO](#using-ditto)
+  - [Webapp](#webapp)
+  - [API](#api)
+  - [Prediction](#prediction)
+
+## Prerequisites
+
+The following prerequisites are required to be installed in the target envrionment for deploying and running DITTO 
+prediction model.
+
+### Tools
+
+- [Python 3.10](https://www.python.org/) - [Install](https://www.python.org/downloads/)
+  - The specified OpenCravat version requires Python 3.10
+- [Anaconda3 25.7+](https://anaconda.com/) - [install](https://www.anaconda.com/docs/getting-started/anaconda/install)
+- [OpenCravat 2.4.1](https://www.opencravat.org/) - [install](https://github.com/KarchinLab/open-cravat/releases/tag/2.4.1)
+- [Git](https://git-scm.com/)
+  - Setup with your favorite git client. Here is a [GitHub Guide](https://github.com/git-guides/install-git)
+  for different platforms.
+- [Nextflow 22.10.7+](https://www.nextflow.io/) - [install](https://www.nextflow.io/docs/latest/install.html)
+
+### System Requirements
+
+- CPU: >2
+- RAM: ~25GB for a WGS VCF sample
+- Storage: 1TB
+  - The storage requirements are for hosting the OpenCravat annotators ~600GB of data required to store all annotators
+
 ## Using DITTO
 
 DITTO scores for variants can be obtained by the below 3 ways. Webapp and API are for single variant analysis and the
@@ -30,52 +61,26 @@ DITTO is available for public use at this [website](https://cgds-ditto.streamlit
 DITTO is not hosted as a public API but one can serve up locally to query DITTO scores. Please follow the instructions
 in this [GitHub repo](https://github.com/uab-cgds-worthey/DITTO-API).
 
-### Setting up to use locally
-
-> ***NOTE:*** This setup will allow one to annotate a VCF sample and make DITTO predictions. Currently tested only in
-> Cheaha (UAB HPC) because of resource limitations to download datasets from OpenCRAVAT.
-> Docker versions may need to be explored later to make it useable in Mac and Windows.
-
-#### System Requirements
-
-*Tools:*
-
-- Anaconda3
-- OpenCravat-2.4.1
-- Git
-
-*Resources:*
-
-- CPU: > 2
-- Storage: ~1TB
-- RAM: ~25GB for a WGS VCF sample
+### Prediction
 
 #### Installation
-
-Requirements:
-
-- DITTO repo from GitHub
-- OpenCravat with databases to annotate
-- Nextflow >=22.10.7
 
 To fetch DITTO source code, change in to directory of your choice and run:
 
 ```sh
 git clone https://github.com/uab-cgds-worthey/DITTO.git
+cd DITTO
 ```
 
-#### Run DITTO pipeline on UAB Cheaha
+### Local Prediction
 
-To run on UAB cheaha, please update the `model.job` (outdir and samplesheet) and `.test_data/file_list.txt` (inout vcfs)
- files with complete file paths and submit a slurm job using the command below
+> ***NOTE:*** This setup will allow one to annotate a VCF sample and make DITTO predictions. Currently tested only in
+> Cheaha (UAB HPC) because of resource limitations to download datasets from OpenCRAVAT.
+> Docker versions may need to be explored later to make it useable in Mac and Windows.
 
-```sh
-sbatch model.job
-```
+#### Setup Steps
 
-#### Run DITTO pipeline outside of UAB Cheaha
-
-***Setup OpenCravat (only one-time installation)***
+1. ***Setup OpenCravat (only one-time installation)***
 
 Please follow the steps mentioned in [install_openCravat.md](docs/install_openCravat.md).
 
@@ -86,7 +91,7 @@ Please follow the steps mentioned in [install_openCravat.md](docs/install_openCr
 <!-- markdown-link-check-enable -->
 > These will be ignored when running the pipeline.
 
-***Setup Nextflow***
+2. ***Setup Nextflow***
 
 Create an environment via conda. Below is an example to install `nextflow`.
 
@@ -102,9 +107,23 @@ conda activate ditto-env
 conda install bioconda::nextflow=22.10 conda-forge::conda=23.1
 ```
 
+3. ***Sample Sheet*** 
+
 Please make a samplesheet `.test_data/file_list.txt` with VCF files (incl. path).
-Please make sure to edit the directory paths as needed and run
-the pipeline as shown below.
+
+Example `file_list.txt`:
+```bash
+# Example is using MacOS home folder
+
+/Users/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
+/Users/<username>/Workspace/DITTO/.test_data/testing_variants_hg38.vcf.gz
+```
+
+This will run DITTO prediction for both vcf files in the `file_list.txt`.
+
+4. ***Run the NextFlow pipeline***
+
+Please make sure to edit the directory paths as needed and run the pipeline as shown below.
 
 ```sh
 # Note: NextFlow work directory is defined as `-work-dir` in the run command parameters
@@ -113,8 +132,25 @@ nextflow run pipeline.nf \
   -work-dir ./work_dir \
   --outdir ./data/ \
   --build hg38 -with-report \
-  --oc_modules /data/opencravat/modules \
+  --oc_modules /<path-to>/opencravat/modules \
   --sample_sheet .test_data/file_list.txt
+```
+
+### HPC Prediction with Cheaha
+
+To run on UAB cheaha, see the [installation](#installation) step to clone the DITTO repository into a Cheaha directory. 
+
+1. Update the `.test_data/file_list.txt` (inout vcfs) files with complete file paths and submit a slurm job using the command below
+
+```bash
+/home/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
+/home/<username>/Workspace/DITTO/.test_data/testing_variants_hg38.vcf.gz
+```
+
+2. Update `model.job` (outdir and samplesheet)
+
+```sh
+sbatch model.job
 ```
 
 ## Reproducing the DITTO model
@@ -138,7 +174,7 @@ For queries, please open a GitHub issue.
 
 For urgent queries, send an email with clear description to
 
-|Name | Email |
-|------|--------|
-|Tarun Mamidi | <tmamidi@uab.edu>|
-|Liz Worthey | <lworthey@uab.edu>|
+|    Name      |        Email       |
+|--------------|--------------------|
+| Tarun Mamidi | <tmamidi@uab.edu>  |
+| Liz Worthey  | <lworthey@uab.edu> |
