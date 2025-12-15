@@ -21,6 +21,12 @@ genetic variants for pathogenicity using patient’s genotype (VCF) information.
   - [Webapp](#webapp)
   - [API](#api)
   - [Prediction](#prediction)
+    - [Local Prediction](#local-prediction)
+    - [HPC Prediction with Cheaha](#hpc-prediction-with-cheaha)
+- [Reproducing the DITTO model](#reproducing-the-ditto-model)
+- [Download DITTO DB (Precomputed scores)](#download-ditto-db-precomputed-scores)
+- [How to cite?](#how-to-cite)
+- [Contact](#contact-information)
 
 ## Prerequisites
 
