@@ -8,7 +8,7 @@ def scratch_dir = System.getenv("USER_SCRATCH") ?: "/tmp"
 params.outdir = "${scratch_dir}"
 params.sample_sheet = '.test_data/file_list.txt'
 params.build = "hg38"
-params.oc_modules = "/Volumes/my_book/james/opencravat/modules"
+params.oc_modules = "/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules"
 
 // Define the output directory for intermediate and final results
 output_dir = params.outdir
@@ -43,6 +43,7 @@ process runOC {
   oc config md ${oc_mod_path}
   oc run ${var_ch} -l ${var_build} -t csv --mp 2 --package mypackage -d .
   rm -rf ${var_ch}.sqlite ${var_ch}.err
+  mkdir -p ${output_dir}
   cp ${var_ch}.variant.csv ${output_dir}/${var_ch}.variant.csv
   """
 

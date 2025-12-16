@@ -132,13 +132,14 @@ cd DITTO
 
   ```sh
   # Note: NextFlow work directory is defined as `-work-dir` in the run command parameters
+  # Note: `--output` cannot be relative, set a path nextflow can access. ex. `/tmp/DITTO/output`
 
   nextflow run pipeline.nf \
     -work-dir ./work_dir \
-    --outdir ./data \
     --build hg38 -c ./configs/nextflow/local.config -with-report \
+    --sample_sheet .test_data/file_list.txt \
     --oc_modules /<path-to>/opencravat/modules \
-    --sample_sheet .test_data/file_list.txt
+    --outdir $PWD/output
   ```
 
 ### HPC Prediction with Cheaha
