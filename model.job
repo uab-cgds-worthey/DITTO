@@ -27,8 +27,8 @@ module load Anaconda3
 #Note: -work-dir is correct with one dash
 /data/project/worthey_lab/tools/nextflow/nextflow-22.10.7/nextflow run pipeline.nf \
   -work-dir $USER_SCRATCH \
-  --outdir /data \
   --build hg38 -c ./configs/nextflow/cheaha.config -with-report \
-  --sample_sheet .test_data/file_list.txt -resume
+  --sample_sheet .test_data/file_list.txt -resume \
+  --outdir $PWD/data/output
 
 #https://training.nextflow.io/basic_training/cache_and_resume/#how-to-organize-in-silico-experiments
