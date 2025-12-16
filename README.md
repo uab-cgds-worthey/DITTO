@@ -139,7 +139,7 @@ cd DITTO
     --build hg38 -c ./configs/nextflow/local.config -with-report \
     --sample_sheet .test_data/file_list.txt \
     --oc_modules /<path-to>/opencravat/modules \
-    --outdir $PWD/output
+    --outdir $PWD/data/output
   ```
 
 ### HPC Prediction with Cheaha
