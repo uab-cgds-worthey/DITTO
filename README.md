@@ -156,7 +156,8 @@ To run on UAB cheaha, see the [installation](#installation) step to clone the DI
 /home/<username>/Workspace/DITTO/.test_data/testing_variants_hg38.vcf.gz
 ```
 
-- Update `model.job` (outdir and samplesheet)
+- Update `model.job` (change the `--sample_sheet` option to your input file with VCF path(s) and
+  `--outdir` to the desired output location of DITTO predictions)
 
 ```sh
 sbatch model.job
