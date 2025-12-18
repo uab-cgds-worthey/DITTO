@@ -151,6 +151,8 @@ To run on UAB cheaha, see the [installation](#installation) step to clone the DI
 - See the example input file [.test_data/file_list.txt](.test_data/file_list.txt) (lists 2 testing example input VCFs) 
   for reference or as an input file for testing (default behavior of `model.job`)
 
+Example input file content:
+
 ```bash
 /home/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
 /home/<username>/Workspace/DITTO/.test_data/testing_variants_hg38.vcf.gz
