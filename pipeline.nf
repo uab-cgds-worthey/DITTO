@@ -85,7 +85,21 @@ process prediction {
 // Each file in the channel will be processed through the steps defined above.
 workflow {
   // Define input channels for the VCF files
-  vcfFile = Channel.fromPath(params.sample_sheet).splitCsv(header: false)
+  vcfFile = Channel.fromPath(params.sample_sheet)
+    .splitText() // Emit each line as a separate item
+    .map { line ->
+        // For each line (relative path), create a Nextflow file object relative to params.data_dir
+        if (line.startsWith("/")){
+            return line.trim()
+        } else {
+            def abs_path = file(workflow.launchDir).resolve(line.trim())
+            return abs_path
+        }
+    }
+    .map { path_obj ->
+        // Ensure the path is a proper Path object for staging
+        file(path_obj, checkIfExists: true)
+    }
   vcfBuild = params.build
   oc_mod_path = params.oc_modules
 
