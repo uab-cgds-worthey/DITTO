@@ -147,8 +147,9 @@ cd DITTO
 To run on UAB cheaha, see the [installation](#installation) step to clone the DITTO repository into a Cheaha directory.
 
 - Create a text file listing the path to VCF file(s) (1 path per line) with variants to score
-  - Paths can be full absolute paths **or** relative paths (relative to the directory where the pipeline will be run from, **not** the directory where the `pipeline.nf` file is)
-- See the example input file [.test_data/file_list.txt](.test_data/file_list.txt) (lists 2 testing example input VCFs) 
+  - Paths can be full absolute paths **or** relative paths (relative to the directory where the pipeline will be run
+    from, **note** the directory where the `pipeline.nf` file is)
+- See the example input file [.test_data/file_list.txt](.test_data/file_list.txt) (lists 2 testing example input VCFs)
   for reference or as an input file for testing (default behavior of `model.job`)
 
 Example input file content:
