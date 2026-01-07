@@ -103,12 +103,9 @@ cd DITTO
   
   ```sh
   # create environment. Needed only the first time. Please use the above link if you're not using Mac.
-  conda create --name ditto-env
+  conda env create -f ./configs/conda/ditto-env.yaml
 
   conda activate ditto-env
-
-  # Install nextflow
-  conda install bioconda::nextflow=22.10 conda-forge::conda=23.1
   ```
 
 - ***Sample Sheet***

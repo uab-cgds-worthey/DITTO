@@ -1,0 +1,9 @@
+name: ditto-env
+
+channels:
+  - bioconda
+  - conda-forge
+
+dependencies:
+  - nextflow=22.10
+  - conda=23.1

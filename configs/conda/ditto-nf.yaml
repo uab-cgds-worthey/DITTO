@@ -1,5 +1,8 @@
+name: ditto-nf
+
 channels:
   - conda-forge
+
 dependencies:
   - python=3.10.11
   - pandas=2.0.1

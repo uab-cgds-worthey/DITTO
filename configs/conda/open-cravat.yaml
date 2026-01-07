@@ -1,3 +1,5 @@
+name: opencravat-env
+
 dependencies:
   - pip
   - python=3.10
