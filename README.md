@@ -94,7 +94,7 @@ cd DITTO
 #### NextFlow Conda Vs. Mamba Setup
 
 ***NOTE:*** If the user has conda running with Mamba instead of Conda, NextFlow can be configured to use Mamba instead
-by modifying the `configs/nextflow/local.config` file and updating the **useMamba** parameter to reflect the user's 
+by modifying the `configs/nextflow/local.config` file and updating the **useMamba** parameter to reflect the user's
 environment:
 
 ```yaml
@@ -112,7 +112,7 @@ useMamba = true
 - ***Setup Nextflow***
 
   Create an environment via conda. Below is an example to install `nextflow`.
-  
+
   ```sh
   # create environment. Needed only the first time. Please use the above link if you're not using Mac.
   conda env create -f ./configs/conda/ditto-env.yaml
