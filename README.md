@@ -91,6 +91,18 @@ cd DITTO
 > Cheaha (UAB HPC) because of resource limitations to download datasets from OpenCRAVAT.
 > Docker versions may need to be explored later to make it useable in Mac and Windows.
 
+#### NextFlow Conda Vs. Mamba Setup
+
+***NOTE:*** If the user has conda running with Mamba instead of Conda, NextFlow can be configured to use Mamba instead
+by modifying the `configs/nextflow/local.config` file and updating the **useMamba** parameter to reflect the user's 
+environment:
+
+```yaml
+# This parameter is defaulted to false, change to true if using Mamba
+
+useMamba = true
+```
+
 #### Setup Steps
 
 - ***Setup OpenCravat (only one-time installation)***
@@ -110,15 +122,26 @@ cd DITTO
 
 - ***Sample Sheet***
 
-  Please make a samplesheet `.test_data/file_list.txt` with VCF files (incl. path).
+  Please make a samplesheet `.test_data/file_list.txt` with VCF files (incl. path). One can supply either relative paths
+  or absolute paths to files for the vcf.gz files. Relative paths need to be relative to the work directory that DITTO
+  was executed from.
 
-  Example `file_list.txt`:
+  Example `file_list.txt` with relative paths:
 
   ```bash
-  # Example is using MacOS home folder
+  .test_data/oc_test_data.vcf.gz
+  .test_data/testing_variants_hg38.vcf.gz
 
-  /Users/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
-  /Users/<username>/Workspace/DITTO/.test_data/testing_variants_hg38.vcf.gz
+  # Example, will become: /Users/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
+  ```
+
+  Or absolute paths
+
+  ```bash
+  /Users/<username>/Desktop/test_data/oc_test_data.vcf.gz
+  /Users/<username>/Desktop/test_data/testing_variants_hg38.vcf.gz
+
+  # Example is using MacOS Desktop folder with test_data directory
   ```
 
   This will run DITTO prediction for both vcf files in the `file_list.txt`.
@@ -148,13 +171,26 @@ To run on UAB cheaha, see the [installation](#installation) step to clone the DI
     from, **note** the directory where the `pipeline.nf` file is)
 - See the example input file [.test_data/file_list.txt](.test_data/file_list.txt) (lists 2 testing example input VCFs)
   for reference or as an input file for testing (default behavior of `model.job`)
+  - One can supply either relative paths or absolute paths to files for the vcf.gz files. Relative paths need to be
+    relative to the work directory that DITTO was executed from.
 
-Example input file content:
+  Example `file_list.txt` with relative paths:
 
-```bash
-/home/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
-/home/<username>/Workspace/DITTO/.test_data/testing_variants_hg38.vcf.gz
-```
+  ```bash
+  .test_data/oc_test_data.vcf.gz
+  .test_data/testing_variants_hg38.vcf.gz
+
+  # Example, will become: /home/<username>/Workspace/DITTO/.test_data/oc_test_data.vcf.gz
+  ```
+
+  Or absolute paths
+
+  ```bash
+  /home/<username>/test_data/oc_test_data.vcf.gz
+  /home/<username>/test_data/testing_variants_hg38.vcf.gz
+  
+  # Example is using Linux home directory with a test_data directory
+  ```
 
 - Update `model.job` (change the `--sample_sheet` option to your input file with VCF path(s) and
   `--outdir` to the desired output location of DITTO predictions)
