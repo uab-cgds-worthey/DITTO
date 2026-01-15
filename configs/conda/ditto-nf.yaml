@@ -10,4 +10,5 @@ dependencies:
   - pyaml=23.7.0
   - pip=23.2.1
   - pip:
+    - --only-binary h5py
     - tensorflow==2.11
