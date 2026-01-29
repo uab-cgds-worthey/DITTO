@@ -49,10 +49,10 @@ Create environment and install dependencies
 
 ```sh
 # create conda environment. Needed only the first time.
-conda env create --file configs/envs/environment.yaml
+conda env create --file configs/conda/environment.yaml
 
 # if you need to update existing environment
-conda env update --file configs/envs/environment.yaml
+conda env update --file configs/conda/environment.yaml
 
 # activate conda environment
 conda activate training
@@ -74,7 +74,7 @@ oc run clinvar.vcf.gz -l hg38 -t csv --package mypackage -d path/to/output/direc
 
 > ***NOTE:*** By default OpenCravat uses all available CPUs. Please specify the number of CPU cores using this parameter
 > in the above command `--mp 2`. Minimum number of CPUs to use is 2. Also, please make sure to setup `mypackage` from
-> `configs` directory to your modules directory. To learn more about it, please review [OpenCravat's package](https://open-cravat.readthedocs.io/en/latest/Package.html).
+> `configs/opencravat` directory to your modules directory. To learn more about it, please review [OpenCravat's package](https://open-cravat.readthedocs.io/en/latest/Package.html).
 
 ## Preprocessing
 
@@ -84,7 +84,7 @@ the below command
 
 ```sh
 python src/annotation_parsing/parse_single_sample.py -i clinvar.vcf.gz.variant.csv -e parse \
-    -o clinvar.vcf.gz.variant.csv_parsed.csv.gz -c configs/opencravat_train_config.json
+    -o clinvar.vcf.gz.variant.csv_parsed.csv.gz -c configs/opencravat/opencravat_train_config.json
 ```
 
 Filter and process the annotations as shown in this [python
@@ -110,9 +110,9 @@ Follow the below steps to install and add more databases for annotation and befo
 
 1. Install the annotator/database using OpenCravat.
 
-2. Add the annotator to `mypackage/mypackage.yml` and reannotate the clinvar VCF file.
+2. Add the annotator to `configs/opencravat/mypackage/mypackage.yml` and reannotate the clinvar VCF file.
 
-3. Add the annotator to the [train config](../configs/opencravat_train_config.json) and specify how to parse the
+3. Add the annotator to the [train config](../configs/opencravat/opencravat_train_config.json) and specify how to parse the
    annotation.
 
 4. Follow the steps from Preprocessing above to parse, filter, process, tune and train DITTO.

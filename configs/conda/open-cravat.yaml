@@ -1,7 +1,11 @@
+name: opencravat-env
+
 dependencies:
   - pip
+  - python=3.10
   - pip:
     - pytabix==0.1
     - open-cravat==2.4.1
+    
     #- joblib==1.3.2
     #- git+https://github.com/tkmamidi/open-cravat.git

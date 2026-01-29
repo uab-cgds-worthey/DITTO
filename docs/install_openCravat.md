@@ -62,7 +62,7 @@ oc module install vcfreporter csvreporter tsvreporter -y
 Package is a module which defines module installation and job parameters. To learn more about OpenCravat's package,
 please click [here](https://open-cravat.readthedocs.io/en/latest/Package.html).
 
-Here's the package for DITTO - `configs/mypackage/mypackage.yml`
+Here's the package for DITTO - `configs/opencravat/mypackage/mypackage.yml`
 
 Copy the package directory to the modules directory.
 
@@ -71,5 +71,5 @@ Copy the package directory to the modules directory.
 oc config md
 
 # copy the package to the modules directory
-cp -r configs/mypackage path/to/modules/directory/
+cp -r configs/opencravat/mypackage path/to/modules/directory/
 ```

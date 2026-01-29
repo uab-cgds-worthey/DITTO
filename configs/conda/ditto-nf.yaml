@@ -1,5 +1,8 @@
+name: ditto-nf
+
 channels:
   - conda-forge
+
 dependencies:
   - python=3.10.11
   - pandas=2.0.1
@@ -7,4 +10,5 @@ dependencies:
   - pyaml=23.7.0
   - pip=23.2.1
   - pip:
+    - --only-binary h5py
     - tensorflow==2.11

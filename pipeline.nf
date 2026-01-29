@@ -1,14 +1,14 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-// Define the command-line options to specify the path to VCF files
-params.sample_sheet = '.test_data/file_list.txt'
-params.build = "hg38"
-params.oc_modules = "/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules"
 // Define the Scratch directory
 def scratch_dir = System.getenv("USER_SCRATCH") ?: "/tmp"
 
+// Define the command-line options to specify the path to VCF files
 params.outdir = "${scratch_dir}"
+params.sample_sheet = '.test_data/file_list.txt'
+params.build = "hg38"
+params.oc_modules = "/data/project/worthey_lab/projects/experimental_pipelines/tarun/opencravat/modules"
 
 // Define the output directory for intermediate and final results
 output_dir = params.outdir
@@ -25,12 +25,10 @@ log.info """\
          """
          .stripIndent()
 
-
 // Define the process to run 'oc' with the specified parameters
 process runOC {
-
   // Define the conda environment file to be used
-  conda './configs/envs/open-cravat.yaml'
+  conda './configs/conda/open-cravat.yaml'
 
   input:
   path var_ch
@@ -45,6 +43,7 @@ process runOC {
   oc config md ${oc_mod_path}
   oc run ${var_ch} -l ${var_build} -t csv --mp 2 --package mypackage -d .
   rm -rf ${var_ch}.sqlite ${var_ch}.err
+  mkdir -p ${output_dir}
   cp ${var_ch}.variant.csv ${output_dir}/${var_ch}.variant.csv
   """
 
@@ -52,7 +51,6 @@ process runOC {
 
 // Define the process to parse the annotation
 process parseAnnotation {
-
   // Define the conda environment file to be used
   conda 'python=3.10'
 
@@ -64,15 +62,14 @@ process parseAnnotation {
 
   script:
   """
-  python ${baseDir}/src/annotation_parsing/parse_single_sample.py -i ${var_ann_ch} -e parse -o ${var_ann_ch}_parsed.csv.gz -c ${baseDir}/configs/opencravat_test_config.json
+  python ${baseDir}/src/annotation_parsing/parse_single_sample.py -i ${var_ann_ch} -e parse -o ${var_ann_ch}_parsed.csv.gz -c ${baseDir}/configs/opencravat/opencravat_test_config.json
   """
 }
 
 // Define the process for prediction
 process prediction {
-
   // Define the conda environment file to be used
-  conda './configs/envs/ditto-nf.yaml'
+  conda './configs/conda/ditto-nf.yaml'
 
   input:
   path var_parse_ch
@@ -87,15 +84,29 @@ process prediction {
 // 'vcfFile' will be the channel containing the input VCF files
 // Each file in the channel will be processed through the steps defined above.
 workflow {
-
   // Define input channels for the VCF files
-  vcfFile = Channel.fromPath(params.sample_sheet).splitCsv(header: false)
+  vcfFile = Channel.fromPath(params.sample_sheet)
+    .splitText() // Emit each line as a separate item
+    .map { line ->
+        // For each line (relative path), create a Nextflow file object relative to params.data_dir
+        if (line.startsWith("/")){
+            return line.trim()
+        } else {
+            def abs_path = file(workflow.launchDir).resolve(line.trim())
+            return abs_path
+        }
+    }
+    .map { path_obj ->
+        // Ensure the path is a proper Path object for staging
+        file(path_obj, checkIfExists: true)
+    }
   vcfBuild = params.build
   oc_mod_path = params.oc_modules
 
   // Run processes
   runOC(vcfFile,vcfBuild,oc_mod_path )
   parseAnnotation(runOC.out)
+  
   // Scatter the output of parseAnnotation to process each file separately
   parseAnnotation.out.flatten().set { parsed_files }
   prediction(parsed_files)

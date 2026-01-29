@@ -81,6 +81,7 @@ work
 .nextflow/
 .nextflow*
 report*
+work_dir/
 
 #logs
 logs/
@@ -90,3 +91,6 @@ logs/
 
 # .java/fonts dir get created when creating fastqc conda env
 .java/
+
+# DITTO output
+data/output/
